@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { PostService } from './post.service';
@@ -19,8 +20,13 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get()
-  findAll() {
-    return this.postService.findAll();
+  findAll(
+    @Query('userId') userId: number,
+    @Query('deptId') deptId: number,
+    @Query('message') message: string,
+    @Query('imageLocation') imageLocation: string,
+  ) {
+    return this.postService.findAll(userId, deptId, message, imageLocation);
   }
 
   @Get(':id')

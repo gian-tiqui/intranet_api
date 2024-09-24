@@ -7,8 +7,25 @@ import { UpdatePostDto } from './dto/update-post.dto';
 export class PostService {
   constructor(private prismaService: PrismaService) {}
 
-  async findAll() {
-    return this.prismaService.post.findMany();
+  async findAll(
+    userId?: number,
+    deptId?: number,
+    message?: string,
+    imageLocation?: string,
+  ) {
+    const iDeptId = Number(deptId);
+    const iUserId = Number(userId);
+
+    return this.prismaService.post.findMany({
+      where: {
+        ...(deptId && { deptId: iDeptId }),
+        ...(userId && { userId: iUserId }),
+        ...(message && { message: { contains: message } }),
+        ...(imageLocation && {
+          imageLocation: { contains: imageLocation },
+        }),
+      },
+    });
   }
 
   async findById(postId: number) {
