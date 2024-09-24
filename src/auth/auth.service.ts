@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -84,6 +85,11 @@ export class AuthService {
 
   async refresh(refreshTokenDto: RefreshTokenDto) {
     const { refreshToken } = refreshTokenDto;
+
+    if (!refreshToken) {
+      throw new BadRequestException('No token provided');
+    }
+
     const user = await this.prisma.user.findFirst({
       where: {
         refreshToken: refreshToken,
