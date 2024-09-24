@@ -26,6 +26,7 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   refreshToken   String?  @unique
+  deptId         Int
   posts          Post[]
 }
 
@@ -41,7 +42,6 @@ model Post {
   deptId         Int
   message        String?
   imageLocation  String?
-  reacts         Json?    
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   user           User     @relation(fields: [userId], references: [id])
