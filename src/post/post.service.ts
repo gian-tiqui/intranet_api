@@ -137,12 +137,6 @@ export class PostService {
         }
       });
 
-      /*
-       * @TODO:
-       *
-       * newFile path is always empty. provide fix and read docs
-       */
-
       rename(newFile.path, newFilePath, (err) => {
         if (err) {
           console.error('Error moving new file:', err);
