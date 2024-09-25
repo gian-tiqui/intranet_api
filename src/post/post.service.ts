@@ -98,12 +98,6 @@ export class PostService {
     }
   }
 
-  /*
-   * @TODO:
-   * If the image is not empty, validate if the image has image extensions and update the data
-   * @params postId: number, updatedPostDto: UpdatePostDto, [new] newMemoFile: Express.Multer.File
-   */
-
   // This method should update the data in the database and update image if the image is not empty
   async updateById(
     postId: number,
@@ -121,18 +115,19 @@ export class PostService {
 
     const updatedPostData = { ...updatePostDto };
 
-    console.log(post.imageLocation);
-
     if (newFile) {
       const oldFilePath = path.join(
         __dirname,
         'uploads',
         post.imageLocation.split('uploads/')[1],
       );
+
       const newFileName = newFile.originalname;
-      console.log('old file path:', oldFilePath);
-      const newFilePath = path.join(__dirname, 'uploads', newFileName);
-      console.log('new file path', newFilePath);
+      const newFilePath = path.join(
+        __dirname,
+        '../../dist/post/uploads',
+        newFileName,
+      );
 
       unlink(oldFilePath, (err) => {
         if (err) {
@@ -141,6 +136,12 @@ export class PostService {
           console.log('Old file deleted successfully:', oldFilePath);
         }
       });
+
+      /*
+       * @TODO:
+       *
+       * newFile path is always empty. provide fix and read docs
+       */
 
       rename(newFile.path, newFilePath, (err) => {
         if (err) {
