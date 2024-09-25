@@ -16,6 +16,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from './common/MulterOption';
 
 // This guard accepts requests that are provided with valid access tokens
 @UseGuards(JwtAuthGuard)
@@ -74,9 +75,15 @@ export class PostController {
   @Put(':id')
   @UseInterceptors(
     FileInterceptor('newMemo', {
+      ...multerOptions,
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
-        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const allowedMimeTypes = [
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'image/jpg',
+        ];
         if (allowedMimeTypes.includes(file.mimetype)) {
           cb(null, true);
         } else {
@@ -88,10 +95,9 @@ export class PostController {
   updateById(
     @Param('id') postId,
     @Body() updatePostDto: UpdatePostDto,
-    @UploadedFile() uppdatedMemoFile: Express.Multer.File,
+    @UploadedFile() updatedMemoFile?: Express.Multer.File,
   ) {
-    console.log(uppdatedMemoFile);
-    return this.postService.updateById(postId, updatePostDto);
+    return this.postService.updateById(postId, updatePostDto, updatedMemoFile);
   }
 
   // This endpoint deletes a post with the given id
