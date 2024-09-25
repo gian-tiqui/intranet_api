@@ -8,7 +8,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { promises as fs, unlink } from 'fs';
+import { promises as fs, unlink, rename } from 'fs';
 import * as path from 'path';
 
 @Injectable()
@@ -105,7 +105,11 @@ export class PostService {
    */
 
   // This method should update the data in the database and update image if the image is not empty
-  async updateById(postId: number, updatePostDto: UpdatePostDto) {
+  async updateById(
+    postId: number,
+    updatePostDto: UpdatePostDto,
+    newFile?: Express.Multer.File,
+  ) {
     const id = Number(postId);
     const post = await this.prismaService.post.findFirst({
       where: {
@@ -115,9 +119,42 @@ export class PostService {
 
     if (!post) throw new NotFoundException('Post not found');
 
+    const updatedPostData = { ...updatePostDto };
+
+    console.log(post.imageLocation);
+
+    if (newFile) {
+      const oldFilePath = path.join(
+        __dirname,
+        'uploads',
+        post.imageLocation.split('uploads/')[1],
+      );
+      const newFileName = newFile.originalname;
+      console.log('old file path:', oldFilePath);
+      const newFilePath = path.join(__dirname, 'uploads', newFileName);
+      console.log('new file path', newFilePath);
+
+      unlink(oldFilePath, (err) => {
+        if (err) {
+          console.error('Error deleting old file:', err);
+        } else {
+          console.log('Old file deleted successfully:', oldFilePath);
+        }
+      });
+
+      rename(newFile.path, newFilePath, (err) => {
+        if (err) {
+          console.error('Error moving new file:', err);
+        } else {
+          console.log('New file moved successfully:', newFilePath);
+          updatedPostData.imageLocation = `uploads/${newFileName}`;
+        }
+      });
+    }
+
     const updatedPost = await this.prismaService.post.update({
       where: { pid: id },
-      data: { ...updatePostDto },
+      data: updatedPostData,
     });
 
     return {
