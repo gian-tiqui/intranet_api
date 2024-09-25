@@ -9,11 +9,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { promises as fs, unlink, rename } from 'fs';
+import { promisify } from 'util';
 import * as path from 'path';
 
 @Injectable()
 export class PostService {
   constructor(private prismaService: PrismaService) {}
+
+  unlinkAsync = promisify(unlink);
+  renameAsync = promisify(rename);
 
   // This method returns all the posts and can also be filtered if the following query parameters are filled
   async findAll(
@@ -98,7 +102,6 @@ export class PostService {
     }
   }
 
-  // This method should update the data in the database and update image if the image is not empty
   async updateById(
     postId: number,
     updatePostDto: UpdatePostDto,
@@ -113,7 +116,10 @@ export class PostService {
 
     if (!post) throw new NotFoundException('Post not found');
 
-    const updatedPostData = { ...updatePostDto };
+    const updatePost = {
+      message: updatePostDto?.message,
+      imageLocation: '',
+    };
 
     if (newFile) {
       const oldFilePath = path.join(
@@ -129,27 +135,25 @@ export class PostService {
         newFileName,
       );
 
-      unlink(oldFilePath, (err) => {
-        if (err) {
-          console.error('Error deleting old file:', err);
-        } else {
-          console.log('Old file deleted successfully:', oldFilePath);
-        }
-      });
+      try {
+        await this.unlinkAsync(oldFilePath);
+        console.log('Old file deleted successfully:', oldFilePath);
+      } catch (err) {
+        console.error('Error deleting old file:', err);
+      }
 
-      rename(newFile.path, newFilePath, (err) => {
-        if (err) {
-          console.error('Error moving new file:', err);
-        } else {
-          console.log('New file moved successfully:', newFilePath);
-          updatedPostData.imageLocation = `uploads/${newFileName}`;
-        }
-      });
+      try {
+        await this.renameAsync(newFile.path, newFilePath);
+        console.log('New file moved successfully:', newFilePath);
+        updatePost.imageLocation = `uploads/${newFileName}`;
+      } catch (err) {
+        console.error('Error moving new file:', err);
+      }
     }
 
     const updatedPost = await this.prismaService.post.update({
       where: { pid: id },
-      data: updatedPostData,
+      data: updatePost,
     });
 
     return {

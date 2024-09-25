@@ -17,7 +17,7 @@ describe('Post endpoints testing', () => {
     postController = moduleRef.get<PostController>(PostController);
   });
 
-  describe('find all posts', () => {
+  describe('findAll', () => {
     it('should return posts', async () => {
       const results = [
         {
