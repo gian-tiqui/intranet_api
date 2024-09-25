@@ -29,6 +29,33 @@ describe('Post endpoints testing', () => {
           createdAt: '2024-09-25T05:20:33.019Z',
           updatedAt: '2024-09-25T05:23:40.742Z',
         },
+        {
+          pid: 48,
+          userId: 2,
+          deptId: 1,
+          message: 'updated post',
+          imageLocation: 'uploads/1727241633011-365550808-download.jpg',
+          createdAt: '2024-09-25T05:20:33.019Z',
+          updatedAt: '2024-09-25T05:23:40.742Z',
+        },
+        {
+          pid: 49,
+          userId: 2,
+          deptId: 1,
+          message: 'updated post',
+          imageLocation: 'uploads/1727241633011-365550808-download.jpg',
+          createdAt: '2024-09-25T05:20:33.019Z',
+          updatedAt: '2024-09-25T05:23:40.742Z',
+        },
+        {
+          pid: 50,
+          userId: 2,
+          deptId: 1,
+          message: 'updated post',
+          imageLocation: 'uploads/1727241633011-365550808-download.jpg',
+          createdAt: '2024-09-25T05:20:33.019Z',
+          updatedAt: '2024-09-25T05:23:40.742Z',
+        },
       ];
 
       jest.spyOn(postService, 'findAll').mockImplementation(() => results);
