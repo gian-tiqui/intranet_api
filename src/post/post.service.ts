@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class PostService {
@@ -43,27 +50,54 @@ export class PostService {
     };
   }
 
-  async create(createPostDto: CreatePostDto) {
-    const post = await this.prismaService.post.create({
-      data: {
-        userId: createPostDto.userId,
-        deptId: createPostDto.deptId,
-        message: createPostDto.message,
-        imageLocation: createPostDto.imageLocation,
-      },
-    });
+  async create(createPostDto: CreatePostDto, memoFile: Express.Multer.File) {
+    try {
+      let imageLocation = '';
 
-    const { userId, deptId, ...extractions } = post;
+      if (memoFile) {
+        // production script
 
-    console.log(userId + deptId);
+        const postDir = path.join(__dirname, 'uploads');
+        const filePath = path.join(postDir, memoFile.originalname);
 
-    return {
-      message: 'Post created successfully',
-      statusCode: 200,
-      post: { ...extractions },
-    };
+        // if we want the files to be stored in src
+
+        // const postDir = path.join(process.cwd(), 'src', 'post', 'uploads');
+        // const filePath = path.join(postDir, memoFile.originalname);
+
+        await fs.mkdir(postDir, { recursive: true });
+
+        await fs.writeFile(filePath, memoFile.buffer);
+
+        imageLocation = `src/post/uploads/${memoFile.originalname}`;
+      }
+
+      const post = await this.prismaService.post.create({
+        data: {
+          userId: Number(createPostDto.userId),
+          deptId: Number(createPostDto.deptId),
+          message: createPostDto.message,
+          imageLocation: imageLocation,
+        },
+      });
+
+      const { userId, deptId, ...extractions } = post;
+
+      console.log(userId + 15 + deptId);
+
+      return {
+        message: 'Post created successfully',
+        statusCode: 200,
+        post: { ...extractions, imageLocation },
+      };
+    } catch (error) {
+      console.error('Error creating post:', error);
+      throw new HttpException(
+        'Failed to create post',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
-
   async updateById(postId: number, updatePostDto: UpdatePostDto) {
     const id = Number(postId);
     const post = await this.prismaService.post.findFirst({
