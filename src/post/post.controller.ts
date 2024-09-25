@@ -38,16 +38,13 @@ export class PostController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('memoFile'))
-  createPost(
-    @Body() createPostDto: CreatePostDto,
-    @UploadedFile() memoFile: Express.Multer.File,
-  ) {
+  @UseInterceptors(FileInterceptor('memo'))
+  createPost(@Body() createPostDto: CreatePostDto, @UploadedFile() memoFile) {
     return this.postService.create(createPostDto, memoFile);
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('newMemoFile'))
+  @UseInterceptors(FileInterceptor('newMemo'))
   updateById(
     @Param('id') postId,
     @Body() updatePostDto: UpdatePostDto,
