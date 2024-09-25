@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -51,18 +52,20 @@ export class PostService {
   }
 
   async create(createPostDto: CreatePostDto, memoFile: Express.Multer.File) {
+    if (!memoFile) throw new ConflictException('no memo found');
     try {
       let imageLocation = '';
 
       if (memoFile) {
         const postDir = path.join(__dirname, 'uploads');
-        await fs.mkdir(postDir, { recursive: true });
 
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const filePath = path.join(
           postDir,
           `${uniqueSuffix}-${memoFile.originalname}`,
         );
+
+        await fs.mkdir(postDir, { recursive: true });
 
         await fs.writeFile(filePath, memoFile.buffer);
 
@@ -78,15 +81,10 @@ export class PostService {
         },
       });
 
-      const retPostObject = { ...post };
-
-      delete retPostObject.deptId;
-      delete retPostObject.userId;
-
       return {
         message: 'Post created successfully',
         statusCode: 200,
-        post: { ...retPostObject, imageLocation },
+        post: { post },
       };
     } catch (error) {
       console.error('Error creating post:', error);
@@ -134,7 +132,9 @@ export class PostService {
       },
     });
 
-    console.log(deletedPost.imageLocation.split('s/')[1]);
+    const deleteFileName = deletedPost.imageLocation.split('uploads/')[1];
+
+    console.log(deleteFileName);
 
     return {
       message: 'Post deleted successfully',
