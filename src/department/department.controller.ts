@@ -23,6 +23,12 @@ export class DepartmentController {
     return this.departmentService.findAll(departmenName);
   }
 
+  // One department fetcher endpoint
+  @Get(':id')
+  findById(@Param('id') deptId: number) {
+    return this.departmentService.findOneById(deptId);
+  }
+
   // Department creation endpoint
   @Post()
   create(@Body() createDepartmentDto: CreateDepartmentDto) {

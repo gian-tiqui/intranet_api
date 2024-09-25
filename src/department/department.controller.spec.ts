@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { DepartmentController } from './department.controller';
 import { DepartmentService } from './department.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateDepartmentDto } from './dto/create-department.dto';
 
 describe('Departments controller testing', () => {
   let departmentService;
@@ -32,6 +33,58 @@ describe('Departments controller testing', () => {
         .mockImplementation(() => results);
 
       expect(await departmentController.findAll()).toBe(results);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return a department', async () => {
+      const result = {
+        deptId: 1,
+        departmentName: 'IT',
+      };
+
+      jest
+        .spyOn(departmentService, 'findOneById')
+        .mockImplementation(() => result);
+
+      expect(await departmentController.findById(1)).toBe(result);
+    });
+  });
+
+  describe('createDepartment', () => {
+    it('should create a new department', async () => {
+      const createDepartmentDto: CreateDepartmentDto = {
+        departmentName: 'IT',
+      };
+
+      const result = {
+        message: 'Department added successfully',
+        statusCode: 201,
+        department: {
+          deptId: 3,
+          departmentName: 'HR',
+        },
+      };
+
+      jest.spyOn(departmentService, 'create').mockImplementation(() => result);
+
+      expect(await departmentController.create(createDepartmentDto)).toBe(
+        result,
+      );
+    });
+  });
+
+  describe('deleteById', () => {
+    it('should delete a post and return a success message', async () => {
+      const postId = 47;
+
+      jest
+        .spyOn(departmentService, 'deleteById')
+        .mockImplementation(() => Promise.resolve());
+
+      await expect(
+        departmentController.deleteById(postId),
+      ).resolves.toBeUndefined();
     });
   });
 });

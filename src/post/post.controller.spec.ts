@@ -129,6 +129,7 @@ describe('Post endpoints testing', () => {
   describe('deleteById', () => {
     it('should delete a post and return a success message', async () => {
       const postId = 47;
+
       jest
         .spyOn(postService, 'deleteById')
         .mockImplementation(() => Promise.resolve());
