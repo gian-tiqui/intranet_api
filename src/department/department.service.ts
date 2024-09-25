@@ -10,6 +10,7 @@ import { CreateDepartmentDto } from './dto/create-department.dto';
 export class DepartmentService {
   constructor(private prismaService: PrismaService) {}
 
+  // This method returns the data as default and can also be filtered if the department name is not empty
   async findAll(departmentName: string) {
     return await this.prismaService.department.findMany({
       where: {
@@ -18,6 +19,7 @@ export class DepartmentService {
     });
   }
 
+  // This method creates a new department if the input department does not exist
   async create(createDepartmentDto: CreateDepartmentDto) {
     const foundDepartment = await this.prismaService.department.findFirst({
       where: {
@@ -38,6 +40,7 @@ export class DepartmentService {
     };
   }
 
+  // This method deletes a department with the provided ID in the url
   async deleteById(deptId: number) {
     const iDeptId = Number(deptId);
 

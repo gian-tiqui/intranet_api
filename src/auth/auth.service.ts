@@ -20,6 +20,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
+  // Create user upon successful validation and hash the password using the mechanism of argon package
   async register(registerDto: RegisterDto) {
     const hashedPassword = await argon.hash(registerDto.password);
 
@@ -44,14 +45,14 @@ export class AuthService {
         },
       });
 
-      const { password, ...result } = user;
+      const res = { ...user };
 
-      console.log(password[0]);
+      delete res.password;
 
       return {
         message: 'Registration successful',
         statusCode: 201,
-        user: result,
+        user: res,
       };
     } catch (error) {
       console.error(error);
@@ -59,6 +60,7 @@ export class AuthService {
     }
   }
 
+  // Check if the user exists and the password is correct if the user exists and generate tokens for the app to use
   async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: loginDto.email },
@@ -83,6 +85,7 @@ export class AuthService {
     };
   }
 
+  // Validate if the refresh token exists in the user data and generate a new access token if valid
   async refresh(refreshTokenDto: RefreshTokenDto) {
     const { refreshToken } = refreshTokenDto;
 
@@ -105,6 +108,7 @@ export class AuthService {
     return { access_token: accessToken };
   }
 
+  // Remove the refresh token of the user upon logout
   async logout(userId: number) {
     await this.prisma.user.update({
       where: { id: userId },
@@ -112,10 +116,12 @@ export class AuthService {
     });
   }
 
+  // This generates the access token with payloads in the args
   private async signToken(userId: number, email: string): Promise<string> {
     return this.jwtService.signAsync({ sub: userId, email });
   }
 
+  // This generates the refresh token of the user with payload of the access token and exp of the refresh token
   private async signRefreshToken(userId: number): Promise<string> {
     const refreshTokenSecret = this.configService.get<string>('RT_SECRET');
     const refreshTokenExpiration = this.configService.get<string>('RT_EXP');

@@ -15,6 +15,7 @@ import * as path from 'path';
 export class PostService {
   constructor(private prismaService: PrismaService) {}
 
+  // This method returns all the posts and can also be filtered if the following query parameters are filled
   async findAll(
     userId?: number,
     deptId?: number,
@@ -36,6 +37,7 @@ export class PostService {
     });
   }
 
+  // This method returns a post with the given id
   async findById(postId: number) {
     const id = Number(postId);
     const post = await this.prismaService.post.findFirst({
@@ -51,6 +53,7 @@ export class PostService {
     };
   }
 
+  // This method creates a post and uploads the picture of the memo file in the dist folder (build folder)
   async create(createPostDto: CreatePostDto, memoFile: Express.Multer.File) {
     if (!memoFile) throw new ConflictException('no memo found');
     try {
@@ -95,6 +98,13 @@ export class PostService {
     }
   }
 
+  /*
+   * @TODO:
+   * If the image is not empty, validate if the image has image extensions and update the data
+   * @params postId: number, updatedPostDto: UpdatePostDto, [new] newMemoFile: Express.Multer.File
+   */
+
+  // This method should update the data in the database and update image if the image is not empty
   async updateById(postId: number, updatePostDto: UpdatePostDto) {
     const id = Number(postId);
     const post = await this.prismaService.post.findFirst({
@@ -116,6 +126,7 @@ export class PostService {
     };
   }
 
+  // This method deletes the data by id and retrieves the file name that should be deleted in the dist (build directory)
   async deleteById(_postId: number) {
     const postId = Number(_postId);
     const post = await this.prismaService.post.findFirst({

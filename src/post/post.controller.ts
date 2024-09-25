@@ -17,11 +17,13 @@ import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+// This guard accepts requests that are provided with valid access tokens
 @UseGuards(JwtAuthGuard)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  // This endpoint returns the filtered posts [filters are blank by default and will return all of the posts]
   @Get()
   findAll(
     @Query('userId') userId: number,
@@ -32,11 +34,13 @@ export class PostController {
     return this.postService.findAll(userId, deptId, message, imageLocation);
   }
 
+  // This endpoint returns the post with the given id
   @Get(':id')
   findById(@Param('id') postId: number) {
     return this.postService.findById(postId);
   }
 
+  // This endpoint validates if the file is valid (image) and will create a new data after when it satisfies the checks
   @Post()
   @UseInterceptors(
     FileInterceptor('memo', {
@@ -62,6 +66,11 @@ export class PostController {
     return this.postService.create(createPostDto, memoFile);
   }
 
+  /*
+   * @TODO:
+   *
+   * Add new var to the service
+   */
   @Put(':id')
   @UseInterceptors(
     FileInterceptor('newMemo', {
@@ -85,6 +94,7 @@ export class PostController {
     return this.postService.updateById(postId, updatePostDto);
   }
 
+  // This endpoint deletes a post with the given id
   @Delete(':id')
   deleteById(@Param('id') postId: number) {
     return this.postService.deleteById(postId);
