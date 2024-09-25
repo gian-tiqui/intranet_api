@@ -19,6 +19,17 @@ export class DepartmentService {
     });
   }
 
+  // This method finds a department and throws not found if it doesnt exist
+  async findOneById(id: number) {
+    const department = await this.prismaService.department.findFirst({
+      where: { deptId: id },
+    });
+
+    if (!department) throw new NotFoundException('Department not found');
+
+    return department;
+  }
+
   // This method creates a new department if the input department does not exist
   async create(createDepartmentDto: CreateDepartmentDto) {
     const foundDepartment = await this.prismaService.department.findFirst({
