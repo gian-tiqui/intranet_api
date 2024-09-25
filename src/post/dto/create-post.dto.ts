@@ -9,7 +9,4 @@ export class CreatePostDto {
 
   @IsOptional()
   message: string;
-
-  @IsOptional()
-  imageLocation: string;
 }

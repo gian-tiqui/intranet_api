@@ -7,12 +7,15 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(JwtAuthGuard)
 @Controller('post')
@@ -35,12 +38,22 @@ export class PostController {
   }
 
   @Post()
-  createPost(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
+  @UseInterceptors(FileInterceptor('memoFile'))
+  createPost(
+    @Body() createPostDto: CreatePostDto,
+    @UploadedFile() memoFile: Express.Multer.File,
+  ) {
+    return this.postService.create(createPostDto, memoFile);
   }
 
   @Put(':id')
-  updateById(@Param('id') postId, @Body() updatePostDto: UpdatePostDto) {
+  @UseInterceptors(FileInterceptor('newMemoFile'))
+  updateById(
+    @Param('id') postId,
+    @Body() updatePostDto: UpdatePostDto,
+    @UploadedFile() uppdatedMemoFile: Express.Multer.File,
+  ) {
+    console.log(uppdatedMemoFile);
     return this.postService.updateById(postId, updatePostDto);
   }
 
