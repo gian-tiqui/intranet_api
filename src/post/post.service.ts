@@ -128,15 +128,18 @@ export class PostService {
 
     if (!post) throw new NotFoundException('Post not found');
 
-    await this.prismaService.post.delete({
+    const deletedPost = await this.prismaService.post.delete({
       where: {
         pid: postId,
       },
     });
 
+    console.log(deletedPost.imageLocation.split('s/')[1]);
+
     return {
       message: 'Post deleted successfully',
       statusCode: 209,
+      deletedPost,
     };
   }
 }
