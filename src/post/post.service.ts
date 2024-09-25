@@ -55,21 +55,18 @@ export class PostService {
       let imageLocation = '';
 
       if (memoFile) {
-        // production script
-
         const postDir = path.join(__dirname, 'uploads');
-        const filePath = path.join(postDir, memoFile.originalname);
-
-        // if we want the files to be stored in src
-
-        // const postDir = path.join(process.cwd(), 'src', 'post', 'uploads');
-        // const filePath = path.join(postDir, memoFile.originalname);
-
         await fs.mkdir(postDir, { recursive: true });
+
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const filePath = path.join(
+          postDir,
+          `${uniqueSuffix}-${memoFile.originalname}`,
+        );
 
         await fs.writeFile(filePath, memoFile.buffer);
 
-        imageLocation = `src/post/uploads/${memoFile.originalname}`;
+        imageLocation = `uploads/${uniqueSuffix}-${memoFile.originalname}`;
       }
 
       const post = await this.prismaService.post.create({
@@ -81,14 +78,15 @@ export class PostService {
         },
       });
 
-      const { userId, deptId, ...extractions } = post;
+      const retPostObject = { ...post };
 
-      console.log(userId + 15 + deptId);
+      delete retPostObject.deptId;
+      delete retPostObject.userId;
 
       return {
         message: 'Post created successfully',
         statusCode: 200,
-        post: { ...extractions, imageLocation },
+        post: { ...retPostObject, imageLocation },
       };
     } catch (error) {
       console.error('Error creating post:', error);
@@ -98,6 +96,7 @@ export class PostService {
       );
     }
   }
+
   async updateById(postId: number, updatePostDto: UpdatePostDto) {
     const id = Number(postId);
     const post = await this.prismaService.post.findFirst({
