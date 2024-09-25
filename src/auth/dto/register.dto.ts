@@ -48,7 +48,7 @@ export class RegisterDto {
 
   @IsOptional()
   @IsString()
-  zipCode?: string;
+  zipCode?: number;
 
   @IsOptional()
   @IsDate()
