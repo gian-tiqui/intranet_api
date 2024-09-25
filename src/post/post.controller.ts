@@ -38,13 +38,44 @@ export class PostController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('memo'))
-  createPost(@Body() createPostDto: CreatePostDto, @UploadedFile() memoFile) {
+  @UseInterceptors(
+    FileInterceptor('memo', {
+      limits: { fileSize: 1024 * 1024 * 10 },
+      fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Only image files are allowed'), false);
+        }
+      },
+    }),
+  )
+  async createPost(
+    @Body() createPostDto: CreatePostDto,
+    @UploadedFile() memoFile: Express.Multer.File,
+  ) {
+    if (!memoFile) {
+      throw new Error('Memo file is required');
+    }
+
     return this.postService.create(createPostDto, memoFile);
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('newMemo'))
+  @UseInterceptors(
+    FileInterceptor('newMemo', {
+      limits: { fileSize: 1024 * 1024 * 10 },
+      fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Only image files are allowed'), false);
+        }
+      },
+    }),
+  )
   updateById(
     @Param('id') postId,
     @Body() updatePostDto: UpdatePostDto,
