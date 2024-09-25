@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
-import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('department')
