@@ -6,6 +6,7 @@ async function bootstrap() {
 
   const PORT = process.env.PORT || 8080;
 
+  // Allows the client app to make requests
   app.enableCors({
     origin: process.env.CLIENT_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
