@@ -8,7 +8,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { promises as fs } from 'fs';
+import { promises as fs, unlink } from 'fs';
 import * as path from 'path';
 
 @Injectable()
@@ -134,7 +134,13 @@ export class PostService {
 
     const deleteFileName = deletedPost.imageLocation.split('uploads/')[1];
 
-    console.log(deleteFileName);
+    const filePath = path.join(__dirname, 'uploads', deleteFileName);
+
+    unlink(filePath, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      }
+    });
 
     return {
       message: 'Post deleted successfully',
