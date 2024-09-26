@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Injectable()
@@ -65,5 +65,24 @@ export class CommentService {
       throw new BadRequestException('ID must be a number');
 
     return { cid, updateCommentDto };
+  }
+
+  async deleteById(cid: number) {
+    if (typeof cid !== 'number')
+      throw new BadRequestException('ID must be a number');
+
+    const comment = this.prismaService.comment.findFirst({
+      where: {
+        cid: cid,
+      },
+    });
+
+    if (!comment) throw new NotFoundException('Post not found');
+
+    return {
+      message: 'Comment deleted',
+      statusCode: 209,
+      comment,
+    };
   }
 }
