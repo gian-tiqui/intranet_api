@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 
@@ -24,6 +28,9 @@ export class CommentService {
   }
 
   async findOneById(cid: number) {
+    if (typeof cid !== 'number')
+      throw new BadRequestException('ID must be a number');
+
     const comment = await this.prismaService.comment.findFirst({
       where: {
         cid,
@@ -54,6 +61,9 @@ export class CommentService {
   }
 
   async updateById(cid: number, updateCommentDto) {
+    if (typeof cid !== 'number')
+      throw new BadRequestException('ID must be a number');
+
     return { cid, updateCommentDto };
   }
 }

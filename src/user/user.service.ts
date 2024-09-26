@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserIdDto } from './dto/user-id.dto';
 
@@ -18,6 +22,10 @@ export class UserService {
 
   async getById(userIdDto: UserIdDto) {
     const { id } = userIdDto;
+
+    if (typeof id !== 'number')
+      throw new BadRequestException('ID should be a number');
+
     const user = await this.prismaService.user.findFirst({
       where: { id: Number(id) },
     });
@@ -34,6 +42,9 @@ export class UserService {
   }
 
   async deleteById(id: number) {
+    if (typeof id !== 'number')
+      throw new BadRequestException('ID should be a number');
+
     const user = await this.prismaService.user.findFirst({ where: { id } });
 
     if (!user) {

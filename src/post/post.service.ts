@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   HttpStatus,
@@ -44,6 +45,9 @@ export class PostService {
   // This method returns a post with the given id
   async findById(postId: number) {
     const id = Number(postId);
+
+    if (typeof id !== 'number')
+      throw new BadRequestException('ID must be a number');
     const post = await this.prismaService.post.findFirst({
       where: { pid: id },
     });
@@ -108,6 +112,10 @@ export class PostService {
     newFile?: Express.Multer.File,
   ) {
     const id = Number(postId);
+
+    if (typeof id !== 'number')
+      throw new BadRequestException('ID must be a number');
+
     const post = await this.prismaService.post.findFirst({
       where: {
         pid: id,
@@ -165,6 +173,10 @@ export class PostService {
   // This method deletes the data by id and retrieves the file name that should be deleted in the dist (build directory)
   async deleteById(_postId: number) {
     const postId = Number(_postId);
+
+    if (typeof postId !== 'number')
+      throw new BadRequestException('ID must be a number');
+
     const post = await this.prismaService.post.findFirst({
       where: {
         pid: postId,
