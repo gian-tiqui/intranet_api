@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -63,7 +62,6 @@ export class PostService {
 
   // This method creates a post and uploads the picture of the memo file in the dist folder (build folder)
   async create(createPostDto: CreatePostDto, memoFile: Express.Multer.File) {
-    if (!memoFile) throw new ConflictException('no memo found');
     try {
       let imageLocation = '';
 

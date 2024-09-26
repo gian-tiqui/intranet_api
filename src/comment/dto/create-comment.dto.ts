@@ -11,8 +11,5 @@ export class CreateCommentDto {
   message: string;
 
   @IsOptional()
-  imageLocation: string;
-
-  @IsOptional()
   parentId: number;
 }
