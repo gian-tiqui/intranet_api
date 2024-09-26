@@ -67,15 +67,9 @@ export class PostController {
     return this.postService.create(createPostDto, memoFile);
   }
 
-  /*
-   * @TODO:
-   *
-   * Add new var to the service
-   */
   @Put(':id')
   @UseInterceptors(
     FileInterceptor('newMemo', {
-      ...multerOptions,
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = [
@@ -90,6 +84,7 @@ export class PostController {
           cb(new Error('Only image files are allowed'), false);
         }
       },
+      storage: multerOptions('post').storage,
     }),
   )
   updateById(
