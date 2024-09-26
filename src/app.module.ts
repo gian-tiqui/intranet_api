@@ -7,6 +7,7 @@ import { DepartmentModule } from './department/department.module';
 import { CommentModule } from './comment/comment.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       rootPath: join(__dirname, '..', 'post/uploads'),
       serveRoot: '/uploads',
     }),
+    NotificationModule,
   ],
 })
 export class AppModule {}
