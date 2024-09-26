@@ -156,21 +156,39 @@ export class CommentService {
   }
 
   async deleteById(cid: number) {
-    if (typeof cid !== 'number')
+    const id = Number(cid);
+
+    if (typeof id !== 'number')
       throw new BadRequestException('ID must be a number');
 
-    const comment = this.prismaService.comment.findFirst({
+    const comment = await this.prismaService.comment.findFirst({
       where: {
-        cid: cid,
+        cid: id,
       },
     });
 
     if (!comment) throw new NotFoundException('Comment not found');
 
+    const deletedComment = await this.prismaService.comment.delete({
+      where: {
+        cid: id,
+      },
+    });
+
+    const deleteFileName = deletedComment.imageLocation.split('uploads/')[1];
+
+    const filePath = path.join(__dirname, 'uploads', deleteFileName);
+
+    unlink(filePath, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      }
+    });
+
     return {
-      message: 'Comment deleted',
+      message: 'Comment deleted successfully',
       statusCode: 209,
-      comment,
+      deletedComment,
     };
   }
 }

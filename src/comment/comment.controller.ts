@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -78,5 +79,10 @@ export class CommentController {
     @UploadedFile() newImage: Express.Multer.File,
   ) {
     return this.commentService.updateById(cid, updateCommentDto, newImage);
+  }
+
+  @Delete(':id')
+  deleteById(@Param('id') cid: number) {
+    return this.commentService.deleteById(cid);
   }
 }
