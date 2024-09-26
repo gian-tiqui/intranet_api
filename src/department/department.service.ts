@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -21,6 +22,9 @@ export class DepartmentService {
 
   // This method finds a department and throws not found if it doesnt exist
   async findOneById(id: number) {
+    if (typeof id !== 'number')
+      throw new BadRequestException('ID must be a number');
+
     const department = await this.prismaService.department.findFirst({
       where: { deptId: id },
     });
@@ -54,6 +58,9 @@ export class DepartmentService {
   // This method deletes a department with the provided ID in the url
   async deleteById(deptId: number) {
     const iDeptId = Number(deptId);
+
+    if (typeof iDeptId !== 'number')
+      throw new BadRequestException('ID must be a number');
 
     const department = await this.prismaService.department.findFirst({
       where: {
