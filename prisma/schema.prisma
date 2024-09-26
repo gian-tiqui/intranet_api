@@ -51,7 +51,6 @@ model Post {
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   department     Department @relation(fields: [deptId], references: [deptId])
   comments       Comment[] 
-  notifications  Notification[]
 }
 
 model Comment {
@@ -74,12 +73,11 @@ model Comment {
 model Notification {
   id          Int      @id @default(autoincrement())
   userId      Int      
-  postId      Int    
+  postId      Int?    
   commentId   Int?     
   message     String
   isRead      Boolean   @default(false) 
   createdAt   DateTime @default(now())
   
   user        User      @relation(fields: [userId], references: [id])
-  post        Post      @relation(fields: [postId], references: [pid])
 }
