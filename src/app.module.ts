@@ -8,6 +8,7 @@ import { CommentModule } from './comment/comment.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NotificationModule } from './notification/notification.module';
+import { ReactModule } from './react/react.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { NotificationModule } from './notification/notification.module';
     DepartmentModule,
     CommentModule,
     NotificationModule,
+    ReactModule,
   ],
 })
 export class AppModule {}
