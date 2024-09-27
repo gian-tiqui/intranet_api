@@ -14,16 +14,19 @@ import { NotificationModule } from './notification/notification.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'post/uploads'),
+      serveRoot: '/uploads',
+    }),
+
+    // Generated Modules
+
     AuthModule,
     UserModule,
     PostModule,
     PostModule,
     DepartmentModule,
     CommentModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'post/uploads'),
-      serveRoot: '/uploads',
-    }),
     NotificationModule,
   ],
 })

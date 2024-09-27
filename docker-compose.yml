@@ -1,0 +1,8 @@
+version: '3'
+services:
+  intranet_api:
+    build: .
+    ports:
+      - '8081:8081'
+    environment:
+      DATABASE_URL: mysql://root:@host.docker.internal:3306/db_intranet
