@@ -12,9 +12,9 @@ import {
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from 'src/post/common/MulterOption';
+import { multerOptions } from '../post/common/MulterOption';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @UseGuards(JwtAuthGuard)
