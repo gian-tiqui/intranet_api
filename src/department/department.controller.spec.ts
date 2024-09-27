@@ -19,6 +19,18 @@ describe('Departments controller testing', () => {
       moduleRef.get<DepartmentController>(DepartmentController);
   });
 
+  describe('Service', () => {
+    it('Should be defined', () => {
+      expect(departmentService).toBeDefined();
+    });
+  });
+
+  describe('Controller', () => {
+    it('Should be defined', () => {
+      expect(departmentController).toBeDefined();
+    });
+  });
+
   describe('findAll', () => {
     it('should fetch all departments', async () => {
       const results = [
