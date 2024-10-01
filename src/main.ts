@@ -7,12 +7,11 @@ async function bootstrap() {
   const PORT = process.env.PORT || 8080;
 
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://your-production-client.com'],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders:
-      'Origin,Content-Type,Authorization,X-Requested-With,Cache-Control',
+      'Origin, Content-Type, Authorization, X-Requested-With, Cache-Control',
     credentials: true,
-    preflightContinue: true,
   });
 
   await app.listen(PORT);

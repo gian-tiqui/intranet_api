@@ -66,8 +66,17 @@ export class AuthService {
       where: { email: loginDto.email },
     });
 
-    if (!user || !(await argon.verify(user.password, loginDto.password))) {
-      throw new UnauthorizedException('Invalid credentials');
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const isPasswordValid = await argon.verify(
+      user.password,
+      loginDto.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Password invalid');
     }
 
     const accessToken = await this.signToken(user.id, user.email);
