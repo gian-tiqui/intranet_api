@@ -38,6 +38,7 @@ export class PostService {
           imageLocation: { contains: imageLocation },
         }),
       },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -47,8 +48,10 @@ export class PostService {
 
     if (typeof id !== 'number')
       throw new BadRequestException('ID must be a number');
+
     const post = await this.prismaService.post.findFirst({
       where: { pid: id },
+      include: { user: true },
     });
 
     if (!post) throw new NotFoundException('Post not found');
@@ -85,6 +88,7 @@ export class PostService {
         data: {
           userId: Number(createPostDto.userId),
           deptId: Number(createPostDto.deptId),
+          title: createPostDto.title,
           message: createPostDto.message,
           imageLocation: imageLocation,
         },
@@ -125,6 +129,7 @@ export class PostService {
     const updatePost = {
       message: updatePostDto?.message,
       imageLocation: '',
+      title: updatePostDto?.title,
     };
 
     if (newFile) {

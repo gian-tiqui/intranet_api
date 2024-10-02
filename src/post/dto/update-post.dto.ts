@@ -6,4 +6,7 @@ export class UpdatePostDto {
 
   @IsOptional()
   imageLocation: string;
+
+  @IsOptional()
+  title: string;
 }

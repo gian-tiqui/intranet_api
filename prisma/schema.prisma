@@ -43,6 +43,7 @@ model Post {
   pid            Int      @id @default(autoincrement())
   userId         Int
   deptId         Int
+  title          String?  @db.VarChar(255)
   message        String?  @db.VarChar(255)
   imageLocation  String?
   createdAt      DateTime @default(now())
