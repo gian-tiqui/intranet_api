@@ -1,6 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserIdDto } from './dto/user-id.dto';
 
 @Controller('users')
 export class UserController {
@@ -12,7 +11,7 @@ export class UserController {
   }
 
   @Get(':id')
-  getById(@Param('id') userIdDto: UserIdDto) {
-    return this.userService.getById(userIdDto);
+  getById(@Param('id') userId) {
+    return this.userService.getById(userId);
   }
 }

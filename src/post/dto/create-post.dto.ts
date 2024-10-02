@@ -4,6 +4,8 @@ export class CreatePostDto {
   @IsNotEmpty()
   userId: number;
 
+  @IsOptional()
+  title: string;
   @IsNotEmpty()
   deptId: number;
 

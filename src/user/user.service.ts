@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserIdDto } from './dto/user-id.dto';
 
 @Injectable()
 export class UserService {
@@ -20,14 +19,9 @@ export class UserService {
     };
   }
 
-  async getById(userIdDto: UserIdDto) {
-    const { id } = userIdDto;
-
-    if (typeof id !== 'number')
-      throw new BadRequestException('ID should be a number');
-
+  async getById(userId: number) {
     const user = await this.prismaService.user.findFirst({
-      where: { id: Number(id) },
+      where: { id: Number(userId) },
     });
 
     if (!user) {
