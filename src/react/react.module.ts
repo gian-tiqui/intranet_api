@@ -4,6 +4,6 @@ import { ReactController } from './react.controller';
 
 @Module({
   providers: [ReactService],
-  controllers: [ReactController]
+  controllers: [ReactController],
 })
 export class ReactModule {}
