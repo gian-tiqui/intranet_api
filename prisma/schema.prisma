@@ -31,12 +31,14 @@ model User {
   notifications  Notification[]
   posts          Post[]
   comments       Comment[]
+  department     Department @relation(fields: [deptId], references: [deptId])
 }
 
 model Department {
   deptId         Int      @id @default(autoincrement())
   departmentName String   @unique
   posts          Post[]
+  users          User[] 
 }
 
 model Post {

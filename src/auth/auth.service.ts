@@ -64,6 +64,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: loginDto.email },
+      include: { department: true },
     });
 
     if (!user) {
@@ -79,7 +80,13 @@ export class AuthService {
       throw new UnauthorizedException('Password invalid');
     }
 
-    const accessToken = await this.signToken(user.id, user.email);
+    const accessToken = await this.signToken(
+      user.id,
+      user.firstName,
+      user.lastName,
+      user.email,
+      user.department,
+    );
     const refreshToken = await this.signRefreshToken(user.id);
 
     await this.prisma.user.update({
@@ -106,13 +113,20 @@ export class AuthService {
       where: {
         refreshToken: refreshToken,
       },
+      include: { department: true },
     });
 
     if (!user) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const accessToken = await this.signToken(user.id, user.email);
+    const accessToken = await this.signToken(
+      user.id,
+      user.firstName,
+      user.lastName,
+      user.email,
+      user.department,
+    );
 
     return { access_token: accessToken };
   }
@@ -126,8 +140,20 @@ export class AuthService {
   }
 
   // This generates the access token with payloads in the args
-  private async signToken(userId: number, email: string): Promise<string> {
-    return this.jwtService.signAsync({ sub: userId, email });
+  private async signToken(
+    userId: number,
+    firstName: string,
+    lastName: string,
+    email: string,
+    department: { departmentName: string },
+  ): Promise<string> {
+    return this.jwtService.signAsync({
+      sub: userId,
+      email,
+      departmentName: department.departmentName,
+      firstName,
+      lastName,
+    });
   }
 
   // This generates the refresh token of the user with payload of the access token and exp of the refresh token
