@@ -34,7 +34,9 @@ export class CommentService {
     return comments;
   }
 
-  async findOneById(cid: number) {
+  async findOneById(_cid: number) {
+    const cid = Number(_cid);
+
     if (typeof cid !== 'number')
       throw new BadRequestException('ID must be a number');
 
@@ -42,6 +44,7 @@ export class CommentService {
       where: {
         cid,
       },
+      include: { replies: { include: { replies: true } } },
     });
 
     if (!comment) throw new NotFoundException('Comment not found');
