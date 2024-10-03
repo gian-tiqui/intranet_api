@@ -38,6 +38,10 @@ export class PostService {
           imageLocation: { contains: imageLocation },
         }),
       },
+      include: {
+        user: true,
+        comments: { include: { replies: true, user: true } },
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -51,7 +55,15 @@ export class PostService {
 
     const post = await this.prismaService.post.findFirst({
       where: { pid: id },
-      include: { user: true },
+      include: {
+        user: true,
+        comments: {
+          include: {
+            user: true,
+            replies: { include: { user: true, replies: true } },
+          },
+        },
+      },
     });
 
     if (!post) throw new NotFoundException('Post not found');
