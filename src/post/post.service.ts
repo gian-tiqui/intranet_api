@@ -11,10 +11,20 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { promises as fs, unlink, rename } from 'fs';
 import { promisify } from 'util';
 import * as path from 'path';
-
+import * as Pusher from 'pusher';
+//2f bblyn
 @Injectable()
 export class PostService {
-  constructor(private prismaService: PrismaService) {}
+  private pusher: Pusher;
+  constructor(private prismaService: PrismaService) {
+    this.pusher = new Pusher({
+      appId: process.env.APP_ID,
+      key: process.env.KEY,
+      secret: process.env.SECRET,
+      cluster: process.env.CLUSTER,
+      useTLS: true,
+    });
+  }
 
   unlinkAsync = promisify(unlink);
   renameAsync = promisify(rename);
@@ -50,23 +60,38 @@ export class PostService {
   async findById(postId: number) {
     const id = Number(postId);
 
-    if (typeof id !== 'number')
+    if (typeof id !== 'number') {
       throw new BadRequestException('ID must be a number');
+    }
 
     const post = await this.prismaService.post.findFirst({
       where: { pid: id },
       include: {
-        user: true,
+        user: { select: { firstName: true, lastName: true, createdAt: true } },
         comments: {
           include: {
-            user: true,
-            replies: { include: { user: true, replies: true } },
+            user: {
+              select: { firstName: true, lastName: true, createdAt: true },
+            },
+            replies: {
+              include: {
+                user: {
+                  select: { firstName: true, lastName: true, createdAt: true },
+                },
+                replies: true,
+              },
+            },
           },
         },
       },
     });
 
     if (!post) throw new NotFoundException('Post not found');
+
+    // Trigger a Pusher event to notify about post retrieval
+    await this.pusher.trigger(`post-${id}`, 'post-retrieved', {
+      post: post,
+    });
 
     return {
       message: 'Post retrieved successfully',
