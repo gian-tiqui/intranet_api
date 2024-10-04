@@ -31,8 +31,15 @@ export class PostController {
     @Query('deptId') deptId: number,
     @Query('message') message: string,
     @Query('imageLocation') imageLocation: string,
+    @Query('search') search: string,
   ) {
-    return this.postService.findAll(userId, deptId, message, imageLocation);
+    return this.postService.findAll(
+      userId,
+      deptId,
+      message,
+      imageLocation,
+      search,
+    );
   }
 
   // This endpoint returns the post with the given id

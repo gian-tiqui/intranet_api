@@ -35,12 +35,16 @@ export class PostService {
     deptId?: number,
     message?: string,
     imageLocation?: string,
+    search?: string,
   ) {
     const iDeptId = Number(deptId);
     const iUserId = Number(userId);
 
     return this.prismaService.post.findMany({
       where: {
+        ...(search && {
+          title: { contains: search },
+        }),
         ...(deptId && { deptId: iDeptId }),
         ...(userId && { userId: iUserId }),
         ...(message && { message: { contains: message } }),
