@@ -145,12 +145,13 @@ export class AuthService {
     firstName: string,
     lastName: string,
     email: string,
-    department: { departmentName: string },
+    department: { departmentName: string; deptId: number },
   ): Promise<string> {
     return this.jwtService.signAsync({
       sub: userId,
       email,
       departmentName: department.departmentName,
+      deptId: department.deptId,
       firstName,
       lastName,
     });
