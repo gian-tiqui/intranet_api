@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RateLimit } from 'nestjs-rate-limiter';
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +11,12 @@ export class AuthController {
 
   // Register user endpoint
   @Post('register')
+  @RateLimit({
+    keyPrefix: 'sign-up',
+    points: 1,
+    duration: 60,
+    errorMessage: 'Please wait before creating an account again.',
+  })
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }

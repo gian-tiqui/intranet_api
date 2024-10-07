@@ -9,7 +9,8 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NotificationModule } from './notification/notification.module';
 import { ReactModule } from './react/react.module';
-import { RateLimiterModule } from 'nestjs-rate-limiter';
+import { RateLimiterGuard, RateLimiterModule } from 'nestjs-rate-limiter';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -29,6 +30,12 @@ import { RateLimiterModule } from 'nestjs-rate-limiter';
     CommentModule,
     NotificationModule,
     ReactModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RateLimiterGuard,
+    },
   ],
 })
 export class AppModule {}
