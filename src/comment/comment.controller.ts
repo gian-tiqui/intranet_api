@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../post/common/MulterOption';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { RateLimit } from 'nestjs-rate-limiter';
 
 @UseGuards(JwtAuthGuard)
 @Controller('comment')
@@ -46,6 +47,12 @@ export class CommentController {
       },
     }),
   )
+  @RateLimit({
+    keyPrefix: 'sign-in',
+    points: 5,
+    duration: 60,
+    errorMessage: 'Please wait a few seconds before commenting again.',
+  })
   create(
     @Body() createCommentDto: CreateCommentDto,
     @UploadedFile() commentImage: Express.Multer.File,

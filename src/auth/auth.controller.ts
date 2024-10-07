@@ -23,6 +23,12 @@ export class AuthController {
 
   // User validation and token generation endpoint
   @Post('login')
+  @RateLimit({
+    keyPrefix: 'sign-in',
+    points: 5,
+    duration: 60,
+    errorMessage: 'Please wait before logging in again.',
+  })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
@@ -35,6 +41,12 @@ export class AuthController {
 
   // Access token generation when refresh token is still valid endpoint
   @Post('refresh')
+  @RateLimit({
+    keyPrefix: 'refresh-token',
+    points: 5,
+    duration: 60,
+    errorMessage: 'Please wait before refreshing your token again.',
+  })
   refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refresh(refreshTokenDto);
   }
