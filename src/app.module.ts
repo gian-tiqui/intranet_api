@@ -20,8 +20,6 @@ import { ReactModule } from './react/react.module';
       serveRoot: '/uploads',
     }),
 
-    // Generated Modules
-
     AuthModule,
     UserModule,
     PostModule,

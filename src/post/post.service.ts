@@ -209,7 +209,7 @@ export class PostService {
 
     const updatedPost = await this.prismaService.post.update({
       where: { pid: id },
-      data: updatePost,
+      data: { ...updatePost, edited: true },
     });
 
     return {
