@@ -12,7 +12,7 @@ import { promises as fs, unlink, rename } from 'fs';
 import { promisify } from 'util';
 import * as path from 'path';
 import * as Pusher from 'pusher';
-//2f bblyn
+
 @Injectable()
 export class PostService {
   private pusher: Pusher;
@@ -110,7 +110,7 @@ export class PostService {
       let imageLocation = '';
 
       if (memoFile) {
-        const postDir = path.join(__dirname, 'uploads');
+        const postDir = path.join(__dirname, '..', '..', 'uploads', 'post');
 
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const filePath = path.join(
@@ -122,7 +122,7 @@ export class PostService {
 
         await fs.writeFile(filePath, memoFile.buffer);
 
-        imageLocation = `uploads/${uniqueSuffix}-${memoFile.originalname}`;
+        imageLocation = `post/${uniqueSuffix}-${memoFile.originalname}`;
       }
 
       const post = await this.prismaService.post.create({
@@ -176,14 +176,18 @@ export class PostService {
     if (newFile) {
       const oldFilePath = path.join(
         __dirname,
+        '..',
+        '..',
         'uploads',
-        post.imageLocation.split('uploads/')[1],
+        post.imageLocation,
       );
 
-      const newFileName = newFile.originalname;
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+
+      const newFileName = `${uniqueSuffix}-${newFile.originalname}`;
       const newFilePath = path.join(
         __dirname,
-        '../../dist/post/uploads',
+        '../../uploads/post',
         newFileName,
       );
 
@@ -197,7 +201,7 @@ export class PostService {
       try {
         await this.renameAsync(newFile.path, newFilePath);
         console.log('New file moved successfully:', newFilePath);
-        updatePost.imageLocation = `uploads/${newFileName}`;
+        updatePost.imageLocation = `post/${newFileName}`;
       } catch (err) {
         console.error('Error moving new file:', err);
       }
@@ -235,9 +239,15 @@ export class PostService {
       },
     });
 
-    const deleteFileName = deletedPost.imageLocation.split('uploads/')[1];
+    const deleteFileName = deletedPost.imageLocation;
 
-    const filePath = path.join(__dirname, 'uploads', deleteFileName);
+    const filePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'uploads',
+      deleteFileName,
+    );
 
     unlink(filePath, (err) => {
       if (err) {
