@@ -9,6 +9,7 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NotificationModule } from './notification/notification.module';
 import { ReactModule } from './react/react.module';
+import { RateLimiterModule } from 'nestjs-rate-limiter';
 
 @Module({
   imports: [
@@ -19,9 +20,7 @@ import { ReactModule } from './react/react.module';
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
-
-    // Generated Modules
-
+    RateLimiterModule,
     AuthModule,
     UserModule,
     PostModule,

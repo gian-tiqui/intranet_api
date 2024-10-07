@@ -50,6 +50,7 @@ model Post {
   imageLocation  String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  edited         Boolean  @default(false)
 
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   department     Department @relation(fields: [deptId], references: [deptId])
