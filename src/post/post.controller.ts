@@ -19,6 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './common/MulterOption';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { RateLimit } from 'nestjs-rate-limiter';
 
 // This guard accepts requests that are provided with valid access tokens
 @UseGuards(JwtAuthGuard)
@@ -65,6 +66,12 @@ export class PostController {
       },
     }),
   )
+  @RateLimit({
+    keyPrefix: 'posting',
+    points: 10,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
   async createPost(
     @Body() createPostDto: CreatePostDto,
     @UploadedFile() memoFile: Express.Multer.File,
