@@ -11,7 +11,9 @@ export class UserService {
   constructor(private prismaService: PrismaService) {}
 
   async getAll() {
-    const users = await this.prismaService.user.findMany();
+    const users = await this.prismaService.user.findMany({
+      include: { department: { select: { departmentName: true } } },
+    });
 
     return {
       message: 'Users retrieved',
