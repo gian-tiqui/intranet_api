@@ -4,7 +4,7 @@ import * as path from 'path';
 export const multerOptions = (dir) => {
   const storage = diskStorage({
     destination: (req, file, cb) => {
-      const uploadPath = path.join(__dirname, `../../${dir}/uploads`);
+      const uploadPath = path.join(__dirname, `../../../uploads/${dir}`);
       cb(null, uploadPath);
     },
     filename: (req, file, cb) => {

@@ -112,15 +112,8 @@ export class PostController {
 
   @Get('uploads/:filename')
   getImage(@Param('filename') filename: string) {
-    const filePath = join(
-      __dirname,
-      '..',
-      '..',
-      'dist',
-      'post',
-      'uploads',
-      filename,
-    );
+    console.log(filename);
+    const filePath = join(__dirname, '..', '..', 'uploads', filename);
     const imageBuffer = readFileSync(filePath);
     return imageBuffer;
   }
