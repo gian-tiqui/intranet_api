@@ -5,12 +5,14 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { UpdateDeptDto } from './dto/update-department.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('department')
@@ -33,6 +35,11 @@ export class DepartmentController {
   @Post()
   create(@Body() createDepartmentDto: CreateDepartmentDto) {
     return this.departmentService.create(createDepartmentDto);
+  }
+
+  @Put(':id')
+  updateById(@Param('id') deptId, @Body() updateDeptDto: UpdateDeptDto) {
+    return this.departmentService.updateById(deptId, updateDeptDto);
   }
 
   // Department deletion endpoint
