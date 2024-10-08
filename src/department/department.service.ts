@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
+import { UpdateDeptDto } from './dto/update-department.dto';
 
 @Injectable()
 export class DepartmentService {
@@ -29,7 +30,8 @@ export class DepartmentService {
       where: { deptId: id },
     });
 
-    if (!department) throw new NotFoundException('Department not found');
+    if (!department)
+      throw new NotFoundException(`Department with the id ${id} not found`);
 
     return department;
   }
@@ -55,6 +57,30 @@ export class DepartmentService {
     };
   }
 
+  async updateById(deptId: number, updateDeptDto: UpdateDeptDto) {
+    const did = Number(deptId);
+
+    const department = await this.prismaService.department.findFirst({
+      where: { deptId: did },
+    });
+
+    if (!department)
+      throw new NotFoundException(`Department with the id: ${did} not found`);
+
+    const updatedDepartment = await this.prismaService.department.update({
+      where: { deptId: did },
+      data: updateDeptDto,
+    });
+
+    if (updateDeptDto) {
+      return {
+        message: `User with the id ${did} was updated`,
+        statusCode: 202,
+        data: updatedDepartment,
+      };
+    }
+  }
+
   // This method deletes a department with the provided ID in the url
   async deleteById(deptId: number) {
     const iDeptId = Number(deptId);
@@ -68,7 +94,8 @@ export class DepartmentService {
       },
     });
 
-    if (!department) throw new NotFoundException('Department not found');
+    if (!department)
+      throw new NotFoundException(`Department with the ${iDeptId} not found`);
 
     const deletedDept = await this.prismaService.department.delete({
       where: {

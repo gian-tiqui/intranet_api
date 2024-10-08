@@ -90,7 +90,7 @@ export class PostService {
       },
     });
 
-    if (!post) throw new NotFoundException('Post not found');
+    if (!post) throw new NotFoundException(`Post with the id ${id} not found`);
 
     // Trigger a Pusher event to notify about post retrieval
     await this.pusher.trigger(`post-${id}`, 'post-retrieved', {
@@ -165,7 +165,7 @@ export class PostService {
       },
     });
 
-    if (!post) throw new NotFoundException('Post not found');
+    if (!post) throw new NotFoundException(`Post with the id ${id} not found`);
 
     const updatePost = {
       message: updatePostDto?.message,
@@ -231,7 +231,8 @@ export class PostService {
       },
     });
 
-    if (!post) throw new NotFoundException('Post not found');
+    if (!post)
+      throw new NotFoundException(`Post with the id ${postId} not found`);
 
     const deletedPost = await this.prismaService.post.delete({
       where: {

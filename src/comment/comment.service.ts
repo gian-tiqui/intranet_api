@@ -47,7 +47,8 @@ export class CommentService {
       include: { replies: { include: { replies: true } } },
     });
 
-    if (!comment) throw new NotFoundException('Comment not found');
+    if (!comment)
+      throw new NotFoundException(`Comment with the id ${cid} not found`);
 
     return {
       message: 'Comment retrieved',
@@ -110,7 +111,8 @@ export class CommentService {
       },
     });
 
-    if (!comment) throw new NotFoundException('Comment not found');
+    if (!comment)
+      throw new NotFoundException(`Comment with the id ${id} not found`);
 
     const updateComment = {
       message: updateCommentDto.message,
@@ -170,7 +172,8 @@ export class CommentService {
       },
     });
 
-    if (!comment) throw new NotFoundException('Comment not found');
+    if (!comment)
+      throw new NotFoundException(`Comment with the id ${id} not found`);
 
     const deletedComment = await this.prismaService.comment.delete({
       where: {

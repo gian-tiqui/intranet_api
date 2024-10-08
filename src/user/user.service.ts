@@ -25,10 +25,11 @@ export class UserService {
   async getById(userId: number) {
     const user = await this.prismaService.user.findFirst({
       where: { id: Number(userId) },
+      select: { password: false },
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(`User with the id ${userId} not found`);
     }
 
     return {
@@ -68,7 +69,7 @@ export class UserService {
     const user = await this.prismaService.user.findFirst({ where: { id } });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(`User with the id ${id} not found`);
     }
 
     this.prismaService.user.delete({ where: { id } });

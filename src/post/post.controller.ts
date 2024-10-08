@@ -17,8 +17,6 @@ import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './common/MulterOption';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { RateLimit } from 'nestjs-rate-limiter';
 
 // This guard accepts requests that are provided with valid access tokens
@@ -115,13 +113,5 @@ export class PostController {
   @Delete(':id')
   deleteById(@Param('id') postId: number) {
     return this.postService.deleteById(postId);
-  }
-
-  @Get('uploads/:filename')
-  getImage(@Param('filename') filename: string) {
-    console.log(filename);
-    const filePath = join(__dirname, '..', '..', 'uploads', filename);
-    const imageBuffer = readFileSync(filePath);
-    return imageBuffer;
   }
 }
