@@ -1,6 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDTO } from './dto/update-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('users')
 export class UserController {
@@ -24,5 +33,15 @@ export class UserController {
   @Delete(':id')
   deleteById(@Param('id') userId) {
     return this.userService.deleteById(userId);
+  }
+
+  @Post('password')
+  changePassword(@Body() changePasswordDto: ChangePasswordDto) {
+    console.log(changePasswordDto);
+    return this.userService.changePassword(
+      changePasswordDto.userId,
+      changePasswordDto.oldPassword,
+      changePasswordDto.newPassword,
+    );
   }
 }
