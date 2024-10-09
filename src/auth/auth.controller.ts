@@ -43,7 +43,7 @@ export class AuthController {
   @Post('refresh')
   @RateLimit({
     keyPrefix: 'refresh-token',
-    points: 5,
+    points: 10,
     duration: 60,
     errorMessage: 'Please wait before refreshing your token again.',
   })
