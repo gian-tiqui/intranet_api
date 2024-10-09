@@ -25,12 +25,14 @@ export class UserService {
   async getById(userId: number) {
     const user = await this.prismaService.user.findFirst({
       where: { id: Number(userId) },
-      select: { password: false },
+      select: { password: false, refreshToken: false, department: true },
     });
 
     if (!user) {
       throw new NotFoundException(`User with the id ${userId} not found`);
     }
+
+    delete user.password;
 
     return {
       message: 'User retrieved',

@@ -55,6 +55,7 @@ export class PostService {
       include: {
         user: true,
         comments: { include: { replies: true, user: true } },
+        department: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -71,6 +72,7 @@ export class PostService {
     const post = await this.prismaService.post.findFirst({
       where: { pid: id },
       include: {
+        department: { select: { departmentName: true } },
         user: { select: { firstName: true, lastName: true, createdAt: true } },
         comments: {
           include: {
