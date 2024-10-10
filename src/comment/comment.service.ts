@@ -23,6 +23,7 @@ export class CommentService {
         parentId: null,
       },
       include: {
+        user: { select: { firstName: true, lastName: true } },
         replies: {
           include: {
             replies: true,
@@ -37,6 +38,7 @@ export class CommentService {
   async findAllReplies() {
     const replies = await this.prismaService.comment.findMany({
       where: { postId: { equals: null } },
+      include: { user: { select: { firstName: true, lastName: true } } },
     });
 
     return replies;
