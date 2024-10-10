@@ -34,6 +34,14 @@ export class CommentService {
     return comments;
   }
 
+  async findAllReplies() {
+    const replies = await this.prismaService.comment.findMany({
+      where: { postId: { equals: null } },
+    });
+
+    return replies;
+  }
+
   async findOneById(_cid: number) {
     const cid = Number(_cid);
 
