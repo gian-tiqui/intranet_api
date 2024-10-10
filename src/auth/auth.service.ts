@@ -133,10 +133,17 @@ export class AuthService {
 
   // Remove the refresh token of the user upon logout
   async logout(userId: number) {
-    await this.prisma.user.update({
+    const logout = await this.prisma.user.update({
       where: { id: userId },
       data: { refreshToken: null },
     });
+
+    if (!logout) throw new ConflictException('Could not log you out');
+
+    return {
+      message: 'Logged out successful',
+      statusCode: 204,
+    };
   }
 
   // This generates the access token with payloads in the args

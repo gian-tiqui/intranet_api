@@ -4,6 +4,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
+import { LogoutDto } from './dto/logout.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -35,8 +36,8 @@ export class AuthController {
 
   // Refresh token removal in the user data endpoint
   @Post('logout')
-  logout(@Body() userId: number) {
-    return this.authService.logout(userId);
+  logout(@Body() logoutDto: LogoutDto) {
+    return this.authService.logout(logoutDto.userId);
   }
 
   // Access token generation when refresh token is still valid endpoint

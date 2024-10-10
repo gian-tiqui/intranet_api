@@ -18,6 +18,7 @@ export class DepartmentService {
       where: {
         ...(departmentName && { departmentName: { contains: departmentName } }),
       },
+      include: { posts: true, users: true },
     });
   }
 
@@ -28,6 +29,7 @@ export class DepartmentService {
 
     const department = await this.prismaService.department.findFirst({
       where: { deptId: id },
+      include: { users: true, posts: true },
     });
 
     if (!department)
