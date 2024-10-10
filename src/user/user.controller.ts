@@ -14,11 +14,11 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 
-const FIND_ALL_POINTS = 10;
-const FIND_BY_ID_POINTS = 10;
-const PASSWORD_POINTS = 5;
-const UPDATE_BY_ID_POINTS = 10;
-const DELETE_BY_ID_POINTS = 10;
+const FIND_ALL_POINTS = 20;
+const FIND_BY_ID_POINTS = 20;
+const PASSWORD_POINTS = 10;
+const UPDATE_BY_ID_POINTS = 20;
+const DELETE_BY_ID_POINTS = 20;
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
