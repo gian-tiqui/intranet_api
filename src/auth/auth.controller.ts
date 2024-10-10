@@ -6,6 +6,11 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { LogoutDto } from './dto/logout.dto';
 
+const REGISTER_LIMIT = 5;
+const LOGIN_LIMIT = 5;
+const LOGOUT_LIMIT = 5;
+const REFRESH_LIMIT = 50;
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -14,7 +19,7 @@ export class AuthController {
   @Post('register')
   @RateLimit({
     keyPrefix: 'sign-up',
-    points: 1,
+    points: REGISTER_LIMIT,
     duration: 60,
     errorMessage: 'Please wait before creating an account again.',
   })
@@ -26,7 +31,7 @@ export class AuthController {
   @Post('login')
   @RateLimit({
     keyPrefix: 'sign-in',
-    points: 5,
+    points: LOGIN_LIMIT,
     duration: 60,
     errorMessage: 'Please wait before logging in again.',
   })
@@ -36,6 +41,12 @@ export class AuthController {
 
   // Refresh token removal in the user data endpoint
   @Post('logout')
+  @RateLimit({
+    keyPrefix: 'sign-in',
+    points: LOGOUT_LIMIT,
+    duration: 60,
+    errorMessage: 'Please wait before logging in again.',
+  })
   logout(@Body() logoutDto: LogoutDto) {
     return this.authService.logout(logoutDto.userId);
   }
@@ -44,7 +55,7 @@ export class AuthController {
   @Post('refresh')
   @RateLimit({
     keyPrefix: 'refresh-token',
-    points: 10,
+    points: REFRESH_LIMIT,
     duration: 60,
     errorMessage: 'Please wait before refreshing your token again.',
   })

@@ -87,7 +87,14 @@ export class AuthService {
       user.email,
       user.department,
     );
-    const refreshToken = await this.signRefreshToken(user.id);
+
+    let refreshToken: string;
+
+    if (user.refreshToken) {
+      refreshToken = user.refreshToken;
+    } else {
+      refreshToken = await this.signRefreshToken(user.id);
+    }
 
     await this.prisma.user.update({
       where: { id: user.id },
