@@ -19,6 +19,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './common/MulterOption';
 import { RateLimit } from 'nestjs-rate-limiter';
 
+const FIND_ALL_POINTS = 10;
+const FIND_BY_ID_POINTS = 10;
+const CREATE_POINTS = 5;
+const UPDATE_BY_ID_POINTS = 10;
+const DELETE_BY_ID_POINTS = 10;
+
 // This guard accepts requests that are provided with valid access tokens
 @UseGuards(JwtAuthGuard)
 @Controller('post')
@@ -27,6 +33,12 @@ export class PostController {
 
   // This endpoint returns the filtered posts [filters are blank by default and will return all of the posts]
   @Get()
+  @RateLimit({
+    keyPrefix: 'get_posts',
+    points: FIND_ALL_POINTS,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
   findAll(
     @Query('userId') userId: number,
     @Query('deptId') deptId: number,
@@ -45,6 +57,12 @@ export class PostController {
 
   // This endpoint returns the post with the given id
   @Get(':id')
+  @RateLimit({
+    keyPrefix: 'get_post_by_id',
+    points: FIND_BY_ID_POINTS,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
   findById(@Param('id') postId: number) {
     return this.postService.findById(postId);
   }
@@ -65,8 +83,8 @@ export class PostController {
     }),
   )
   @RateLimit({
-    keyPrefix: 'posting',
-    points: 10,
+    keyPrefix: 'create_post',
+    points: CREATE_POINTS,
     duration: 60,
     errorMessage: 'Please wait before posting again.',
   })
@@ -101,6 +119,12 @@ export class PostController {
       storage: multerOptions('post').storage,
     }),
   )
+  @RateLimit({
+    keyPrefix: 'update_post_by_id',
+    points: UPDATE_BY_ID_POINTS,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
   updateById(
     @Param('id') postId,
     @Body() updatePostDto: UpdatePostDto,
@@ -111,6 +135,12 @@ export class PostController {
 
   // This endpoint deletes a post with the given id
   @Delete(':id')
+  @RateLimit({
+    keyPrefix: 'delete_post_by_id',
+    points: DELETE_BY_ID_POINTS,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
   deleteById(@Param('id') postId: number) {
     return this.postService.deleteById(postId);
   }
