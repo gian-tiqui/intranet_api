@@ -40,6 +40,17 @@ export class CommentController {
     return this.commentService.findAll();
   }
 
+  @Get('replies')
+  @RateLimit({
+    keyPrefix: 'all_replies',
+    points: FIND_ALL_POINTS,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
+  findAlReplies() {
+    return this.commentService.findAllReplies();
+  }
+
   @Get(':id')
   @RateLimit({
     keyPrefix: 'find_comment_by_id',
