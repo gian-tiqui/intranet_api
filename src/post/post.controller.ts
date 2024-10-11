@@ -19,8 +19,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './common/MulterOption';
 import { RateLimit } from 'nestjs-rate-limiter';
 
-const FIND_ALL_POINTS = 10;
-const FIND_BY_ID_POINTS = 10;
+const FIND_ALL_POINTS = 50;
+const FIND_BY_ID_POINTS = 50;
 const CREATE_POINTS = 5;
 const UPDATE_BY_ID_POINTS = 10;
 const DELETE_BY_ID_POINTS = 10;
