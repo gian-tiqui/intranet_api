@@ -8,7 +8,6 @@ import { CommentModule } from './comment/comment.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NotificationModule } from './notification/notification.module';
-import { ReactModule } from './react/react.module';
 import { RateLimiterGuard, RateLimiterModule } from 'nestjs-rate-limiter';
 import { APP_GUARD } from '@nestjs/core';
 
@@ -29,7 +28,6 @@ import { APP_GUARD } from '@nestjs/core';
     DepartmentModule,
     CommentModule,
     NotificationModule,
-    ReactModule,
   ],
   providers: [
     {

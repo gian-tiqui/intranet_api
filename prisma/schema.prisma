@@ -86,12 +86,3 @@ model Notification {
   
   user        User      @relation(fields: [userId], references: [id])
 }
-
-model React {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  cid         Int?
-  pid         Int?
-  createdAt   DateTime
-  updatedAt   DateTime  
-}
