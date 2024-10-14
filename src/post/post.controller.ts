@@ -45,6 +45,7 @@ export class PostController {
     @Query('message') message: string,
     @Query('imageLocation') imageLocation: string,
     @Query('search') search: string,
+    @Query('public') _public: boolean,
   ) {
     return this.postService.findAll(
       userId,
@@ -52,6 +53,7 @@ export class PostController {
       message,
       imageLocation,
       search,
+      _public,
     );
   }
 

@@ -7,7 +7,7 @@ import { RateLimit } from 'nestjs-rate-limiter';
 import { LogoutDto } from './dto/logout.dto';
 
 const REGISTER_LIMIT = 5;
-const LOGIN_LIMIT = 5;
+const LOGIN_LIMIT = 10;
 const LOGOUT_LIMIT = 5;
 const REFRESH_LIMIT = 50;
 

@@ -6,9 +6,13 @@ export class CreatePostDto {
 
   @IsOptional()
   title: string;
+
   @IsNotEmpty()
   deptId: number;
 
   @IsOptional()
   message: string;
+
+  @IsNotEmpty()
+  public: boolean;
 }
