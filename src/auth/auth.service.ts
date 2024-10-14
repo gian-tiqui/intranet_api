@@ -42,6 +42,7 @@ export class AuthService {
           zipCode: registerDto.zipCode,
           preferredName: registerDto.preferredName,
           deptId: registerDto.deptId,
+          employeeId: registerDto.employeeId,
         },
       });
 

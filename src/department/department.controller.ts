@@ -7,11 +7,9 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { UpdateDeptDto } from './dto/update-department.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 
@@ -21,7 +19,6 @@ const CREATE_POINTS = 5;
 const UPDATE_BY_ID_POINTS = 10;
 const DELETE_BY_ID_POINTS = 10;
 
-@UseGuards(JwtAuthGuard)
 @Controller('department')
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}

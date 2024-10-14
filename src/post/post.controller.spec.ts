@@ -62,6 +62,7 @@ describe('Post endpoints testing', () => {
         userId: 2,
         deptId: 1,
         message: 'New post',
+        public: true,
       };
       const memoFile = {
         originalname: 'test.jpg',

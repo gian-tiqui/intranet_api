@@ -60,4 +60,7 @@ export class RegisterDto {
 
   @IsNotEmpty()
   deptId: number;
+
+  @IsNotEmpty()
+  employeeId: number;
 }

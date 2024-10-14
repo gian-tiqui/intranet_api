@@ -1,4 +1,4 @@
-import { IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdatePostDto {
   @IsOptional()
@@ -9,4 +9,10 @@ export class UpdatePostDto {
 
   @IsOptional()
   title: string;
+
+  @IsNotEmpty()
+  public: boolean;
+
+  @IsNotEmpty()
+  deptId: number;
 }

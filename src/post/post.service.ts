@@ -11,20 +11,10 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { promises as fs, unlink, rename } from 'fs';
 import { promisify } from 'util';
 import * as path from 'path';
-import * as Pusher from 'pusher';
 
 @Injectable()
 export class PostService {
-  private pusher: Pusher;
-  constructor(private prismaService: PrismaService) {
-    this.pusher = new Pusher({
-      appId: process.env.APP_ID,
-      key: process.env.KEY,
-      secret: process.env.SECRET,
-      cluster: process.env.CLUSTER,
-      useTLS: true,
-    });
-  }
+  constructor(private prismaService: PrismaService) {}
 
   unlinkAsync = promisify(unlink);
   renameAsync = promisify(rename);
@@ -36,6 +26,7 @@ export class PostService {
     message?: string,
     imageLocation?: string,
     search?: string,
+    _public?: boolean,
   ) {
     const iDeptId = Number(deptId);
     const iUserId = Number(userId);
@@ -51,6 +42,7 @@ export class PostService {
         ...(imageLocation && {
           imageLocation: { contains: imageLocation },
         }),
+        ...(_public && { public: Boolean(_public) }),
       },
       include: {
         user: true,
@@ -94,11 +86,6 @@ export class PostService {
 
     if (!post) throw new NotFoundException(`Post with the id ${id} not found`);
 
-    // Trigger a Pusher event to notify about post retrieval
-    await this.pusher.trigger(`post-${id}`, 'post-retrieved', {
-      post: post,
-    });
-
     return {
       message: 'Post retrieved successfully',
       statusCode: 200,
@@ -134,6 +121,7 @@ export class PostService {
           title: createPostDto.title,
           message: createPostDto.message,
           imageLocation: imageLocation,
+          public: Boolean(createPostDto.public),
         },
       });
 
@@ -173,6 +161,8 @@ export class PostService {
       message: updatePostDto?.message,
       imageLocation: '',
       title: updatePostDto?.title,
+      public: Boolean(updatePostDto?.public),
+      deptId: Number(updatePostDto?.deptId), // 3f icu
     };
 
     if (newFile) {
@@ -207,6 +197,8 @@ export class PostService {
       } catch (err) {
         console.error('Error moving new file:', err);
       }
+    } else {
+      delete updatePost.imageLocation;
     }
 
     const updatedPost = await this.prismaService.post.update({

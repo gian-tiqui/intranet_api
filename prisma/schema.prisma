@@ -2,6 +2,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// DEPT ID [1] HR [2] QM [3] IT [4] ADMIN
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -27,6 +29,7 @@ model User {
   updatedAt      DateTime @updatedAt
   refreshToken   String?  @unique
   deptId         Int
+  employeeId     Int? @unique
 
   notifications  Notification[]
   posts          Post[]
@@ -51,6 +54,7 @@ model Post {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   edited         Boolean  @default(false)
+  public         Boolean  @default(true)
 
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   department     Department @relation(fields: [deptId], references: [deptId])
