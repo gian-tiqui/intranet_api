@@ -64,7 +64,7 @@ export class AuthService {
   // Check if the user exists and the password is correct if the user exists and generate tokens for the app to use
   async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: loginDto.email },
+      where: { employeeId: Number(loginDto.employeeId) },
       include: { department: true },
     });
 
