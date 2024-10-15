@@ -10,8 +10,28 @@ export class NotificationService {
   constructor(private prismaService: PrismaService) {}
 
   // Fetch all notifications
-  async findAll() {
-    return await this.prismaService.notification.findMany();
+  async findAll(userId?: number, isRead?: boolean, deptId?: number) {
+    const filters = {
+      userId: null,
+      isRead: null,
+      deptId: null,
+    };
+
+    if (userId) {
+      filters.userId = userId;
+    }
+
+    if (isRead !== undefined) {
+      filters.isRead = isRead;
+    }
+
+    if (deptId) {
+      filters.deptId = deptId;
+    }
+
+    return await this.prismaService.notification.findMany({
+      where: filters,
+    });
   }
 
   // Fetch a single notification by ID
@@ -36,7 +56,7 @@ export class NotificationService {
   async notifyPostReply(userId: number, postId: number) {
     const post = await this.prismaService.post.findFirst({
       where: { pid: Number(postId) },
-      select: { userId: true, deptId: true }, // Fetching deptId of the post
+      select: { userId: true, deptId: true },
     });
 
     if (!post) throw new NotFoundException('Post not found');
@@ -77,7 +97,7 @@ export class NotificationService {
       throw new NotFoundException('No users found in the department');
 
     const postMessage = await this.getPostMessage(postId);
-    const notificationMessage = `A new post has been created in your department: '${postMessage}'`;
+    const notificationMessage = `A new post has been created for your department: '${postMessage}'`;
 
     // Notify each user in the department
     const notifications = users.map((user) =>
@@ -99,7 +119,7 @@ export class NotificationService {
         commentId: relationIds.commentId || null,
         message: message,
         isRead: false,
-        deptId: relationIds.deptId || null, // Storing deptId in the notification
+        deptId: Number(relationIds.deptId) || null,
       },
     });
   }

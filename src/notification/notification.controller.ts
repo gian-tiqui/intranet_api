@@ -17,8 +17,13 @@ export class NotificationController {
 
   // Retrieve all notifications
   @Get()
-  findAll() {
-    return this.notificationService.findAll();
+  @Get()
+  findAll(
+    @Query('userId') userId?: number,
+    @Query('isRead') isRead?: boolean,
+    @Query('deptId') deptId?: number,
+  ) {
+    return this.notificationService.findAll(userId, isRead, deptId);
   }
 
   // Retrieve a single notification by ID
