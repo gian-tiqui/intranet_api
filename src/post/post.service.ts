@@ -27,6 +27,7 @@ export class PostService {
     imageLocation?: string,
     search?: string,
     _public?: boolean,
+    userIdComment?: number,
   ) {
     const iDeptId = Number(deptId);
     const iUserId = Number(userId);
@@ -46,7 +47,10 @@ export class PostService {
       },
       include: {
         user: true,
-        comments: { include: { replies: true, user: true } },
+        comments: {
+          include: { replies: true, user: true },
+          where: { userId: Number(userIdComment) },
+        },
         department: true,
       },
       orderBy: { createdAt: 'desc' },
@@ -54,7 +58,7 @@ export class PostService {
   }
 
   // This method returns a post with the given id
-  async findById(postId: number) {
+  async findById(postId: number, userId: number) {
     const id = Number(postId);
 
     if (typeof id !== 'number') {
@@ -67,6 +71,7 @@ export class PostService {
         department: { select: { departmentName: true } },
         user: { select: { firstName: true, lastName: true, createdAt: true } },
         comments: {
+          where: { ...(userId && { userId: Number(userId) }) },
           include: {
             user: {
               select: { firstName: true, lastName: true, createdAt: true },

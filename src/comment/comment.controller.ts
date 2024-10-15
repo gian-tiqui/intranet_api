@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -36,8 +37,8 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait before posting again.',
   })
-  findAll() {
-    return this.commentService.findAll();
+  findAll(@Query('userId') userId: number) {
+    return this.commentService.findAll(userId);
   }
 
   @Get('replies')

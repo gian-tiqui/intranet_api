@@ -17,13 +17,14 @@ export class CommentService {
   unlinkAsync = promisify(unlink);
   renameAsync = promisify(rename);
 
-  async findAll() {
+  async findAll(userId: number) {
     const comments = await this.prismaService.comment.findMany({
       where: {
         parentId: null,
+        ...(userId && { userId: userId }),
       },
       include: {
-        user: { select: { firstName: true, lastName: true } },
+        user: { select: { firstName: true, lastName: true, id: true } },
         replies: {
           include: {
             replies: true,
