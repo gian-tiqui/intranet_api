@@ -12,8 +12,6 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ConfigService } from '@nestjs/config';
 
-// ?
-
 @Injectable()
 export class AuthService {
   constructor(

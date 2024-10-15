@@ -11,26 +11,12 @@ export class NotificationService {
 
   // Fetch all notifications
   async findAll(userId?: number, isRead?: boolean, deptId?: number) {
-    const filters = {
-      userId: null,
-      isRead: null,
-      deptId: null,
-    };
-
-    if (userId) {
-      filters.userId = userId;
-    }
-
-    if (isRead !== undefined) {
-      filters.isRead = isRead;
-    }
-
-    if (deptId) {
-      filters.deptId = deptId;
-    }
-
     return await this.prismaService.notification.findMany({
-      where: filters,
+      where: {
+        ...(userId && { userId: Number(userId) }),
+        ...(isRead && { isRead: isRead }),
+        ...(deptId && { deptId: Number(deptId) }),
+      },
     });
   }
 
@@ -73,7 +59,10 @@ export class NotificationService {
   async notifyCommentReply(userId: number, commentId: number) {
     const comment = await this.prismaService.comment.findFirst({
       where: { cid: Number(commentId) },
-      select: { userId: true, post: { select: { deptId: true } } }, // Fetching deptId from post
+      select: {
+        userId: true,
+        parentComment: { select: { post: { select: { deptId: true } } } },
+      },
     });
 
     if (!comment) throw new NotFoundException('Comment not found');
@@ -82,7 +71,7 @@ export class NotificationService {
 
     return this.createNotification(comment.userId, notificationMessage, {
       commentId,
-      deptId: comment.post.deptId, // Associating deptId with notification
+      deptId: comment.parentComment.post.deptId,
     });
   }
 
@@ -116,7 +105,7 @@ export class NotificationService {
       data: {
         userId: userId,
         postId: Number(relationIds.postId) || null,
-        commentId: relationIds.commentId || null,
+        commentId: Number(relationIds.commentId) || null,
         message: message,
         isRead: false,
         deptId: Number(relationIds.deptId) || null,
