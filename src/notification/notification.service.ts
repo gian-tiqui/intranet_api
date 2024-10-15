@@ -99,7 +99,7 @@ export class NotificationService {
         commentId: relationIds.commentId || null,
         message: message,
         isRead: false,
-        deptId: relationIds.deptId || null, // Storing deptId in the notification
+        deptId: Number(relationIds.deptId) || null,
       },
     });
   }
