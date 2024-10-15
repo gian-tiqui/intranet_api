@@ -98,11 +98,11 @@ export class NotificationService {
   private async getPostMessage(postId: number): Promise<string> {
     const post = await this.prismaService.post.findFirst({
       where: { pid: Number(postId) },
-      select: { message: true },
+      select: { message: true, title: true },
     });
 
     if (!post) throw new NotFoundException('Post not found');
-    return post.message;
+    return post.title || post.message;
   }
 
   // Get comment message by commentId
