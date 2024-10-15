@@ -45,6 +45,15 @@ export class NotificationController {
     return this.notificationService.notifyCommentReply(userId, commentId);
   }
 
+  // Notify users in the department when a new post is created
+  @Post('new-post')
+  notifyDepartmentOfNewPost(
+    @Query('deptId') deptId: number,
+    @Query('postId') postId: number,
+  ) {
+    return this.notificationService.notifyDepartmentOfNewPost(deptId, postId);
+  }
+
   // Delete a notification by ID
   @Delete(':id')
   deleteById(@Param('id') nid: number) {

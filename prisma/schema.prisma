@@ -43,6 +43,7 @@ model Department {
   departmentName String   @unique
   posts          Post[]
   users          User[] 
+  notifications  Notification[]
 }
 
 model Post {
@@ -95,12 +96,14 @@ model Comment {
 
 model Notification {
   id          Int       @id @default(autoincrement())
-  userId      Int      
-  postId      Int?    
-  commentId   Int?     
+  userId      Int
+  postId      Int?
+  commentId   Int?
+  deptId      Int?      
   message     String
-  isRead      Boolean   @default(false) 
+  isRead      Boolean   @default(false)
   createdAt   DateTime  @default(now())
   
   user        User      @relation(fields: [userId], references: [id])
+  department  Department?  @relation(fields: [deptId], references: [deptId])
 }
