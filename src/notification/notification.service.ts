@@ -45,7 +45,7 @@ export class NotificationService {
     const user = await this.getUserName(userId);
     const postMessage = await this.getPostMessage(postId);
 
-    const notificationMessage = `${user} replied to your post: '${postMessage}'`;
+    const notificationMessage = `${user} commented on your post: '${postMessage}'`;
 
     const createdNotification = await this.prismaService.notification.create({
       data: {

@@ -46,6 +46,7 @@ export class PostController {
     @Query('imageLocation') imageLocation: string,
     @Query('search') search: string,
     @Query('public') _public: boolean,
+    @Query('userIdComment') userIdComment: number,
   ) {
     return this.postService.findAll(
       userId,
@@ -54,6 +55,7 @@ export class PostController {
       imageLocation,
       search,
       _public,
+      userIdComment,
     );
   }
 
@@ -65,8 +67,11 @@ export class PostController {
     duration: 60,
     errorMessage: 'Please wait before posting again.',
   })
-  findById(@Param('id') postId: number) {
-    return this.postService.findById(postId);
+  findById(
+    @Param('id') postId: number,
+    @Query('userIdComment') userId: number,
+  ) {
+    return this.postService.findById(postId, userId);
   }
 
   // This endpoint validates if the file is valid (image) and will create a new data after when it satisfies the checks

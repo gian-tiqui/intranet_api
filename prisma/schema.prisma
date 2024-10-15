@@ -34,7 +34,8 @@ model User {
   notifications  Notification[]
   posts          Post[]
   comments       Comment[]
-  department     Department @relation(fields: [deptId], references: [deptId])
+  postReads      PostReader[] 
+  department     Department   @relation(fields: [deptId], references: [deptId])
 }
 
 model Department {
@@ -58,7 +59,20 @@ model Post {
 
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   department     Department @relation(fields: [deptId], references: [deptId])
-  comments       Comment[] 
+  comments       Comment[]
+  readers        PostReader[] 
+}
+
+model PostReader {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  userId    Int
+  readAt    DateTime @default(now())
+
+  post      Post     @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
 }
 
 model Comment {
