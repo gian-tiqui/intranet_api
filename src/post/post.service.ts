@@ -49,7 +49,7 @@ export class PostService {
         user: true,
         comments: {
           include: { replies: true, user: true },
-          where: { userId: Number(userIdComment) },
+          where: { ...(userIdComment && { userId: Number(userIdComment) }) },
         },
         department: true,
       },

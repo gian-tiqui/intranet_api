@@ -19,9 +19,8 @@ export class NotificationService {
     if (typeof id !== 'number')
       throw new BadRequestException('ID must be a number');
 
-    const nid = Number(id);
     const notification = await this.prismaService.notification.findFirst({
-      where: { id: nid },
+      where: { id: Number(id) },
     });
 
     if (!notification) throw new NotFoundException('Notification not found');
@@ -37,61 +36,84 @@ export class NotificationService {
   async notifyPostReply(userId: number, postId: number) {
     const post = await this.prismaService.post.findFirst({
       where: { pid: Number(postId) },
-      select: { userId: true },
+      select: { userId: true, deptId: true }, // Fetching deptId of the post
     });
 
     if (!post) throw new NotFoundException('Post not found');
 
-    const user = await this.getUserName(userId);
-    const postMessage = await this.getPostMessage(postId);
+    const notificationMessage = `${await this.getUserName(userId)} commented on your post: '${await this.getPostMessage(postId)}'`;
 
-    const notificationMessage = `${user} commented on your post: '${postMessage}'`;
-
-    const createdNotification = await this.prismaService.notification.create({
-      data: {
-        userId: post.userId,
-        postId: Number(postId),
-        message: notificationMessage,
-        isRead: false,
-      },
+    return this.createNotification(post.userId, notificationMessage, {
+      postId,
+      deptId: post.deptId, // Associating deptId with notification
     });
-
-    return createdNotification;
   }
 
+  // Notify about a reply on a comment
   async notifyCommentReply(userId: number, commentId: number) {
     const comment = await this.prismaService.comment.findFirst({
       where: { cid: Number(commentId) },
-      select: { userId: true },
+      select: { userId: true, post: { select: { deptId: true } } }, // Fetching deptId from post
     });
 
     if (!comment) throw new NotFoundException('Comment not found');
 
-    const user = await this.getUserName(userId);
-    const commentMessage = await this.getCommentMessage(commentId);
+    const notificationMessage = `${await this.getUserName(userId)} replied to your comment: '${await this.getCommentMessage(commentId)}'`;
 
-    const notificationMessage = `${user} replied to your comment: '${commentMessage}'`;
-
-    const createdNotification = await this.prismaService.notification.create({
-      data: {
-        userId: comment.userId,
-        commentId: Number(commentId),
-        message: notificationMessage,
-        isRead: false,
-      },
+    return this.createNotification(comment.userId, notificationMessage, {
+      commentId,
+      deptId: comment.post.deptId, // Associating deptId with notification
     });
-
-    return createdNotification;
   }
 
-  // Common method to get the user's name
+  // Notify users in the department about a new post
+  async notifyDepartmentOfNewPost(deptId: number, postId: number) {
+    const users = await this.prismaService.user.findMany({
+      where: { deptId: Number(deptId) },
+      select: { id: true },
+    });
+
+    if (users.length === 0)
+      throw new NotFoundException('No users found in the department');
+
+    const postMessage = await this.getPostMessage(postId);
+    const notificationMessage = `A new post has been created in your department: '${postMessage}'`;
+
+    // Notify each user in the department
+    const notifications = users.map((user) =>
+      this.createNotification(user.id, notificationMessage, { postId, deptId }),
+    );
+    return Promise.all(notifications);
+  }
+
+  // Helper to create a notification
+  private async createNotification(
+    userId: number,
+    message: string,
+    relationIds: { postId?: number; commentId?: number; deptId?: number },
+  ) {
+    return this.prismaService.notification.create({
+      data: {
+        userId: userId,
+        postId: Number(relationIds.postId) || null,
+        commentId: relationIds.commentId || null,
+        message: message,
+        isRead: false,
+        deptId: relationIds.deptId || null, // Storing deptId in the notification
+      },
+    });
+  }
+
+  // Get the user's full name
   private async getUserName(userId: number): Promise<string> {
-    const { firstName, lastName } = await this.prismaService.user.findFirst({
+    const user = await this.prismaService.user.findFirst({
       where: { id: Number(userId) },
       select: { firstName: true, lastName: true },
     });
 
-    return `${firstName} ${lastName}`;
+    if (!user) throw new NotFoundException('User not found');
+
+    return `${user.firstName} ${user.lastName}`;
   }
 
   // Get post message by postId
@@ -102,6 +124,7 @@ export class NotificationService {
     });
 
     if (!post) throw new NotFoundException('Post not found');
+
     return post.title || post.message;
   }
 
@@ -113,6 +136,7 @@ export class NotificationService {
     });
 
     if (!comment) throw new NotFoundException('Comment not found');
+
     return comment.message;
   }
 
@@ -121,15 +145,14 @@ export class NotificationService {
     if (typeof id !== 'number')
       throw new BadRequestException('ID must be a number');
 
-    const nid = Number(id);
     const notification = await this.prismaService.notification.findFirst({
-      where: { id: nid },
+      where: { id: Number(id) },
     });
 
     if (!notification) throw new NotFoundException('Notification not found');
 
     const deletedNotification = await this.prismaService.notification.delete({
-      where: { id: nid },
+      where: { id: Number(id) },
     });
 
     return {
