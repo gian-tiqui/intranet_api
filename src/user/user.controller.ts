@@ -12,7 +12,7 @@ import { UserService } from './user.service';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
-import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
 
 const FIND_ALL_POINTS = 20;
 const FIND_BY_ID_POINTS = 20;
