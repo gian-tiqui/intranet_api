@@ -36,9 +36,12 @@ export class CommentService {
     return comments;
   }
 
-  async findAllReplies() {
+  async findAllReplies(parentId?: number) {
     const replies = await this.prismaService.comment.findMany({
-      where: { postId: { equals: null } },
+      where: {
+        postId: { equals: null },
+        ...(parentId && { parentId: Number(parentId) }),
+      },
       include: { user: { select: { firstName: true, lastName: true } } },
     });
 
