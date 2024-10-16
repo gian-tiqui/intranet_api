@@ -67,6 +67,7 @@ export class UserService {
         suffix: true,
         updatedAt: true,
         zipCode: true,
+        notifications: true,
       },
     });
 
