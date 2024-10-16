@@ -17,6 +17,7 @@ export class NotificationService {
         ...(isRead && { isRead: isRead }),
         ...(deptId && { deptId: Number(deptId) }),
       },
+      orderBy: { createdAt: 'desc' },
     });
   }
 

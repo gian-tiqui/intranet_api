@@ -19,7 +19,7 @@ import { multerOptions } from '../post/common/MulterOption';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 
-const FIND_ALL_POINTS = 10;
+const FIND_ALL_POINTS = 100;
 const FIND_BY_ID_POINTS = 10;
 const CREATE_POINTS = 5;
 const UPDATE_BY_ID_POINTS = 10;
@@ -48,8 +48,8 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait before posting again.',
   })
-  findAlReplies() {
-    return this.commentService.findAllReplies();
+  findAllReplies(@Query('parentId') parentId?: number) {
+    return this.commentService.findAllReplies(parentId);
   }
 
   @Get(':id')
