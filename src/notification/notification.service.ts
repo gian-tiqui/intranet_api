@@ -150,6 +150,15 @@ export class NotificationService {
     return comment.message;
   }
 
+  async notificationRead(id: number) {
+    const notification = await this.prismaService.notification.update({
+      where: { id: Number(id) },
+      data: { isRead: true },
+    });
+
+    return notification;
+  }
+
   // Delete a notification by ID
   async deleteById(id: number) {
     if (typeof id !== 'number')
