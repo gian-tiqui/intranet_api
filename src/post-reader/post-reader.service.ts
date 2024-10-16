@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostReaderDto } from './dto/create-post-reader.dto';
-// redeploy
 @Injectable()
 export class PostReaderService {
   constructor(private readonly prismaService: PrismaService) {}
