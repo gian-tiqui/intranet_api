@@ -9,6 +9,42 @@ import { PrismaService } from '../prisma/prisma.service';
 export class NotificationService {
   constructor(private prismaService: PrismaService) {}
 
+  async checkUserReads(userId: number, deptId: number) {
+    const userPostReads = await this.prismaService.user.findFirst({
+      where: {
+        id: Number(userId),
+      },
+      select: { postReads: true },
+    });
+
+    const deptPostCounts = await this.prismaService.post.findMany({
+      where: { deptId: Number(deptId) },
+    });
+
+    if (userPostReads.postReads.length !== deptPostCounts.length) {
+      return {
+        message: `This user have not read all of the department's post.`,
+        statusCode: 200,
+        readAll: false,
+      };
+    } else if (
+      userPostReads.postReads.length === 0 &&
+      deptPostCounts.length === 0
+    ) {
+      return {
+        message: `This department has no post yet`,
+        statusCode: 200,
+        readAll: true,
+      };
+    }
+
+    return {
+      message: `This user have read all of the department's post.`,
+      statusCode: 200,
+      readAll: true,
+    };
+  }
+
   // Fetch all notifications
   async findAll(userId?: number, isRead?: boolean, deptId?: number) {
     return await this.prismaService.notification.findMany({

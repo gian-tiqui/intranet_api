@@ -169,7 +169,7 @@ export class PostService {
       imageLocation: '',
       title: updatePostDto?.title,
       public: Boolean(updatePostDto?.public),
-      deptId: Number(updatePostDto?.deptId), // 3f icu
+      deptId: Number(updatePostDto?.deptId),
     };
 
     if (newFile) {

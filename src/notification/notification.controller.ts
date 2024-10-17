@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -10,14 +11,21 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { ReadNotifDto } from './dto/read-notif.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('notification')
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  // Retrieve all notifications
-  @Get()
+  @Post('user-reads')
+  checkUserReads(@Body() readNotifDto: ReadNotifDto) {
+    return this.notificationService.checkUserReads(
+      readNotifDto.userId,
+      readNotifDto.deptId,
+    );
+  }
+
   @Get()
   findAll(
     @Query('userId') userId?: number,
