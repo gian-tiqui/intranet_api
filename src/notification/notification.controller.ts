@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -57,6 +58,11 @@ export class NotificationController {
     @Query('postId') postId: number,
   ) {
     return this.notificationService.notifyDepartmentOfNewPost(deptId, postId);
+  }
+
+  @Put('read/:id')
+  readNotification(@Param('id') id: number) {
+    return this.notificationService.notificationRead(id);
   }
 
   // Delete a notification by ID
