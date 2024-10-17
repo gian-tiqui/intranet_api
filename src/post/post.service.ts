@@ -29,6 +29,7 @@ export class PostService {
     _public?: boolean,
     userIdComment?: number,
   ) {
+    // ?
     const iDeptId = Number(deptId);
     const iUserId = Number(userId);
 
