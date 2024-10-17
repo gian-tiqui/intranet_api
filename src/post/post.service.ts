@@ -32,6 +32,8 @@ export class PostService {
     const iDeptId = Number(deptId);
     const iUserId = Number(userId);
 
+    const pub = String(_public) === 'true' ? 1 : 0;
+
     return this.prismaService.post.findMany({
       where: {
         ...(search && {
@@ -43,7 +45,7 @@ export class PostService {
         ...(imageLocation && {
           imageLocation: { contains: imageLocation },
         }),
-        ...(_public && { public: Boolean(_public) }),
+        ...(_public && { public: Boolean(pub) }),
       },
       include: {
         user: true,
