@@ -125,11 +125,17 @@ export class NotificationService {
     const postMessage = await this.getPostMessage(postId);
     const notificationMessage = `A new post has been created for your department: '${postMessage}'`;
 
-    // Notify each user in the department
-    const notifications = users.map((user) =>
-      this.createNotification(user.id, notificationMessage, { postId, deptId }),
-    );
-    return Promise.all(notifications);
+    const notificationsData = users.map((user) => ({
+      userId: user.id,
+      message: notificationMessage,
+      postId,
+      deptId,
+      isRead: false,
+    }));
+
+    return this.prismaService.notification.createMany({
+      data: notificationsData,
+    });
   }
 
   // Helper to create a notification
