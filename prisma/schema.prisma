@@ -115,7 +115,6 @@ model Notification {
 model EditLogs {
   id           Int        @id @default(autoincrement())
   previousData String
-  newData      String
   updatedBy    Int
 
 
