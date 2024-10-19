@@ -84,4 +84,9 @@ export class UserController {
       changePasswordDto.newPassword,
     );
   }
+
+  @Get('history/:id')
+  getPostReadsById(@Param('id') userId: number) {
+    return this.userService.getPostReadsById(userId);
+  }
 }
