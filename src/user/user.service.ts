@@ -164,4 +164,23 @@ export class UserService {
       statusCode: 200,
     };
   }
+
+  async getPostReadsById(userId: number) {
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        id: Number(userId),
+      },
+      select: {
+        postReads: { select: { post: true } },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with the id ${userId} not found`);
+    }
+
+    const posts = user.postReads.map((read) => read.post);
+
+    return posts;
+  }
 }

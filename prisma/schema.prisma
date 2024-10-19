@@ -45,6 +45,9 @@ model Department {
   posts          Post[]
   users          User[] 
   notifications  Notification[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
 }
 
 model Post {
@@ -107,4 +110,15 @@ model Notification {
   
   user        User      @relation(fields: [userId], references: [id])
   department  Department?  @relation(fields: [deptId], references: [deptId])
+}
+
+model EditLogs {
+  id           Int        @id @default(autoincrement())
+  previousData String
+  newData      String
+  updatedBy    Int
+
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now())
 }
