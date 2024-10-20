@@ -11,6 +11,7 @@ import { NotificationModule } from './notification/notification.module';
 import { RateLimiterGuard, RateLimiterModule } from 'nestjs-rate-limiter';
 import { APP_GUARD } from '@nestjs/core';
 import { PostReaderModule } from './post-reader/post-reader.module';
+import { MonitoringModule } from './monitoring/monitoring.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PostReaderModule } from './post-reader/post-reader.module';
     CommentModule,
     NotificationModule,
     PostReaderModule,
+    MonitoringModule,
   ],
   providers: [
     {

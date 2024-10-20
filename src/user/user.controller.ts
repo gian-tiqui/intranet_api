@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -85,8 +86,17 @@ export class UserController {
     );
   }
 
+  @RateLimit({
+    keyPrefix: 'change_user_password',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
   @Get('history/:id')
-  getPostReadsById(@Param('id') userId: number) {
-    return this.userService.getPostReadsById(userId);
+  getPostReadsById(
+    @Param('id') userId: number,
+    @Query('search') search: string,
+  ) {
+    return this.userService.getPostReadsById(userId, search);
   }
 }

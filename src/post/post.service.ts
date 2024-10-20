@@ -41,7 +41,7 @@ export class PostService {
         }),
         ...(deptId && { deptId: iDeptId }),
         ...(userId && { userId: iUserId }),
-        ...(message && { message: { contains: message } }),
+        ...(message && { message: { contains: message || search } }),
         ...(imageLocation && {
           imageLocation: { contains: imageLocation },
         }),
