@@ -128,8 +128,8 @@ export class NotificationService {
     const notificationsData = users.map((user) => ({
       userId: user.id,
       message: notificationMessage,
-      postId,
-      deptId,
+      postId: Number(postId),
+      deptId: Number(deptId),
       isRead: false,
     }));
 
