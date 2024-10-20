@@ -21,6 +21,9 @@ export class NotificationService {
       where: { deptId: Number(deptId) },
     });
 
+    // console.log(userPostReads.postReads.length, 'user reads');
+    // console.log(deptPostCounts.length, 'dept posts');
+
     if (userPostReads.postReads.length !== deptPostCounts.length) {
       return {
         message: `This user have not read all of the department's post.`,
