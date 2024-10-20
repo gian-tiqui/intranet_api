@@ -165,13 +165,25 @@ export class UserService {
     };
   }
 
-  async getPostReadsById(userId: number) {
+  async getPostReadsById(userId: number, search: string) {
     const user = await this.prismaService.user.findFirst({
       where: {
         id: Number(userId),
       },
       select: {
-        postReads: { select: { post: true } },
+        postReads: {
+          where: {
+            post: {
+              OR: search
+                ? [
+                    { title: { contains: search } },
+                    { message: { contains: search } },
+                  ]
+                : undefined,
+            },
+          },
+          select: { post: true },
+        },
       },
     });
 
@@ -179,8 +191,6 @@ export class UserService {
       throw new NotFoundException(`User with the id ${userId} not found`);
     }
 
-    const posts = user.postReads.map((read) => read.post);
-
-    return posts;
+    return user.postReads;
   }
 }
