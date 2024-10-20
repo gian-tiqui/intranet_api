@@ -170,6 +170,7 @@ export class CommentService {
     });
 
     return {
+      statusCode: 204,
       message: 'Comment updated',
       comment: updatedComment,
     };
