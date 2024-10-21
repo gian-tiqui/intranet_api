@@ -42,6 +42,7 @@ model User {
 model Department {
   deptId         Int      @id @default(autoincrement())
   departmentName String   @unique
+  departmentCode String
   posts          Post[]
   users          User[] 
   notifications  Notification[]

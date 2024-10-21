@@ -49,7 +49,10 @@ export class DepartmentService {
     if (foundDepartment) throw new ConflictException('Department exists');
 
     const createdDepartment = await this.prismaService.department.create({
-      data: { departmentName: createDepartmentDto.departmentName },
+      data: {
+        departmentName: createDepartmentDto.departmentName,
+        departmentCode: createDepartmentDto.departmentCode,
+      },
     });
 
     return {
