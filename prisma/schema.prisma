@@ -5,6 +5,8 @@ generator client {
 // DEPT ID [1]HR [2]QM [3]IT [4]ADMIN [5]MARKETING [6]ACCOUNTING [7]PURCHASING
 // POPULATE DEPARTMENTS TABLE UPON MIGRATION
 
+// moving to postgresql
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
