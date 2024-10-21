@@ -5,4 +5,5 @@ services:
     ports:
       - '8081:8081'
     environment:
+      PORT: 8081
       DATABASE_URL: mysql://root:@host.docker.internal:3306/db_intranet
