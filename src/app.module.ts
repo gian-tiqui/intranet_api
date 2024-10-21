@@ -12,6 +12,7 @@ import { RateLimiterGuard, RateLimiterModule } from 'nestjs-rate-limiter';
 import { APP_GUARD } from '@nestjs/core';
 import { PostReaderModule } from './post-reader/post-reader.module';
 import { MonitoringModule } from './monitoring/monitoring.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -39,5 +40,6 @@ import { MonitoringModule } from './monitoring/monitoring.module';
       useClass: RateLimiterGuard,
     },
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
