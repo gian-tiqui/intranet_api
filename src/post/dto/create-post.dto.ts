@@ -14,5 +14,5 @@ export class CreatePostDto {
   message: string;
 
   @IsNotEmpty()
-  public: boolean;
+  public: string;
 }

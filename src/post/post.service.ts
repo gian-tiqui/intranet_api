@@ -128,7 +128,7 @@ export class PostService {
           title: createPostDto.title,
           message: createPostDto.message,
           imageLocation: imageLocation,
-          public: Boolean(createPostDto.public),
+          public: Boolean(createPostDto.public === 'public' ? true : false),
         },
       });
 
@@ -152,6 +152,7 @@ export class PostService {
     newFile?: Express.Multer.File,
   ) {
     const id = Number(postId);
+    console.log(updatePostDto.public);
 
     if (typeof id !== 'number')
       throw new BadRequestException('ID must be a number');
@@ -168,7 +169,7 @@ export class PostService {
       message: updatePostDto?.message,
       imageLocation: '',
       title: updatePostDto?.title,
-      public: Boolean(updatePostDto?.public),
+      public: Boolean(updatePostDto?.public === 'public' ? true : false),
       deptId: Number(updatePostDto?.deptId),
     };
 

@@ -11,7 +11,7 @@ export class UpdatePostDto {
   title: string;
 
   @IsNotEmpty()
-  public: boolean;
+  public: string;
 
   @IsNotEmpty()
   deptId: number;
