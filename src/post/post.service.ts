@@ -172,6 +172,8 @@ export class PostService {
       deptId: Number(updatePostDto?.deptId),
     };
 
+    console.log(updatePost.public);
+
     if (newFile) {
       const oldFilePath = path.join(
         __dirname,
