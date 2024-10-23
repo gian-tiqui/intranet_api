@@ -74,11 +74,13 @@ export class PostService {
         user: { select: { firstName: true, lastName: true, createdAt: true } },
         comments: {
           where: { ...(userId && { userId: Number(userId) }) },
+          orderBy: { updatedAt: 'desc' },
           include: {
             user: {
               select: { firstName: true, lastName: true, createdAt: true },
             },
             replies: {
+              orderBy: { updatedAt: 'desc' },
               include: {
                 user: {
                   select: { firstName: true, lastName: true, createdAt: true },
