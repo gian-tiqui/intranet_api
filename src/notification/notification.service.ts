@@ -9,6 +9,38 @@ import { PrismaService } from '../prisma/prisma.service';
 export class NotificationService {
   constructor(private prismaService: PrismaService) {}
 
+  async getUnreadPosts(userId: number, deptId: number) {
+    const departmentPosts = await this.prismaService.post.findMany({
+      where: { deptId: Number(deptId) },
+      select: {
+        deptId: true,
+        title: true,
+        message: true,
+        createdAt: true,
+        pid: true,
+      },
+    });
+
+    const userReads = await this.prismaService.user.findFirst({
+      where: { id: Number(userId) },
+      select: { postReads: true },
+    });
+
+    if (!userReads) throw new NotFoundException('User not found');
+
+    const readPostIds = userReads.postReads.map((read) => read.postId);
+
+    const unreadPosts = departmentPosts.filter(
+      (post) => !readPostIds.includes(post.pid),
+    );
+
+    return {
+      message: 'Unread posts retrieved',
+      statusCode: 200,
+      unreadPosts,
+    };
+  }
+
   async checkUserReads(userId: number, deptId: number) {
     const userPostReads = await this.prismaService.user.findFirst({
       where: {
