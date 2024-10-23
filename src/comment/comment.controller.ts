@@ -21,7 +21,7 @@ import { RateLimit } from 'nestjs-rate-limiter';
 
 const FIND_ALL_POINTS = 100;
 const FIND_BY_ID_POINTS = 10;
-const CREATE_POINTS = 5;
+const CREATE_POINTS = 2;
 const UPDATE_BY_ID_POINTS = 10;
 const DELETE_BY_ID_POINTS = 10;
 
