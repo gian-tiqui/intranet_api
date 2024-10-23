@@ -18,6 +18,14 @@ import { ReadNotifDto } from './dto/read-notif.dto';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
+  @Get('unreads/:id')
+  getUnreadsOfUserById(
+    @Param('id') userId: number,
+    @Query('deptId') deptId: number,
+  ) {
+    return this.notificationService.getUnreadPosts(userId, deptId);
+  }
+
   @Post('user-reads')
   checkUserReads(@Body() readNotifDto: ReadNotifDto) {
     return this.notificationService.checkUserReads(
