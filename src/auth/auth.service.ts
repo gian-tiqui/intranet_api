@@ -43,6 +43,7 @@ export class AuthService {
           preferredName: registerDto.preferredName,
           deptId: registerDto.deptId,
           employeeId: registerDto.employeeId,
+          lid: registerDto.lid,
         },
       });
 
@@ -160,12 +161,16 @@ export class AuthService {
     firstName: string,
     lastName: string,
     email: string,
-    department: { departmentName: string; deptId: number },
+    department: {
+      departmentName: string;
+      deptId: number;
+      departmentCode: string;
+    },
   ): Promise<string> {
     return this.jwtService.signAsync({
       sub: userId,
       email,
-      departmentName: department.departmentName,
+      departmentCode: department.departmentCode,
       deptId: department.deptId,
       firstName,
       lastName,

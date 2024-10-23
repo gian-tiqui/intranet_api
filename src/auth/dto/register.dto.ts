@@ -63,4 +63,7 @@ export class RegisterDto {
 
   @IsNotEmpty()
   employeeId: number;
+
+  @IsNotEmpty()
+  lid: number;
 }
