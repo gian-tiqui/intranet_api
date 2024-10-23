@@ -130,7 +130,7 @@ export class PostService {
           title: createPostDto.title,
           message: createPostDto.message,
           imageLocation: imageLocation,
-          public: Boolean(createPostDto.public === 'public' ? true : false),
+          public: createPostDto.public === 'public' ? true : false,
         },
       });
 

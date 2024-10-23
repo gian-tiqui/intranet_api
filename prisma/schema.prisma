@@ -11,7 +11,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL")
 }
 model User {
   id             Int      @id @default(autoincrement())
@@ -34,12 +34,22 @@ model User {
   refreshToken   String?  @unique
   deptId         Int
   employeeId     Int? @unique
+  lid  Int      
 
   notifications  Notification[]
   posts          Post[]
   comments       Comment[]
   postReads      PostReader[] 
   department     Department   @relation(fields: [deptId], references: [deptId])
+  editLogs       EditLogs[]
+  employeeLevel  EmployeeLevel @relation(fields: [lid], references: [lid])
+}
+
+model EmployeeLevel {
+  lid Int @id @default(autoincrement())
+  level String
+
+  users           User[] 
 }
 
 model Department {
@@ -65,6 +75,7 @@ model Post {
   updatedAt      DateTime @updatedAt
   edited         Boolean  @default(false)
   public         Boolean  @default(true)
+  extractedText  String?  
 
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   department     Department @relation(fields: [deptId], references: [deptId])
@@ -123,4 +134,6 @@ model EditLogs {
 
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now())
+
+  user         User @relation(fields: [id], references: [id])
 }
