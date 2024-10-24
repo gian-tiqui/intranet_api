@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ApiKeyMiddleware } from './middleware/api-key.middleware';
-import { DelayMiddleware } from './middleware/delay.middleware';
+// import { DelayMiddleware } from './middleware/delay.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -19,9 +19,9 @@ async function bootstrap() {
   });
 
   app.use(new ApiKeyMiddleware().use);
-  const nodeEnv = process.env.NODE_ENV;
+  // const nodeEnv = process.env.NODE_ENV;
 
-  if (nodeEnv === 'development') app.use(new DelayMiddleware().use);
+  // if (nodeEnv === 'development') app.use(new DelayMiddleware().use);
 
   await app.listen(PORT);
 }
