@@ -13,6 +13,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { PostReaderModule } from './post-reader/post-reader.module';
 import { MonitoringModule } from './monitoring/monitoring.module';
 import { AppController } from './app.controller';
+import { LevelModule } from './level/level.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { AppController } from './app.controller';
     NotificationModule,
     PostReaderModule,
     MonitoringModule,
+    LevelModule,
   ],
   providers: [
     {

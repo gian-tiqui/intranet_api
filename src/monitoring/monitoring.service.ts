@@ -20,6 +20,16 @@ export class MonitoringService {
           select: { departmentName: true },
         });
 
+        const posts = await this.prismaService.post.findMany({
+          where: {
+            deptId: postCount.deptId,
+          },
+          select: {
+            pid: true,
+            lid: true, // Select post level
+          },
+        });
+
         const users = await this.prismaService.user.findMany({
           where: {
             deptId: postCount.deptId,
@@ -28,6 +38,7 @@ export class MonitoringService {
             id: true,
             firstName: true,
             lastName: true,
+            lid: true, // Select user level
             postReads: {
               select: {
                 postId: true,
@@ -38,20 +49,33 @@ export class MonitoringService {
 
         const usersNotCompletedReads = users.filter((user) => {
           const readPostIds = user.postReads.map((read) => read.postId);
-          return readPostIds.length < postCount._count.pid;
+
+          const postsForUserLevel = posts.filter(
+            (post) => user.lid >= post.lid,
+          );
+
+          return readPostIds.length < postsForUserLevel.length;
         });
 
         return {
           departmentId: postCount.deptId,
           departmentName: department?.departmentName,
           postCount: postCount._count.pid,
-          users: usersNotCompletedReads.map((user) => ({
-            userId: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            readCount: user.postReads.length,
-            unreadCount: postCount._count.pid - user.postReads.length,
-          })),
+          users: usersNotCompletedReads.map((user) => {
+            const readPostIds = user.postReads.map((read) => read.postId);
+
+            const relevantPostsCount = posts.filter(
+              (post) => user.lid >= post.lid,
+            ).length;
+
+            return {
+              userId: user.id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              readCount: readPostIds.length,
+              unreadCount: relevantPostsCount - readPostIds.length,
+            };
+          }),
         };
       }),
     );

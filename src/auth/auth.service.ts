@@ -88,6 +88,7 @@ export class AuthService {
       user.lastName,
       user.email,
       user.department,
+      user.lid,
     );
 
     let refreshToken: string;
@@ -135,6 +136,7 @@ export class AuthService {
       user.lastName,
       user.email,
       user.department,
+      user.lid,
     );
 
     return { access_token: accessToken };
@@ -166,6 +168,7 @@ export class AuthService {
       deptId: number;
       departmentCode: string;
     },
+    lid: number,
   ): Promise<string> {
     return this.jwtService.signAsync({
       sub: userId,
@@ -174,6 +177,7 @@ export class AuthService {
       deptId: department.deptId,
       firstName,
       lastName,
+      lid,
     });
   }
 
