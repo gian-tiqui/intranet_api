@@ -47,8 +47,10 @@ export class PostController {
     @Query('search') search: string,
     @Query('public') _public: boolean,
     @Query('userIdComment') userIdComment: number,
+    @Query('lid') lid: number,
   ) {
     return this.postService.findAll(
+      lid,
       userId,
       deptId,
       message,
@@ -99,10 +101,6 @@ export class PostController {
     @Body() createPostDto: CreatePostDto,
     @UploadedFile() memoFile: Express.Multer.File,
   ) {
-    if (!memoFile) {
-      throw new Error('Memo file is required');
-    }
-
     return this.postService.create(createPostDto, memoFile);
   }
 

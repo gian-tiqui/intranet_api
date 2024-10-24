@@ -49,7 +49,8 @@ model EmployeeLevel {
   lid Int @id @default(autoincrement())
   level String
 
-  users           User[] 
+  users           User[]
+  posts           Post[]
 }
 
 model Department {
@@ -76,7 +77,9 @@ model Post {
   edited         Boolean  @default(false)
   public         Boolean  @default(true)
   extractedText  String?  
+  lid            Int      
 
+  employeeLevel  EmployeeLevel @relation(fields: [lid], references: [lid])
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   department     Department @relation(fields: [deptId], references: [deptId])
   comments       Comment[]

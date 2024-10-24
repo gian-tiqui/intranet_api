@@ -15,4 +15,7 @@ export class CreatePostDto {
 
   @IsNotEmpty()
   public: string;
+
+  @IsNotEmpty()
+  lid: number;
 }

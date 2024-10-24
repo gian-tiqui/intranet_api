@@ -21,6 +21,7 @@ export class PostService {
 
   // This method returns all the posts and can also be filtered if the following query parameters are filled
   async findAll(
+    lid: number,
     userId?: number,
     deptId?: number,
     message?: string,
@@ -36,16 +37,17 @@ export class PostService {
 
     return this.prismaService.post.findMany({
       where: {
-        ...(search && {
-          title: { contains: search },
-        }),
-        ...(deptId && { deptId: iDeptId }),
-        ...(userId && { userId: iUserId }),
-        ...(message && { message: { contains: message || search } }),
-        ...(imageLocation && {
-          imageLocation: { contains: imageLocation },
-        }),
-        ...(_public && { public: Boolean(pub) }),
+        AND: [
+          { lid: { lte: Number(lid) } },
+          ...(search ? [{ title: { contains: search } }] : []),
+          ...(deptId ? [{ deptId: iDeptId }] : []),
+          ...(userId ? [{ userId: iUserId }] : []),
+          ...(message ? [{ message: { contains: message || search } }] : []),
+          ...(imageLocation
+            ? [{ imageLocation: { contains: imageLocation } }]
+            : []),
+          ...(_public ? [{ public: Boolean(pub) }] : []),
+        ],
       },
       include: {
         user: true,
@@ -131,6 +133,7 @@ export class PostService {
           message: createPostDto.message,
           imageLocation: imageLocation,
           public: createPostDto.public === 'public' ? true : false,
+          lid: Number(createPostDto.lid),
         },
       });
 
@@ -154,7 +157,6 @@ export class PostService {
     newFile?: Express.Multer.File,
   ) {
     const id = Number(postId);
-    console.log(updatePostDto.public);
 
     if (typeof id !== 'number')
       throw new BadRequestException('ID must be a number');
@@ -173,6 +175,7 @@ export class PostService {
       title: updatePostDto?.title,
       public: Boolean(updatePostDto?.public === 'public' ? true : false),
       deptId: Number(updatePostDto?.deptId),
+      lid: Number(updatePostDto.lid),
     };
 
     if (newFile) {

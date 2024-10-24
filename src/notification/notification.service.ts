@@ -10,8 +10,14 @@ export class NotificationService {
   constructor(private prismaService: PrismaService) {}
 
   async getUnreadPosts(userId: number, deptId: number) {
+    const user = await this.prismaService.user.findFirst({
+      where: { id: Number(userId) },
+      select: { lid: true },
+    });
     const departmentPosts = await this.prismaService.post.findMany({
-      where: { deptId: Number(deptId) },
+      where: {
+        AND: [{ deptId: Number(deptId), lid: { lte: Number(user.lid) } }],
+      },
       select: {
         deptId: true,
         title: true,
@@ -46,11 +52,15 @@ export class NotificationService {
       where: {
         id: Number(userId),
       },
-      select: { postReads: true },
+      select: { postReads: true, lid: true },
     });
 
     const deptPostCounts = await this.prismaService.post.findMany({
-      where: { deptId: Number(deptId) },
+      where: {
+        AND: [
+          { deptId: Number(deptId), lid: { lte: Number(userPostReads.lid) } },
+        ],
+      },
     });
 
     // console.log(userPostReads.postReads.length, 'user reads');
@@ -81,9 +91,19 @@ export class NotificationService {
   }
 
   // Fetch all notifications
-  async findAll(userId?: number, isRead?: boolean, deptId?: number) {
+  async findAll(
+    lid: number,
+    userId?: number,
+    isRead?: boolean,
+    deptId?: number,
+  ) {
     return await this.prismaService.notification.findMany({
       where: {
+        department: {
+          posts: {
+            every: { lid: { lte: Number(lid) } },
+          },
+        },
         ...(userId && { userId: Number(userId) }),
         ...(isRead && { isRead: isRead }),
         ...(deptId && { deptId: Number(deptId) }),

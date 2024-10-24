@@ -15,4 +15,7 @@ export class UpdatePostDto {
 
   @IsNotEmpty()
   deptId: number;
+
+  @IsNotEmpty()
+  lid: number;
 }
