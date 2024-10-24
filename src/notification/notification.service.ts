@@ -14,6 +14,7 @@ export class NotificationService {
       where: { id: Number(userId) },
       select: { lid: true },
     });
+
     const departmentPosts = await this.prismaService.post.findMany({
       where: {
         AND: [{ deptId: Number(deptId), lid: { lte: Number(user.lid) } }],
@@ -100,17 +101,13 @@ export class NotificationService {
     return await this.prismaService.notification.findMany({
       where: {
         user: {
-          lid: { lte: lid },
+          lid: { lte: Number(lid) },
         },
 
         ...(userId && { userId: Number(userId) }),
         ...(isRead !== undefined && { isRead: isRead }),
         ...(deptId && { deptId: Number(deptId) }),
-        ...(lid && {
-          post: {
-            lid: { lte: lid },
-          },
-        }),
+        ...(lid && {}),
       },
 
       orderBy: { createdAt: 'desc' },
