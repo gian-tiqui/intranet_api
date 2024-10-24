@@ -84,6 +84,7 @@ model Post {
   department     Department @relation(fields: [deptId], references: [deptId])
   comments       Comment[]
   readers        PostReader[] 
+  notifications  Notification[]
 }
 
 model PostReader {
@@ -126,6 +127,7 @@ model Notification {
   isRead      Boolean   @default(false)
   createdAt   DateTime  @default(now())
   
+  post        Post?     @relation(fields: [postId], references: [pid]) 
   user        User      @relation(fields: [userId], references: [id])
   department  Department?  @relation(fields: [deptId], references: [deptId])
 }
