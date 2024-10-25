@@ -42,7 +42,7 @@ export class AuthController {
   // Refresh token removal in the user data endpoint
   @Post('logout')
   @RateLimit({
-    keyPrefix: 'sign-in',
+    keyPrefix: 'logout',
     points: LOGOUT_LIMIT,
     duration: 60,
     errorMessage: 'Please wait before logging in again.',

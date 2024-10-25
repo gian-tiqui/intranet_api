@@ -33,7 +33,7 @@ export class PostController {
 
   @Get('admin')
   @RateLimit({
-    keyPrefix: 'get_posts',
+    keyPrefix: 'get_posts_for_admin',
     points: FIND_ALL_POINTS,
     duration: 60,
     errorMessage: 'Please wait before posting again.',
@@ -78,7 +78,7 @@ export class PostController {
 
   @Get('level/:lid')
   @RateLimit({
-    keyPrefix: 'get_post_by_id',
+    keyPrefix: 'get_post_by_level_and_id',
     points: FIND_BY_ID_POINTS,
     duration: 60,
     errorMessage: 'Please wait before posting again.',

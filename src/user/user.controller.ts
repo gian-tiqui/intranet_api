@@ -87,7 +87,7 @@ export class UserController {
   }
 
   @RateLimit({
-    keyPrefix: 'change_user_password',
+    keyPrefix: 'get_user_history',
     points: 50,
     duration: 60,
     errorMessage: 'Please wait before posting again.',
