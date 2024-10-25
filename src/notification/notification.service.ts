@@ -107,7 +107,7 @@ export class NotificationService {
         ...(userId && { userId: Number(userId) }),
         ...(isRead !== undefined && { isRead: isRead }),
         ...(deptId && { deptId: Number(deptId) }),
-        ...(lid && {}),
+        ...(lid && { post: { lid: { lte: Number(lid) } } }),
       },
 
       orderBy: { createdAt: 'desc' },

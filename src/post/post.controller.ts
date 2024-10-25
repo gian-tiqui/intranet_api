@@ -31,6 +31,17 @@ const DELETE_BY_ID_POINTS = 10;
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @Get('admin')
+  @RateLimit({
+    keyPrefix: 'get_posts',
+    points: FIND_ALL_POINTS,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
+  findPostsForAdmin() {
+    return this.postService.findPostsForAdmin();
+  }
+
   // This endpoint returns the filtered posts [filters are blank by default and will return all of the posts]
   @Get()
   @RateLimit({
@@ -59,6 +70,17 @@ export class PostController {
       _public,
       userIdComment,
     );
+  }
+
+  @Get('level/:lid')
+  @RateLimit({
+    keyPrefix: 'get_post_by_id',
+    points: FIND_BY_ID_POINTS,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
+  findManyByLid(@Param('lid') lid: number, @Query('deptId') deptId: number) {
+    return this.postService.findManyByLid(lid, deptId);
   }
 
   // This endpoint returns the post with the given id
