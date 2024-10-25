@@ -51,16 +51,16 @@ export class PostController {
     errorMessage: 'Please wait before posting again.',
   })
   findAll(
-    @Query('userId') userId: number,
-    @Query('deptId') deptId: number,
-    @Query('message') message: string,
-    @Query('imageLocation') imageLocation: string,
-    @Query('search') search: string,
-    @Query('public') _public: boolean,
-    @Query('userIdComment') userIdComment: number,
+    @Query('userId') userId: number = null, // Default to null or appropriate value
+    @Query('deptId') deptId: number = null,
+    @Query('message') message: string = null,
+    @Query('imageLocation') imageLocation: string = null,
+    @Query('search') search: string = '',
+    @Query('public') _public: boolean = true,
+    @Query('userIdComment') userIdComment: number = null,
     @Query('lid') lid: number,
-    @Query('offset') offset: number,
-    @Query('limit') limit: number,
+    @Query('offset') offset: number = 0,
+    @Query('limit') limit: number = 10,
   ) {
     return this.postService.findAll(
       lid,

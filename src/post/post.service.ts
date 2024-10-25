@@ -45,6 +45,10 @@ export class PostService {
 
     return this.prismaService.post.findMany({
       where: {
+        title: {
+          contains: search.toLowerCase(),
+          mode: 'insensitive',
+        },
         AND: [
           { lid: { lte: Number(lid) } },
           ...(search ? [{ title: { contains: search } }] : []),
@@ -66,8 +70,8 @@ export class PostService {
         department: true,
       },
       orderBy: { createdAt: 'desc' },
-      skip: Number(offset) ?? 0,
-      take: Number(limit) ?? 10,
+      skip: Number(offset) ? Number(offset) : 0,
+      take: Number(limit) ? Number(limit) : 10,
     });
   }
 
