@@ -12,6 +12,7 @@ import {
 import { NotificationService } from './notification.service';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { ReadNotifDto } from './dto/read-notif.dto';
+import { RateLimit } from 'nestjs-rate-limiter';
 
 @UseGuards(JwtAuthGuard)
 @Controller('notification')
@@ -34,6 +35,12 @@ export class NotificationController {
     );
   }
 
+  @RateLimit({
+    keyPrefix: 'get_post_by_id',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before posting again.',
+  })
   @Get()
   findAll(
     @Query('lid') lid: number,

@@ -19,6 +19,12 @@ export class PostService {
   unlinkAsync = promisify(unlink);
   renameAsync = promisify(rename);
 
+  async findPostsForAdmin() {
+    return this.prismaService.post.findMany({
+      include: { department: true, user: true },
+    });
+  }
+
   // This method returns all the posts and can also be filtered if the following query parameters are filled
   async findAll(
     lid: number,
@@ -58,6 +64,15 @@ export class PostService {
         department: true,
       },
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findManyByLid(lid: number, deptId: number) {
+    return this.prismaService.post.findMany({
+      where: {
+        lid: Number(lid),
+        deptId: Number(deptId),
+      },
     });
   }
 
