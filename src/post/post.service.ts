@@ -45,7 +45,7 @@ export class PostService {
 
     return this.prismaService.post.findMany({
       where: {
-        OR: [
+        AND: [
           { lid: { lte: Number(lid) } },
           ...(search ? [{ title: { contains: search } }] : []),
           ...(deptId ? [{ deptId: iDeptId }] : []),
