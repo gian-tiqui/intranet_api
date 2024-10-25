@@ -36,7 +36,7 @@ export class NotificationController {
   }
 
   @RateLimit({
-    keyPrefix: 'get_post_by_id',
+    keyPrefix: 'find_all_notifications',
     points: 50,
     duration: 60,
     errorMessage: 'Please wait before posting again.',
