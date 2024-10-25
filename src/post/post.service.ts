@@ -35,6 +35,8 @@ export class PostService {
     search?: string,
     _public?: boolean,
     userIdComment?: number,
+    offset?: number,
+    limit?: number,
   ) {
     const iDeptId = Number(deptId);
     const iUserId = Number(userId);
@@ -43,7 +45,7 @@ export class PostService {
 
     return this.prismaService.post.findMany({
       where: {
-        AND: [
+        OR: [
           { lid: { lte: Number(lid) } },
           ...(search ? [{ title: { contains: search } }] : []),
           ...(deptId ? [{ deptId: iDeptId }] : []),
@@ -64,6 +66,8 @@ export class PostService {
         department: true,
       },
       orderBy: { createdAt: 'desc' },
+      skip: Number(offset) ?? 0,
+      take: Number(limit) ?? 10,
     });
   }
 

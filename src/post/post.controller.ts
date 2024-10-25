@@ -59,6 +59,8 @@ export class PostController {
     @Query('public') _public: boolean,
     @Query('userIdComment') userIdComment: number,
     @Query('lid') lid: number,
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
   ) {
     return this.postService.findAll(
       lid,
@@ -69,6 +71,8 @@ export class PostController {
       search,
       _public,
       userIdComment,
+      offset,
+      limit,
     );
   }
 
