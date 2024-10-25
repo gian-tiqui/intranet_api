@@ -6,4 +6,22 @@ services:
       - '8081:8081'
     environment:
       PORT: 8081
-      DATABASE_URL: mysql://root:@host.docker.internal:3306/db_intranet
+      DATABASE_URL: postgres://postgres:boss%3Fbossing%21@postgres:5432/db_intranet
+    depends_on:
+      - postgres
+    command: >
+      sh -c "npx prisma migrate deploy && npm run start:prod"
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: boss?bossing!
+      POSTGRES_DB: db_intranet
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
