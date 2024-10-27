@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -6,15 +6,17 @@ export class MonitoringService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async checkReadStatus(userId: number, postId: number) {
-    //meow
     const read = await this.prismaService.postReader.findFirst({
       where: { AND: [{ userId: Number(userId) }, { postId: Number(postId) }] },
     });
 
-    if (!read) throw new NotFoundException('User did not read this post yet');
+    if (!read)
+      return {
+        message: 'Unread',
+      };
 
     return {
-      message: 'Post read by the user',
+      message: 'Read',
     };
   }
 
