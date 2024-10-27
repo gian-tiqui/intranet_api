@@ -5,6 +5,21 @@ import { PrismaService } from '../prisma/prisma.service';
 export class MonitoringService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async checkReadStatus(userId: number, postId: number) {
+    const read = await this.prismaService.postReader.findFirst({
+      where: { AND: [{ userId: Number(userId) }, { postId: Number(postId) }] },
+    });
+
+    if (!read)
+      return {
+        message: 'Unread',
+      };
+
+    return {
+      message: 'Read',
+    };
+  }
+
   async getUsersWithIncompleteReads() {
     const postCounts = await this.prismaService.post.groupBy({
       by: ['deptId'],
