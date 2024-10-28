@@ -48,7 +48,7 @@ export class PostService {
           mode: 'insensitive',
         },
         AND: [
-          { lid: { lte: Number(lid) } },
+          ...(lid ? [{ lid: { lte: Number(lid[0]) } }] : []),
           ...(search ? [{ title: { contains: search } }] : []),
           ...(deptId ? [{ deptId: iDeptId }] : []),
           ...(userId ? [{ userId: iUserId }] : []),
