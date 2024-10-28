@@ -28,25 +28,23 @@ export class PostService {
   // This method returns all the posts and can also be filtered if the following query parameters are filled
   async findAll(
     lid: number,
-    userId?: number,
-    deptId?: number,
-    message?: string,
-    imageLocation?: string,
-    search?: string,
-    _public?: boolean,
-    userIdComment?: number,
-    offset?: number,
-    limit?: number,
+    userId: number | undefined = undefined,
+    deptId: number | undefined = undefined,
+    message: string | undefined = undefined,
+    imageLocation: string | undefined = undefined,
+    search: string | undefined = undefined,
+    _public: string | undefined = undefined,
+    userIdComment: number | undefined = undefined,
+    offset: number = 0,
+    limit: number = 10,
   ) {
-    const iDeptId = Number(deptId);
-    const iUserId = Number(userId);
-
-    const pub = String(_public) === 'true' ? 1 : 0;
+    const iDeptId = deptId ? Number(deptId) : undefined;
+    const iUserId = userId ? Number(userId) : undefined;
 
     return this.prismaService.post.findMany({
       where: {
         title: {
-          contains: search.toLowerCase(),
+          contains: search ? search.toLowerCase() : '',
           mode: 'insensitive',
         },
         AND: [
@@ -54,24 +52,28 @@ export class PostService {
           ...(search ? [{ title: { contains: search } }] : []),
           ...(deptId ? [{ deptId: iDeptId }] : []),
           ...(userId ? [{ userId: iUserId }] : []),
-          ...(message ? [{ message: { contains: message || search } }] : []),
+          ...(message ? [{ message: { contains: message } }] : []),
           ...(imageLocation
             ? [{ imageLocation: { contains: imageLocation } }]
             : []),
-          ...(_public ? [{ public: Boolean(pub) }] : []),
+          ...(_public
+            ? [{ public: Boolean(_public === 'true' ? true : false) }]
+            : []),
         ],
       },
       include: {
         user: true,
         comments: {
           include: { replies: true, user: true },
-          where: { ...(userIdComment && { userId: Number(userIdComment) }) },
+          where: {
+            ...(userIdComment ? { userId: Number(userIdComment) } : {}),
+          },
         },
         department: true,
       },
       orderBy: { createdAt: 'desc' },
-      skip: Number(offset) ? Number(offset) : 0,
-      take: Number(limit) ? Number(limit) : 10,
+      skip: offset,
+      take: limit,
     });
   }
 
