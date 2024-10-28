@@ -56,7 +56,7 @@ export class PostController {
     @Query('message') message: string = null,
     @Query('imageLocation') imageLocation: string = null,
     @Query('search') search: string = '',
-    @Query('public') _public: boolean = true,
+    @Query('public') _public: string = undefined,
     @Query('userIdComment') userIdComment: number = null,
     @Query('lid') lid: number,
     @Query('offset') offset: number = 0,
