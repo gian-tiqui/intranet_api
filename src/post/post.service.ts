@@ -37,29 +37,32 @@ export class PostService {
     userIdComment: number | undefined = undefined,
     offset: number = 0,
     limit: number = 10,
+    direction: string = 'desc',
   ) {
     const iDeptId = deptId ? Number(deptId) : undefined;
     const iUserId = userId ? Number(userId) : undefined;
 
-    return this.prismaService.post.findMany({
+    const opts: any[] = [
+      ...(lid ? [{ lid: { lte: Number(lid[0]) } }] : []),
+      ...(search ? [{ title: { contains: search } }] : []),
+      ...(deptId ? [{ deptId: iDeptId }] : []),
+      ...(userId ? [{ userId: iUserId }] : []),
+      ...(message ? [{ message: { contains: message } }] : []),
+      ...(imageLocation
+        ? [{ imageLocation: { contains: imageLocation } }]
+        : []),
+      ...(_public
+        ? [{ public: Boolean(_public === 'true' ? true : false) }]
+        : []),
+    ];
+
+    const posts = await this.prismaService.post.findMany({
       where: {
         title: {
           contains: search ? search.toLowerCase() : '',
           mode: 'insensitive',
         },
-        AND: [
-          ...(lid ? [{ lid: { lte: Number(lid[0]) } }] : []),
-          ...(search ? [{ title: { contains: search } }] : []),
-          ...(deptId ? [{ deptId: iDeptId }] : []),
-          ...(userId ? [{ userId: iUserId }] : []),
-          ...(message ? [{ message: { contains: message } }] : []),
-          ...(imageLocation
-            ? [{ imageLocation: { contains: imageLocation } }]
-            : []),
-          ...(_public
-            ? [{ public: Boolean(_public === 'true' ? true : false) }]
-            : []),
-        ],
+        AND: opts,
       },
       include: {
         user: true,
@@ -71,10 +74,25 @@ export class PostService {
         },
         department: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: direction === 'desc' ? 'desc' : 'asc' },
       skip: Number(offset),
       take: Number(limit),
     });
+
+    const count = await this.prismaService.post.count({
+      where: {
+        title: {
+          contains: search ? search.toLowerCase() : '',
+          mode: 'insensitive',
+        },
+        AND: opts,
+      },
+    });
+
+    return {
+      posts,
+      count,
+    };
   }
 
   async findManyByLid(lid: number, deptId: number) {

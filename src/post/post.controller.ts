@@ -20,7 +20,7 @@ import { multerOptions } from './common/MulterOption';
 import { RateLimit } from 'nestjs-rate-limiter';
 
 const FIND_ALL_POINTS = 50;
-const FIND_BY_ID_POINTS = 50;
+const FIND_BY_ID_POINTS = 1000;
 const CREATE_POINTS = 5;
 const UPDATE_BY_ID_POINTS = 10;
 const DELETE_BY_ID_POINTS = 10;
@@ -60,7 +60,8 @@ export class PostController {
     @Query('userIdComment') userIdComment: number = null,
     @Query('lid') lid: number,
     @Query('offset') offset: number = 0,
-    @Query('limit') limit: number = 10,
+    @Query('limit') limit: number = 100,
+    @Query('direction') direction: string,
   ) {
     return this.postService.findAll(
       lid,
@@ -73,6 +74,7 @@ export class PostController {
       userIdComment,
       offset,
       limit,
+      direction,
     );
   }
 

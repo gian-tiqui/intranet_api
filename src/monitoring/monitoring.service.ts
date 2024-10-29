@@ -6,10 +6,6 @@ export class MonitoringService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async checkReadStatus(userId: number, postId: number) {
-    if (!postId)
-      return {
-        message: 'post id not supplied',
-      };
     const read = await this.prismaService.postReader.findFirst({
       where: { AND: [{ userId: Number(userId) }, { postId: Number(postId) }] },
     });
