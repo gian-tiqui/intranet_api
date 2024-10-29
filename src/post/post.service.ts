@@ -72,8 +72,8 @@ export class PostService {
         department: true,
       },
       orderBy: { createdAt: 'desc' },
-      skip: offset,
-      take: limit,
+      skip: Number(offset),
+      take: Number(limit),
     });
   }
 

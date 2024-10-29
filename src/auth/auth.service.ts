@@ -178,6 +178,7 @@ export class AuthService {
       firstName,
       lastName,
       lid,
+      departmentName: department.departmentName,
     });
   }
 
