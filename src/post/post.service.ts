@@ -19,6 +19,8 @@ export class PostService {
   unlinkAsync = promisify(unlink);
   renameAsync = promisify(rename);
 
+  // hi
+
   async findPostsForAdmin() {
     return this.prismaService.post.findMany({
       include: { department: true, user: true },
