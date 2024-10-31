@@ -18,4 +18,7 @@ export class CreatePostDto {
 
   @IsNotEmpty()
   lid: number;
+
+  @IsOptional()
+  extractedText: string;
 }
