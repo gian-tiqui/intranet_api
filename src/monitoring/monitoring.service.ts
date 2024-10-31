@@ -41,7 +41,7 @@ export class MonitoringService {
           },
           select: {
             pid: true,
-            lid: true, // Select post level
+            lid: true,
           },
         });
 
@@ -53,7 +53,7 @@ export class MonitoringService {
             id: true,
             firstName: true,
             lastName: true,
-            lid: true, // Select user level
+            lid: true,
             postReads: {
               select: {
                 postId: true,

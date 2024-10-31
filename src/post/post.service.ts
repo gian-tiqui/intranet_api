@@ -23,7 +23,7 @@ export class PostService {
 
   async findPostsForAdmin() {
     return this.prismaService.post.findMany({
-      include: { department: true, user: true },
+      include: { department: true, user: true, readers: true },
     });
   }
 
@@ -64,6 +64,7 @@ export class PostService {
       },
       include: {
         user: true,
+        readers: true,
         comments: {
           include: { replies: true, user: true },
           where: {
@@ -211,6 +212,8 @@ export class PostService {
 
     if (!post) throw new NotFoundException(`Post with the id ${id} not found`);
 
+    console.log(updatePostDto.extractedText);
+
     const updatePost = {
       message: updatePostDto?.message,
       imageLocation: '',
@@ -218,6 +221,7 @@ export class PostService {
       public: Boolean(updatePostDto?.public === 'public' ? true : false),
       deptId: Number(updatePostDto?.deptId),
       lid: Number(updatePostDto.lid),
+      extractedText: updatePostDto.extractedText,
     };
 
     if (newFile) {
