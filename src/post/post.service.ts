@@ -30,7 +30,6 @@ export class PostService {
     lid: number,
     userId: number | undefined = undefined,
     deptId: number | undefined = undefined,
-    message: string | undefined = undefined,
     imageLocation: string | undefined = undefined,
     search: string | undefined = undefined,
     _public: string | undefined = undefined,
@@ -44,10 +43,11 @@ export class PostService {
 
     const opts: any[] = [
       ...(lid ? [{ lid: { lte: Number(lid[0]) } }] : []),
-      ...(search ? [{ title: { contains: search } }] : []),
+      ...(search
+        ? [{ extractedText: { contains: search.toLowerCase() } }]
+        : []),
       ...(deptId ? [{ deptId: iDeptId }] : []),
       ...(userId ? [{ userId: iUserId }] : []),
-      ...(message ? [{ message: { contains: message } }] : []),
       ...(imageLocation
         ? [{ imageLocation: { contains: imageLocation } }]
         : []),
@@ -58,10 +58,6 @@ export class PostService {
 
     const posts = await this.prismaService.post.findMany({
       where: {
-        title: {
-          contains: search ? search.toLowerCase() : '',
-          mode: 'insensitive',
-        },
         AND: opts,
       },
       include: {
