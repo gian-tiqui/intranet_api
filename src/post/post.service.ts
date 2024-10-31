@@ -177,6 +177,7 @@ export class PostService {
           imageLocation: imageLocation,
           public: createPostDto.public === 'public' ? true : false,
           lid: Number(createPostDto.lid),
+          extractedText: createPostDto.extractedText,
         },
       });
 
