@@ -53,7 +53,6 @@ export class PostController {
   findAll(
     @Query('userId') userId: number = null, // Default to null or appropriate value
     @Query('deptId') deptId: number = null,
-    @Query('message') message: string = null,
     @Query('imageLocation') imageLocation: string = null,
     @Query('search') search: string = '',
     @Query('public') _public: string = undefined,
@@ -67,7 +66,6 @@ export class PostController {
       lid,
       userId,
       deptId,
-      message,
       imageLocation,
       search,
       _public,
