@@ -21,15 +21,13 @@ export class PostService {
 
   async findPostsForAdmin() {
     return this.prismaService.post.findMany({
-      include: { department: true, user: true },
+      include: { postDepartments: true, user: true },
     });
   }
 
-  // This method returns all the posts and can also be filtered if the following query parameters are filled
   async findAll(
     lid: number,
     userId: number | undefined = undefined,
-    deptId: number | undefined = undefined,
     imageLocation: string | undefined = undefined,
     search: string | undefined = undefined,
     _public: string | undefined = undefined,
@@ -37,8 +35,8 @@ export class PostService {
     offset: number = 0,
     limit: number = 10,
     direction: string = 'desc',
+    deptId: number | undefined = undefined, // Added deptId filter
   ) {
-    const iDeptId = deptId ? Number(deptId) : undefined;
     const iUserId = userId ? Number(userId) : undefined;
 
     const opts: any[] = [
@@ -46,13 +44,15 @@ export class PostService {
       ...(search
         ? [{ extractedText: { contains: search.toLowerCase() } }]
         : []),
-      ...(deptId ? [{ deptId: iDeptId }] : []),
       ...(userId ? [{ userId: iUserId }] : []),
       ...(imageLocation
         ? [{ imageLocation: { contains: imageLocation } }]
         : []),
       ...(_public
         ? [{ public: Boolean(_public === 'true' ? true : false) }]
+        : []),
+      ...(deptId
+        ? [{ postDepartments: { some: { deptId: Number(deptId) } } }]
         : []),
     ];
 
@@ -62,13 +62,14 @@ export class PostService {
       },
       include: {
         user: true,
+        readers: true,
         comments: {
           include: { replies: true, user: true },
           where: {
             ...(userIdComment ? { userId: Number(userIdComment) } : {}),
           },
         },
-        department: true,
+        postDepartments: true,
       },
       orderBy: { createdAt: direction === 'desc' ? 'desc' : 'asc' },
       skip: Number(offset),
@@ -95,7 +96,7 @@ export class PostService {
     return this.prismaService.post.findMany({
       where: {
         lid: Number(lid),
-        deptId: Number(deptId),
+        postDepartments: { some: { deptId: Number(deptId) } },
       },
     });
   }
@@ -111,7 +112,9 @@ export class PostService {
     const post = await this.prismaService.post.findFirst({
       where: { pid: id },
       include: {
-        department: { select: { departmentName: true } },
+        postDepartments: {
+          select: { department: { select: { departmentName: true } } },
+        },
         user: { select: { firstName: true, lastName: true, createdAt: true } },
         comments: {
           where: { ...(userId && { userId: Number(userId) }) },
@@ -143,14 +146,13 @@ export class PostService {
     };
   }
 
-  // This method creates a post and uploads the picture of the memo file in the dist folder (build folder)
+  // Enhanced create method with improved error handling for file and deptIds processing
   async create(createPostDto: CreatePostDto, memoFile: Express.Multer.File) {
     try {
       let imageLocation = '';
 
       if (memoFile) {
         const postDir = path.join(__dirname, '..', '..', 'uploads', 'post');
-
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const filePath = path.join(
           postDir,
@@ -158,29 +160,36 @@ export class PostService {
         );
 
         await fs.mkdir(postDir, { recursive: true });
-
         await fs.writeFile(filePath, memoFile.buffer);
-
         imageLocation = `post/${uniqueSuffix}-${memoFile.originalname}`;
       }
 
       const post = await this.prismaService.post.create({
         data: {
           userId: Number(createPostDto.userId),
-          deptId: Number(createPostDto.deptId),
           title: createPostDto.title,
           message: createPostDto.message,
-          imageLocation: imageLocation,
-          public: createPostDto.public === 'public' ? true : false,
+          imageLocation,
+          public: createPostDto.public === 'public',
           lid: Number(createPostDto.lid),
           extractedText: createPostDto.extractedText,
         },
       });
 
+      const departmentIds = createPostDto.deptIds;
+      if (departmentIds && departmentIds.length > 0) {
+        await this.prismaService.postDepartment.createMany({
+          data: departmentIds.split(',').map((deptId) => ({
+            postId: post.pid,
+            deptId: Number(deptId),
+          })),
+        });
+      }
+
       return {
         message: 'Post created successfully',
         statusCode: 200,
-        post: { post },
+        post,
       };
     } catch (error) {
       console.error('Error creating post:', error);
@@ -191,6 +200,7 @@ export class PostService {
     }
   }
 
+  // Enhanced updateById method with improved error handling for file update and deptIds processing
   async updateById(
     postId: number,
     updatePostDto: UpdatePostDto,
@@ -198,37 +208,28 @@ export class PostService {
   ) {
     const id = Number(postId);
 
-    if (typeof id !== 'number')
+    if (typeof id !== 'number') {
       throw new BadRequestException('ID must be a number');
+    }
 
     const post = await this.prismaService.post.findFirst({
-      where: {
-        pid: id,
-      },
+      where: { pid: id },
     });
-
     if (!post) throw new NotFoundException(`Post with the id ${id} not found`);
 
     const updatePost = {
-      message: updatePostDto?.message,
-      imageLocation: '',
-      title: updatePostDto?.title,
-      public: Boolean(updatePostDto?.public === 'public' ? true : false),
-      deptId: Number(updatePostDto?.deptId),
+      message: updatePostDto.message,
+      title: updatePostDto.title,
+      public: updatePostDto.public === 'public',
       lid: Number(updatePostDto.lid),
+      imageLocation: post.imageLocation,
     };
 
     if (newFile) {
-      const oldFilePath = path.join(
-        __dirname,
-        '..',
-        '..',
-        'uploads',
-        post.imageLocation,
-      );
-
+      const oldFilePath = post.imageLocation
+        ? path.join(__dirname, '..', '..', 'uploads', post.imageLocation)
+        : null;
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-
       const newFileName = `${uniqueSuffix}-${newFile.originalname}`;
       const newFilePath = path.join(
         __dirname,
@@ -237,21 +238,16 @@ export class PostService {
       );
 
       try {
-        await this.unlinkAsync(oldFilePath);
-        console.log('Old file deleted successfully:', oldFilePath);
-      } catch (err) {
-        console.error('Error deleting old file:', err);
-      }
-
-      try {
-        await this.renameAsync(newFile.path, newFilePath);
-        console.log('New file moved successfully:', newFilePath);
+        if (oldFilePath) {
+          await this.unlinkAsync(oldFilePath);
+          console.log('Old file deleted successfully:', oldFilePath);
+        }
+        await fs.writeFile(newFilePath, newFile.buffer);
+        console.log('New file uploaded successfully:', newFilePath);
         updatePost.imageLocation = `post/${newFileName}`;
       } catch (err) {
-        console.error('Error moving new file:', err);
+        console.error('Error handling file update:', err);
       }
-    } else {
-      delete updatePost.imageLocation;
     }
 
     const updatedPost = await this.prismaService.post.update({
@@ -259,13 +255,26 @@ export class PostService {
       data: { ...updatePost, edited: true },
     });
 
+    const newDeptIds = updatePostDto.deptIds;
+    if (newDeptIds) {
+      await this.prismaService.postDepartment.deleteMany({
+        where: { postId: id },
+      });
+      await this.prismaService.postDepartment.createMany({
+        data: newDeptIds.split(',').map((deptId) => ({
+          postId: id,
+          deptId: Number(deptId),
+        })),
+      });
+    }
+
     return {
-      message: 'Post updated',
+      message: 'Post updated successfully',
       post: updatedPost,
     };
   }
 
-  // This method deletes the data by id and retrieves the file name that should be deleted in the dist (build directory)
+  // Enhanced deleteById method with improved error handling for file deletion
   async deleteById(_postId: number) {
     const postId = Number(_postId);
 
@@ -273,35 +282,33 @@ export class PostService {
       throw new BadRequestException('ID must be a number');
 
     const post = await this.prismaService.post.findFirst({
-      where: {
-        pid: postId,
-      },
+      where: { pid: postId },
     });
 
     if (!post)
       throw new NotFoundException(`Post with the id ${postId} not found`);
 
     const deletedPost = await this.prismaService.post.delete({
-      where: {
-        pid: postId,
-      },
+      where: { pid: postId },
     });
 
     const deleteFileName = deletedPost.imageLocation;
 
-    const filePath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'uploads',
-      deleteFileName,
-    );
-
-    unlink(filePath, (err) => {
-      if (err) {
+    if (deleteFileName) {
+      const filePath = path.join(
+        __dirname,
+        '..',
+        '..',
+        'uploads',
+        deleteFileName,
+      );
+      try {
+        await this.unlinkAsync(filePath);
+        console.log('File deleted successfully:', filePath);
+      } catch (err) {
         console.error('Error deleting file:', err);
       }
-    });
+    }
 
     return {
       message: 'Post deleted successfully',

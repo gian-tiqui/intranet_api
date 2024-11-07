@@ -52,7 +52,6 @@ export class PostController {
   })
   findAll(
     @Query('userId') userId: number = null, // Default to null or appropriate value
-    @Query('deptId') deptId: number = null,
     @Query('imageLocation') imageLocation: string = null,
     @Query('search') search: string = '',
     @Query('public') _public: string = undefined,
@@ -61,11 +60,11 @@ export class PostController {
     @Query('offset') offset: number = 0,
     @Query('limit') limit: number = 100,
     @Query('direction') direction: string,
+    @Query('deptId') deptId: number = null,
   ) {
     return this.postService.findAll(
       lid,
       userId,
-      deptId,
       imageLocation,
       search,
       _public,
@@ -73,6 +72,7 @@ export class PostController {
       offset,
       limit,
       direction,
+      deptId,
     );
   }
 

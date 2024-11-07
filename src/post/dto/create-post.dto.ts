@@ -8,7 +8,7 @@ export class CreatePostDto {
   title: string;
 
   @IsNotEmpty()
-  deptId: number;
+  deptIds: string;
 
   @IsOptional()
   message: string;
