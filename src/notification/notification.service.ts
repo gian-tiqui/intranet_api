@@ -17,10 +17,15 @@ export class NotificationService {
 
     const departmentPosts = await this.prismaService.post.findMany({
       where: {
-        AND: [{ deptId: Number(deptId), lid: { lte: Number(user.lid) } }],
+        AND: [
+          {
+            postDepartments: { some: { deptId: Number(deptId) } },
+            lid: { lte: Number(user.lid) },
+          },
+        ],
       },
       select: {
-        deptId: true,
+        postDepartments: true,
         title: true,
         message: true,
         createdAt: true,
@@ -50,21 +55,29 @@ export class NotificationService {
 
   async checkUserReads(userId: number, deptId: number) {
     const userPostReads = await this.prismaService.user.findFirst({
-      where: { id: Number(userId) },
+      where: {
+        id: Number(userId),
+      },
       select: { postReads: true, lid: true },
     });
 
     const deptPostCounts = await this.prismaService.post.findMany({
       where: {
         AND: [
-          { deptId: Number(deptId), lid: { lte: Number(userPostReads.lid) } },
+          {
+            postDepartments: { some: { deptId: Number(deptId) } },
+            lid: { lte: Number(userPostReads.lid) },
+          },
         ],
       },
     });
 
+    // console.log(userPostReads.postReads.length, 'user reads');
+    // console.log(deptPostCounts.length, 'dept posts');
+
     if (userPostReads.postReads.length !== deptPostCounts.length) {
       return {
-        message: `This user has not read all of the department's posts.`,
+        message: `This user have not read all of the department's post.`,
         statusCode: 200,
         readAll: false,
       };
@@ -73,14 +86,14 @@ export class NotificationService {
       deptPostCounts.length === 0
     ) {
       return {
-        message: `This department has no posts yet`,
+        message: `This department has no post yet`,
         statusCode: 200,
         readAll: true,
       };
     }
 
     return {
-      message: `This user has read all of the department's posts.`,
+      message: `This user have read all of the department's post.`,
       statusCode: 200,
       readAll: true,
     };
@@ -109,20 +122,50 @@ export class NotificationService {
     });
   }
 
+  // Fetch a single notification by ID
+  async findOneById(id: number) {
+    if (typeof id !== 'number')
+      throw new BadRequestException('ID must be a number');
+
+    const notification = await this.prismaService.notification.findFirst({
+      where: { id: Number(id) },
+    });
+
+    if (!notification) throw new NotFoundException('Notification not found');
+
+    return {
+      message: 'Notification retrieved',
+      statusCode: 200,
+      notification,
+    };
+  }
+
   // Notify about a reply on a post
   async notifyPostReply(userId: number, postId: number) {
     const post = await this.prismaService.post.findFirst({
       where: { pid: Number(postId) },
-      select: { userId: true, deptId: true },
+      select: {
+        userId: true,
+        postDepartments: {
+          select: {
+            deptId: true,
+          },
+        },
+      },
     });
 
     if (!post) throw new NotFoundException('Post not found');
+
+    const departmentId = post.postDepartments?.[0]?.deptId;
+
+    if (!departmentId)
+      throw new NotFoundException('Department not found for this post');
 
     const notificationMessage = `${await this.getUserName(userId)} commented on your post: '${await this.getPostMessage(postId)}'`;
 
     return this.createNotification(post.userId, notificationMessage, {
       postId,
-      deptId: post.deptId, // Associating deptId with notification
+      deptId: departmentId,
     });
   }
 
@@ -132,17 +175,35 @@ export class NotificationService {
       where: { cid: Number(commentId) },
       select: {
         userId: true,
-        parentComment: { select: { post: { select: { deptId: true } } } },
+        parentComment: {
+          select: {
+            post: {
+              select: {
+                postDepartments: {
+                  select: {
+                    deptId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 
     if (!comment) throw new NotFoundException('Comment not found');
 
+    const departmentId =
+      comment.parentComment.post.postDepartments?.[0]?.deptId;
+
+    if (!departmentId)
+      throw new NotFoundException('Department not found for this post');
+
     const notificationMessage = `${await this.getUserName(userId)} replied to your comment: '${await this.getCommentMessage(commentId)}'`;
 
     return this.createNotification(comment.userId, notificationMessage, {
       commentId,
-      deptId: comment.parentComment.post.deptId, // Associating deptId with notification
+      deptId: departmentId,
     });
   }
 
