@@ -6,28 +6,23 @@ export class MonitoringService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async checkReadStatus(userId: number, postId: number) {
+    if (!postId) return;
     const read = await this.prismaService.postReader.findFirst({
       where: { AND: [{ userId: Number(userId) }, { postId: Number(postId) }] },
     });
 
-    if (!read)
-      return {
-        message: 'Unread',
-      };
-
     return {
-      message: 'Read',
+      message: read ? 'Read' : 'Unread',
     };
   }
 
   async getUsersWithIncompleteReads() {
-    const postCounts = await this.prismaService.post.groupBy({
+    const postCounts = await this.prismaService.postDepartment.groupBy({
       by: ['deptId'],
       _count: {
-        pid: true,
+        postId: true,
       },
     });
-
     const usersWithIncompleteReads = await Promise.all(
       postCounts.map(async (postCount) => {
         const department = await this.prismaService.department.findUnique({
@@ -35,13 +30,15 @@ export class MonitoringService {
           select: { departmentName: true },
         });
 
-        const posts = await this.prismaService.post.findMany({
-          where: {
-            deptId: postCount.deptId,
-          },
+        const posts = await this.prismaService.postDepartment.findMany({
+          where: { deptId: postCount.deptId },
           select: {
-            pid: true,
-            lid: true,
+            post: {
+              select: {
+                pid: true,
+                lid: true,
+              },
+            },
           },
         });
 
@@ -65,9 +62,9 @@ export class MonitoringService {
         const usersNotCompletedReads = users.filter((user) => {
           const readPostIds = user.postReads.map((read) => read.postId);
 
-          const postsForUserLevel = posts.filter(
-            (post) => user.lid >= post.lid,
-          );
+          const postsForUserLevel = posts
+            .map((postDep) => postDep.post)
+            .filter((post) => user.lid >= post.lid);
 
           return readPostIds.length < postsForUserLevel.length;
         });
@@ -75,13 +72,13 @@ export class MonitoringService {
         return {
           departmentId: postCount.deptId,
           departmentName: department?.departmentName,
-          postCount: postCount._count.pid,
+          postCount: postCount._count.postId,
           users: usersNotCompletedReads.map((user) => {
             const readPostIds = user.postReads.map((read) => read.postId);
 
-            const relevantPostsCount = posts.filter(
-              (post) => user.lid >= post.lid,
-            ).length;
+            const relevantPostsCount = posts
+              .map((postDep) => postDep.post)
+              .filter((post) => user.lid >= post.lid).length;
 
             return {
               userId: user.id,

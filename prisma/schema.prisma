@@ -49,37 +49,48 @@ model EmployeeLevel {
 }
 
 model Department {
-  deptId         Int      @id @default(autoincrement())
-  departmentName String   @unique
+  deptId         Int        @id @default(autoincrement())
+  departmentName String     @unique
   departmentCode String
-  posts          Post[]
-  users          User[] 
+  posts          PostDepartment[] // Reference to PostDepartment
+  users          User[]
   notifications  Notification[]
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @default(now())
 }
 
 model Post {
-  pid            Int      @id @default(autoincrement())
+  pid            Int            @id @default(autoincrement())
   userId         Int
-  deptId         Int
-  title          String?  @db.VarChar(255)
-  message        String?  @db.VarChar(255)
+  title          String?        @db.VarChar(255)
+  message        String?        @db.VarChar(255)
   imageLocation  String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  edited         Boolean  @default(false)
-  public         Boolean  @default(true)
-  extractedText  String?  
-  lid            Int      
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  edited         Boolean        @default(false)
+  public         Boolean        @default(true)
+  extractedText  String?        
+  lid            Int            
 
-  employeeLevel  EmployeeLevel @relation(fields: [lid], references: [lid])
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  department     Department @relation(fields: [deptId], references: [deptId])
+  employeeLevel  EmployeeLevel  @relation(fields: [lid], references: [lid])
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments       Comment[]
   readers        PostReader[] 
   notifications  Notification[]
+
+  postDepartments PostDepartment[] 
+}
+
+model PostDepartment {
+  id         Int      @id @default(autoincrement())
+  postId     Int
+  deptId     Int
+
+  post       Post     @relation(fields: [postId], references: [pid])
+  department Department @relation(fields: [deptId], references: [deptId])
+
+  @@unique([postId, deptId]) 
 }
 
 model PostReader {

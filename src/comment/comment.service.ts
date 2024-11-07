@@ -24,11 +24,17 @@ export class CommentService {
         ...(userId && { userId: userId }),
       },
       include: {
-        post: { include: { department: { select: { departmentName: true } } } },
         user: { select: { firstName: true, lastName: true, id: true } },
         replies: {
           include: {
             replies: true,
+          },
+        },
+        post: {
+          select: {
+            postDepartments: {
+              select: { department: { select: { departmentName: true } } },
+            },
           },
         },
       },
