@@ -50,9 +50,7 @@ export class NotificationService {
 
   async checkUserReads(userId: number, deptId: number) {
     const userPostReads = await this.prismaService.user.findFirst({
-      where: {
-        id: Number(userId),
-      },
+      where: { id: Number(userId) },
       select: { postReads: true, lid: true },
     });
 
@@ -64,12 +62,9 @@ export class NotificationService {
       },
     });
 
-    // console.log(userPostReads.postReads.length, 'user reads');
-    // console.log(deptPostCounts.length, 'dept posts');
-
     if (userPostReads.postReads.length !== deptPostCounts.length) {
       return {
-        message: `This user have not read all of the department's post.`,
+        message: `This user has not read all of the department's posts.`,
         statusCode: 200,
         readAll: false,
       };
@@ -78,14 +73,14 @@ export class NotificationService {
       deptPostCounts.length === 0
     ) {
       return {
-        message: `This department has no post yet`,
+        message: `This department has no posts yet`,
         statusCode: 200,
         readAll: true,
       };
     }
 
     return {
-      message: `This user have read all of the department's post.`,
+      message: `This user has read all of the department's posts.`,
       statusCode: 200,
       readAll: true,
     };
@@ -112,24 +107,6 @@ export class NotificationService {
 
       orderBy: { createdAt: 'desc' },
     });
-  }
-
-  // Fetch a single notification by ID
-  async findOneById(id: number) {
-    if (typeof id !== 'number')
-      throw new BadRequestException('ID must be a number');
-
-    const notification = await this.prismaService.notification.findFirst({
-      where: { id: Number(id) },
-    });
-
-    if (!notification) throw new NotFoundException('Notification not found');
-
-    return {
-      message: 'Notification retrieved',
-      statusCode: 200,
-      notification,
-    };
   }
 
   // Notify about a reply on a post
@@ -165,7 +142,7 @@ export class NotificationService {
 
     return this.createNotification(comment.userId, notificationMessage, {
       commentId,
-      deptId: comment.parentComment.post.deptId,
+      deptId: comment.parentComment.post.deptId, // Associating deptId with notification
     });
   }
 
