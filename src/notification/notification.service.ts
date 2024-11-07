@@ -17,10 +17,15 @@ export class NotificationService {
 
     const departmentPosts = await this.prismaService.post.findMany({
       where: {
-        AND: [{ deptId: Number(deptId), lid: { lte: Number(user.lid) } }],
+        AND: [
+          {
+            postDepartments: { some: { deptId: Number(deptId) } },
+            lid: { lte: Number(user.lid) },
+          },
+        ],
       },
       select: {
-        deptId: true,
+        postDepartments: true,
         title: true,
         message: true,
         createdAt: true,
@@ -59,7 +64,10 @@ export class NotificationService {
     const deptPostCounts = await this.prismaService.post.findMany({
       where: {
         AND: [
-          { deptId: Number(deptId), lid: { lte: Number(userPostReads.lid) } },
+          {
+            postDepartments: { some: { deptId: Number(deptId) } },
+            lid: { lte: Number(userPostReads.lid) },
+          },
         ],
       },
     });
@@ -136,16 +144,28 @@ export class NotificationService {
   async notifyPostReply(userId: number, postId: number) {
     const post = await this.prismaService.post.findFirst({
       where: { pid: Number(postId) },
-      select: { userId: true, deptId: true },
+      select: {
+        userId: true,
+        postDepartments: {
+          select: {
+            deptId: true,
+          },
+        },
+      },
     });
 
     if (!post) throw new NotFoundException('Post not found');
+
+    const departmentId = post.postDepartments?.[0]?.deptId;
+
+    if (!departmentId)
+      throw new NotFoundException('Department not found for this post');
 
     const notificationMessage = `${await this.getUserName(userId)} commented on your post: '${await this.getPostMessage(postId)}'`;
 
     return this.createNotification(post.userId, notificationMessage, {
       postId,
-      deptId: post.deptId, // Associating deptId with notification
+      deptId: departmentId,
     });
   }
 
@@ -155,17 +175,35 @@ export class NotificationService {
       where: { cid: Number(commentId) },
       select: {
         userId: true,
-        parentComment: { select: { post: { select: { deptId: true } } } },
+        parentComment: {
+          select: {
+            post: {
+              select: {
+                postDepartments: {
+                  select: {
+                    deptId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 
     if (!comment) throw new NotFoundException('Comment not found');
 
+    const departmentId =
+      comment.parentComment.post.postDepartments?.[0]?.deptId;
+
+    if (!departmentId)
+      throw new NotFoundException('Department not found for this post');
+
     const notificationMessage = `${await this.getUserName(userId)} replied to your comment: '${await this.getCommentMessage(commentId)}'`;
 
     return this.createNotification(comment.userId, notificationMessage, {
       commentId,
-      deptId: comment.parentComment.post.deptId,
+      deptId: departmentId,
     });
   }
 
