@@ -5,21 +5,21 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class PostDepartmentService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAssociations(postId: number, deptId: number) {
-    const found = this.prismaService.postDepartment.findFirst({
+  async findAssociations(postId: number) {
+    const deptIds = await this.prismaService.postDepartment.findMany({
       where: {
-        AND: {
-          deptId: Number(deptId),
-          postId: Number(postId),
-        },
+        postId: Number(postId),
       },
+      select: { deptId: true },
     });
 
-    const retVal = found ? 'found' : 'not found';
+    const deptIdStr = deptIds.map((deptIdObj) => deptIdObj.deptId);
+
+    const retVal = deptIdStr.join(',');
 
     return {
       statusCode: 200,
-      message: retVal,
+      deptIds: retVal,
     };
   }
 }
