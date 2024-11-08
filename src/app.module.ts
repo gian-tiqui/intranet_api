@@ -14,6 +14,7 @@ import { PostReaderModule } from './post-reader/post-reader.module';
 import { MonitoringModule } from './monitoring/monitoring.module';
 import { AppController } from './app.controller';
 import { LevelModule } from './level/level.module';
+import { PostDepartmentModule } from './post-department/post-department.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { LevelModule } from './level/level.module';
     PostReaderModule,
     MonitoringModule,
     LevelModule,
+    PostDepartmentModule,
   ],
   providers: [
     {
