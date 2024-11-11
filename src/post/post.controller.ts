@@ -161,6 +161,7 @@ export class PostController {
     @Body() updatePostDto: UpdatePostDto,
     @UploadedFile() updatedMemoFile?: Express.Multer.File,
   ) {
+    console.log(updatedMemoFile);
     return this.postService.updateById(postId, updatePostDto, updatedMemoFile);
   }
 
