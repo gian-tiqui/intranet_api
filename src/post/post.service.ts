@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -35,7 +36,7 @@ export class PostService {
     offset: number = 0,
     limit: number = 10,
     direction: string = 'desc',
-    deptId: number | undefined = undefined, // Added deptId filter
+    deptId: number | undefined = undefined,
   ) {
     const iUserId = userId ? Number(userId) : undefined;
 
@@ -201,6 +202,7 @@ export class PostService {
   }
 
   // Enhanced updateById method with improved error handling for file update and deptIds processing
+  // WHY
   async updateById(
     postId: number,
     updatePostDto: UpdatePostDto,
@@ -208,7 +210,7 @@ export class PostService {
   ) {
     const id = Number(postId);
 
-    if (typeof id !== 'number') {
+    if (isNaN(id)) {
       throw new BadRequestException('ID must be a number');
     }
 
@@ -238,15 +240,25 @@ export class PostService {
       );
 
       try {
-        if (oldFilePath) {
-          await this.unlinkAsync(oldFilePath);
+        if (
+          oldFilePath &&
+          (await fs
+            .access(oldFilePath)
+            .then(() => true)
+            .catch(() => false))
+        ) {
+          await fs.unlink(oldFilePath);
           console.log('Old file deleted successfully:', oldFilePath);
+        } else {
+          console.warn('Old file not found or already deleted:', oldFilePath);
         }
+
         await fs.writeFile(newFilePath, newFile.buffer);
         console.log('New file uploaded successfully:', newFilePath);
         updatePost.imageLocation = `post/${newFileName}`;
       } catch (err) {
         console.error('Error handling file update:', err);
+        throw new InternalServerErrorException('File update failed');
       }
     }
 
