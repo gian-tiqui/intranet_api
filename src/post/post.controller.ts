@@ -16,7 +16,6 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from './common/MulterOption';
 import { RateLimit } from 'nestjs-rate-limiter';
 
 const FIND_ALL_POINTS = 50;
@@ -135,19 +134,13 @@ export class PostController {
     FileInterceptor('newMemo', {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
-        const allowedMimeTypes = [
-          'image/jpeg',
-          'image/png',
-          'image/gif',
-          'image/jpg',
-        ];
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (allowedMimeTypes.includes(file.mimetype)) {
           cb(null, true);
         } else {
           cb(new Error('Only image files are allowed'), false);
         }
       },
-      storage: multerOptions('post').storage,
     }),
   )
   @RateLimit({
@@ -161,7 +154,6 @@ export class PostController {
     @Body() updatePostDto: UpdatePostDto,
     @UploadedFile() updatedMemoFile?: Express.Multer.File,
   ) {
-    console.log(updatedMemoFile);
     return this.postService.updateById(postId, updatePostDto, updatedMemoFile);
   }
 
