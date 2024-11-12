@@ -22,7 +22,7 @@ export class PostService {
 
   async findPostsForAdmin() {
     return this.prismaService.post.findMany({
-      include: { postDepartments: true, user: true },
+      include: { postDepartments: true, user: true, readers: true },
     });
   }
 
