@@ -44,20 +44,20 @@ model EmployeeLevel {
   lid Int @id @default(autoincrement())
   level String
 
-  users           User[]
-  posts           Post[]
+  users          User[]
+  posts          Post[]
 }
 
 model Department {
-  deptId         Int        @id @default(autoincrement())
-  departmentName String     @unique
+  deptId         Int            @id @default(autoincrement())
+  departmentName String         @unique
   departmentCode String
-  posts          PostDepartment[] // Reference to PostDepartment
+  posts          PostDepartment[] 
   users          User[]
   notifications  Notification[]
 
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @default(now())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now())
 }
 
 model Post {
@@ -83,9 +83,9 @@ model Post {
 }
 
 model PostDepartment {
-  id         Int      @id @default(autoincrement())
-  postId     Int
-  deptId     Int
+  id             Int      @id @default(autoincrement())
+  postId         Int
+  deptId         Int
 
   post       Post     @relation(fields: [postId], references: [pid])
   department Department @relation(fields: [deptId], references: [deptId])
@@ -94,31 +94,31 @@ model PostDepartment {
 }
 
 model PostReader {
-  id        Int      @id @default(autoincrement())
-  postId    Int
-  userId    Int
-  readAt    DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  postId          Int
+  userId          Int
+  readAt          DateTime @default(now())
 
-  post      Post     @relation(fields: [postId], references: [pid], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post            Post     @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId])
 }
 
 model Comment {
-  cid            Int      @id @default(autoincrement())
-  userId         Int
-  postId         Int?
-  parentId       Int?
-  message        String   @db.VarChar(255)
-  imageLocation  String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  cid             Int      @id @default(autoincrement())
+  userId          Int
+  postId          Int?
+  parentId        Int?
+  message         String   @db.VarChar(255)
+  imageLocation   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post           Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade)
-  parentComment  Comment? @relation("CommentReplies", fields: [parentId], references: [cid])
-  replies        Comment[] @relation("CommentReplies")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post            Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  parentComment   Comment? @relation("CommentReplies", fields: [parentId], references: [cid])
+  replies         Comment[] @relation("CommentReplies")
 
   @@index([parentId])
 }
@@ -140,11 +140,21 @@ model Notification {
 
 model EditLogs {
   id           Int        @id @default(autoincrement())
-  previousData String
+  log_a        String
+  log_b        String
+  log_c        String
+  log_d        String
   updatedBy    Int
-
+  editTypeId   Int
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now())
 
   user         User @relation(fields: [id], references: [id])
+  editType     EditType @relation(fields: [editTypeId], references: [id])
+}
+
+model EditType {
+  id           Int         @id @default(autoincrement())
+  type         String      
+  editLogs     EditLogs[]
 }
