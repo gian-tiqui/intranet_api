@@ -12,10 +12,14 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { promises as fs, unlink, rename } from 'fs';
 import { promisify } from 'util';
 import * as path from 'path';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class PostService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private notificationService: NotificationService,
+  ) {}
 
   unlinkAsync = promisify(unlink);
   renameAsync = promisify(rename);
@@ -273,12 +277,26 @@ export class PostService {
       await this.prismaService.postDepartment.deleteMany({
         where: { postId: id },
       });
+
+      await this.prismaService.notification.deleteMany({
+        where: { postId: id },
+      });
+
       await this.prismaService.postDepartment.createMany({
         data: newDeptIds.split(',').map((deptId) => ({
           postId: id,
           deptId: Number(deptId),
         })),
       });
+
+      newDeptIds
+        .split(',')
+        .map((deptId) =>
+          this.notificationService.notifyDepartmentOfNewPost(
+            Number(deptId),
+            id,
+          ),
+        );
     }
 
     return {
