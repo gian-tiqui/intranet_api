@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,17 +12,21 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { promises as fs, unlink, rename } from 'fs';
 import { promisify } from 'util';
 import * as path from 'path';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class PostService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private notificationService: NotificationService,
+  ) {}
 
   unlinkAsync = promisify(unlink);
   renameAsync = promisify(rename);
 
   async findPostsForAdmin() {
     return this.prismaService.post.findMany({
-      include: { postDepartments: true, user: true },
+      include: { postDepartments: true, user: true, readers: true },
     });
   }
 
@@ -35,7 +40,7 @@ export class PostService {
     offset: number = 0,
     limit: number = 10,
     direction: string = 'desc',
-    deptId: number | undefined = undefined, // Added deptId filter
+    deptId: number | undefined = undefined,
   ) {
     const iUserId = userId ? Number(userId) : undefined;
 
@@ -201,6 +206,7 @@ export class PostService {
   }
 
   // Enhanced updateById method with improved error handling for file update and deptIds processing
+  // WHY
   async updateById(
     postId: number,
     updatePostDto: UpdatePostDto,
@@ -208,7 +214,7 @@ export class PostService {
   ) {
     const id = Number(postId);
 
-    if (typeof id !== 'number') {
+    if (isNaN(id)) {
       throw new BadRequestException('ID must be a number');
     }
 
@@ -223,6 +229,7 @@ export class PostService {
       public: updatePostDto.public === 'public',
       lid: Number(updatePostDto.lid),
       imageLocation: post.imageLocation,
+      extractedText: updatePostDto.extractedText,
     };
 
     if (newFile) {
@@ -238,15 +245,25 @@ export class PostService {
       );
 
       try {
-        if (oldFilePath) {
-          await this.unlinkAsync(oldFilePath);
+        if (
+          oldFilePath &&
+          (await fs
+            .access(oldFilePath)
+            .then(() => true)
+            .catch(() => false))
+        ) {
+          await fs.unlink(oldFilePath);
           console.log('Old file deleted successfully:', oldFilePath);
+        } else {
+          console.warn('Old file not found or already deleted:', oldFilePath);
         }
+
         await fs.writeFile(newFilePath, newFile.buffer);
         console.log('New file uploaded successfully:', newFilePath);
         updatePost.imageLocation = `post/${newFileName}`;
       } catch (err) {
         console.error('Error handling file update:', err);
+        throw new InternalServerErrorException('File update failed');
       }
     }
 
@@ -260,12 +277,26 @@ export class PostService {
       await this.prismaService.postDepartment.deleteMany({
         where: { postId: id },
       });
+
+      await this.prismaService.notification.deleteMany({
+        where: { postId: id },
+      });
+
       await this.prismaService.postDepartment.createMany({
         data: newDeptIds.split(',').map((deptId) => ({
           postId: id,
           deptId: Number(deptId),
         })),
       });
+
+      newDeptIds
+        .split(',')
+        .map((deptId) =>
+          this.notificationService.notifyDepartmentOfNewPost(
+            Number(deptId),
+            id,
+          ),
+        );
     }
 
     return {
