@@ -225,6 +225,7 @@ export class PostService {
       public: updatePostDto.public === 'public',
       lid: Number(updatePostDto.lid),
       imageLocation: post.imageLocation,
+      extractedText: updatePostDto.extractedText,
     };
 
     if (newFile) {

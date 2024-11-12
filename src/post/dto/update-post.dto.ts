@@ -18,4 +18,7 @@ export class UpdatePostDto {
 
   @IsNotEmpty()
   lid: number;
+
+  @IsOptional()
+  extractedText: string;
 }
