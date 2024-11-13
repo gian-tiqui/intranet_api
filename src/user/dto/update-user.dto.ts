@@ -1,4 +1,4 @@
-import { IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdateUserDTO {
   @IsOptional()
@@ -42,4 +42,7 @@ export class UpdateUserDTO {
 
   @IsOptional()
   deptId?: number;
+
+  @IsNotEmpty()
+  updatedBy: string;
 }
