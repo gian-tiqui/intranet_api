@@ -3,6 +3,7 @@ import {
   ConflictException,
   UnauthorizedException,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -21,8 +22,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  // Create user upon successful validation and hash the password using the mechanism of argon package
-  async register(registerDto: RegisterDto) {
+  async verify(employeeId: number) {
     let employeeIds: string[];
 
     try {
@@ -35,8 +35,18 @@ export class AuthService {
       console.error(error);
     }
 
-    console.log(employeeIds);
+    if (employeeIds.includes(String(employeeId))) {
+      return {
+        message: 'ID Found',
+        statusCode: 200,
+      };
+    }
 
+    throw new NotFoundException(`ID ${employeeId} not found.`);
+  }
+
+  // Create user upon successful validation and hash the password using the mechanism of argon package
+  async register(registerDto: RegisterDto) {
     const hashedPassword = await argon.hash(registerDto.password);
 
     try {
