@@ -21,4 +21,7 @@ export class UpdatePostDto {
 
   @IsOptional()
   extractedText: string;
+
+  @IsNotEmpty()
+  updatedBy: number;
 }

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -99,6 +100,19 @@ export class CommentService {
         cid: id,
       },
     });
+
+    try {
+      await this.prismaService.editLogs.create({
+        data: {
+          editTypeId: 2,
+          log: { ...comment },
+          updatedBy: Number(updateCommentDto.updatedBy),
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new ConflictException(error);
+    }
 
     if (!comment)
       throw new NotFoundException(`Comment with the id ${id} not found`);
