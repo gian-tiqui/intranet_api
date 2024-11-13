@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL") // uncomment this if you want to use supabase
 }
 
 model User {
@@ -140,10 +140,7 @@ model Notification {
 
 model EditLogs {
   id                 Int        @id @default(autoincrement())
-  log_title          String
-  log_description    String
-  log_c              String
-  log_d              String
+  log                Json
   updatedBy          Int
   editTypeId         Int
   createdAt          DateTime   @default(now())
