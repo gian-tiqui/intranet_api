@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async verify(employeeId: number) {
@@ -36,6 +38,15 @@ export class AuthService {
     }
 
     if (employeeIds.includes(String(employeeId))) {
+      await this.mailerService.sendMail({
+        to: 'gian.tiqui.dev@gmail.com',
+        subject: 'Welcome to Our Service',
+        template: null,
+        context: {
+          name: 'meow',
+        },
+      });
+
       return {
         message: 'ID Found',
         statusCode: 200,

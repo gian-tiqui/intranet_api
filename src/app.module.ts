@@ -16,6 +16,8 @@ import { AppController } from './app.controller';
 import { LevelModule } from './level/level.module';
 import { PostDepartmentModule } from './post-department/post-department.module';
 import { EditLogsModule } from './edit-logs/edit-logs.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -25,6 +27,27 @@ import { EditLogsModule } from './edit-logs/edit-logs.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.example.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: 'your-email@example.com',
+          pass: 'your-password',
+        },
+      },
+      defaults: {
+        from: '"No Reply" <no-reply@example.com>',
+      },
+      template: {
+        dir: join(__dirname, 'templates'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
     }),
     RateLimiterModule,
     AuthModule,
