@@ -109,7 +109,7 @@ model Comment {
   cid                Int      @id @default(autoincrement())
   userId             Int
   postId             Int?
-  parentId           Int?
+  parentId           Int? 
   message            String   @db.VarChar(255)
   imageLocation      String?
   createdAt          DateTime @default(now())
