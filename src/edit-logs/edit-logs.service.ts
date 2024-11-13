@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateEditLogDto } from './dto/update-edit-log.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -12,20 +11,5 @@ export class EditLogsService {
         ...(editTypeId != null && { editTypeId: Number(editTypeId) }),
       },
     });
-  }
-
-  async findOne(id: number) {
-    return await this.prismaService.editLogs.findFirst({
-      where: { id: Number(id) },
-    });
-  }
-
-  async update(id: number, updateEditLogDto: UpdateEditLogDto) {
-    console.log(updateEditLogDto);
-    return `This action updates a #${id} editLog`;
-  }
-
-  async remove(id: number) {
-    return `This action removes a #${id} editLog`;
   }
 }

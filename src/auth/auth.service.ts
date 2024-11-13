@@ -11,6 +11,7 @@ import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +23,20 @@ export class AuthService {
 
   // Create user upon successful validation and hash the password using the mechanism of argon package
   async register(registerDto: RegisterDto) {
+    let employeeIds: string[];
+
+    try {
+      const rawData = fs.readFileSync(
+        this.configService.get('EMPLOYEE_IDS_PATH'),
+        'utf-8',
+      );
+      employeeIds = JSON.parse(rawData).employeeIds;
+    } catch (error) {
+      console.error(error);
+    }
+
+    console.log(employeeIds);
+
     const hashedPassword = await argon.hash(registerDto.password);
 
     try {
