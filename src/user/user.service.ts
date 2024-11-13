@@ -96,6 +96,18 @@ export class UserService {
         await this.prismaService.editLogs.create({
           data: {
             log: { ...user },
+            editTypeId: 3,
+            updatedBy: Number(_userId),
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+
+      try {
+        await this.prismaService.editLogs.create({
+          data: {
+            log: { ...user },
             updatedBy: Number(updateUserDto.updatedBy),
             editTypeId: 3,
           },
