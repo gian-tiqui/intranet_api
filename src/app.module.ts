@@ -15,6 +15,7 @@ import { MonitoringModule } from './monitoring/monitoring.module';
 import { AppController } from './app.controller';
 import { LevelModule } from './level/level.module';
 import { PostDepartmentModule } from './post-department/post-department.module';
+import { EditLogsModule } from './edit-logs/edit-logs.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { PostDepartmentModule } from './post-department/post-department.module';
     MonitoringModule,
     LevelModule,
     PostDepartmentModule,
+    EditLogsModule,
   ],
   providers: [
     {

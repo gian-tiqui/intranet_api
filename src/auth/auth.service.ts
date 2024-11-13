@@ -3,6 +3,7 @@ import {
   ConflictException,
   UnauthorizedException,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -11,6 +12,7 @@ import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +21,29 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
+
+  async verify(employeeId: number) {
+    let employeeIds: string[];
+
+    try {
+      const rawData = fs.readFileSync(
+        this.configService.get('EMPLOYEE_IDS_PATH'),
+        'utf-8',
+      );
+      employeeIds = JSON.parse(rawData).employeeIds;
+    } catch (error) {
+      console.error(error);
+    }
+
+    if (employeeIds.includes(String(employeeId))) {
+      return {
+        message: 'ID Found',
+        statusCode: 200,
+      };
+    }
+
+    throw new NotFoundException(`ID ${employeeId} not found.`);
+  }
 
   // Create user upon successful validation and hash the password using the mechanism of argon package
   async register(registerDto: RegisterDto) {

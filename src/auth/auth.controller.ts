@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -14,6 +14,17 @@ const REFRESH_LIMIT = 50;
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Post('verify')
+  @RateLimit({
+    keyPrefix: 'verify',
+    points: REGISTER_LIMIT,
+    duration: 60,
+    errorMessage: 'Please wait before creating an account again.',
+  })
+  verify(@Query('employeeId') employeeId: number) {
+    return this.authService.verify(employeeId);
+  }
 
   // Register user endpoint
   @Post('register')
