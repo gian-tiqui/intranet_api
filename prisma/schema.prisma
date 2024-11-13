@@ -9,152 +9,152 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  email          String   @unique
-  password       String
-  firstName      String  
-  middleName     String?
-  lastName       String
-  lastNamePrefix String?
-  preferredName  String?
-  suffix         String?
-  address        String?
-  city           String?
-  state          String?
-  zipCode        Int?
-  dob            DateTime @db.Date
-  gender         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  refreshToken   String?  @unique
-  deptId         Int
-  employeeId     Int? @unique
-  lid  Int      
+  id                 Int      @id @default(autoincrement())
+  email              String   @unique
+  password           String
+  firstName          String  
+  middleName         String?
+  lastName           String
+  lastNamePrefix     String?
+  preferredName      String?
+  suffix             String?
+  address            String?
+  city               String?
+  state              String?
+  zipCode            Int?
+  dob                DateTime @db.Date
+  gender             String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  refreshToken       String?  @unique
+  deptId             Int
+  employeeId         Int? @unique
+  lid                Int      
 
-  notifications  Notification[]
-  posts          Post[]
-  comments       Comment[]
-  postReads      PostReader[] 
-  department     Department   @relation(fields: [deptId], references: [deptId])
-  editLogs       EditLogs[]
-  employeeLevel  EmployeeLevel @relation(fields: [lid], references: [lid])
+  notifications      Notification[]
+  posts              Post[]
+  comments           Comment[]
+  postReads          PostReader[] 
+  department         Department   @relation(fields: [deptId], references: [deptId])
+  editLogs           EditLogs[]
+  employeeLevel      EmployeeLevel @relation(fields: [lid], references: [lid])
 }
 
 model EmployeeLevel {
-  lid Int @id @default(autoincrement())
-  level String
+  lid                Int @id @default(autoincrement())
+  level              String
 
-  users          User[]
-  posts          Post[]
+  users              User[]
+  posts              Post[]
 }
 
 model Department {
-  deptId         Int            @id @default(autoincrement())
-  departmentName String         @unique
-  departmentCode String
-  posts          PostDepartment[] 
-  users          User[]
-  notifications  Notification[]
+  deptId             Int            @id @default(autoincrement())
+  departmentName     String         @unique
+  departmentCode     String
+  posts              PostDepartment[] 
+  users              User[]
+  notifications      Notification[]
 
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @default(now())
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @default(now())
 }
 
 model Post {
-  pid            Int            @id @default(autoincrement())
-  userId         Int
-  title          String?        @db.VarChar(255)
-  message        String?        @db.VarChar(255)
-  imageLocation  String?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  edited         Boolean        @default(false)
-  public         Boolean        @default(true)
-  extractedText  String?        
-  lid            Int            
+  pid                Int            @id @default(autoincrement())
+  userId             Int
+  title              String?        @db.VarChar(255)
+  message            String?        @db.VarChar(255)
+  imageLocation      String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  edited             Boolean        @default(false)
+  public             Boolean        @default(true)
+  extractedText      String?        
+  lid                Int            
 
-  employeeLevel  EmployeeLevel  @relation(fields: [lid], references: [lid])
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comments       Comment[]
-  readers        PostReader[] 
-  notifications  Notification[]
+  employeeLevel      EmployeeLevel  @relation(fields: [lid], references: [lid])
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments           Comment[]
+  readers            PostReader[] 
+  notifications      Notification[]
 
-  postDepartments PostDepartment[] 
+  postDepartments    PostDepartment[] 
 }
 
 model PostDepartment {
-  id             Int      @id @default(autoincrement())
-  postId         Int
-  deptId         Int
+  id                 Int            @id @default(autoincrement())
+  postId             Int
+  deptId             Int
 
-  post       Post     @relation(fields: [postId], references: [pid])
-  department Department @relation(fields: [deptId], references: [deptId])
+  post               Post           @relation(fields: [postId], references: [pid])
+  department         Department     @relation(fields: [deptId], references: [deptId])
 
   @@unique([postId, deptId]) 
 }
 
 model PostReader {
-  id              Int      @id @default(autoincrement())
-  postId          Int
-  userId          Int
-  readAt          DateTime @default(now())
+  id                 Int            @id @default(autoincrement())
+  postId             Int
+  userId             Int
+  readAt             DateTime       @default(now())
 
-  post            Post     @relation(fields: [postId], references: [pid], onDelete: Cascade)
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post               Post           @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId])
 }
 
 model Comment {
-  cid             Int      @id @default(autoincrement())
-  userId          Int
-  postId          Int?
-  parentId        Int?
-  message         String   @db.VarChar(255)
-  imageLocation   String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  cid                Int      @id @default(autoincrement())
+  userId             Int
+  postId             Int?
+  parentId           Int?
+  message            String   @db.VarChar(255)
+  imageLocation      String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post            Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade)
-  parentComment   Comment? @relation("CommentReplies", fields: [parentId], references: [cid])
-  replies         Comment[] @relation("CommentReplies")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post               Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  parentComment      Comment? @relation("CommentReplies", fields: [parentId], references: [cid])
+  replies            Comment[] @relation("CommentReplies")
 
   @@index([parentId])
 }
 
 model Notification {
-  id          Int       @id @default(autoincrement())
-  userId      Int
-  postId      Int?
-  commentId   Int?
-  deptId      Int?      
-  message     String
-  isRead      Boolean   @default(false)
-  createdAt   DateTime  @default(now())
+  id                 Int       @id @default(autoincrement())
+  userId             Int
+  postId             Int?
+  commentId          Int?
+  deptId             Int?      
+  message            String
+  isRead             Boolean   @default(false)
+  createdAt          DateTime  @default(now())
   
-  post        Post?     @relation(fields: [postId], references: [pid]) 
-  user        User      @relation(fields: [userId], references: [id])
-  department  Department?  @relation(fields: [deptId], references: [deptId])
+  post               Post?     @relation(fields: [postId], references: [pid]) 
+  user               User      @relation(fields: [userId], references: [id])
+  department         Department?  @relation(fields: [deptId], references: [deptId])
 }
 
 model EditLogs {
-  id           Int        @id @default(autoincrement())
-  log_a        String
-  log_b        String
-  log_c        String
-  log_d        String
-  updatedBy    Int
-  editTypeId   Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now())
+  id                 Int        @id @default(autoincrement())
+  log_title          String
+  log_description    String
+  log_c              String
+  log_d              String
+  updatedBy          Int
+  editTypeId         Int
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @default(now())
 
-  user         User @relation(fields: [id], references: [id])
-  editType     EditType @relation(fields: [editTypeId], references: [id])
+  user               User @relation(fields: [id], references: [id])
+  editType           EditType @relation(fields: [editTypeId], references: [id])
 }
 
 model EditType {
-  id           Int         @id @default(autoincrement())
-  type         String      
-  editLogs     EditLogs[]
+  id                Int         @id @default(autoincrement())
+  type              String      
+  editLogs          EditLogs[]
 }
