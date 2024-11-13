@@ -223,6 +223,14 @@ export class PostService {
     });
     if (!post) throw new NotFoundException(`Post with the id ${id} not found`);
 
+    await this.prismaService.editLogs.create({
+      data: {
+        editTypeId: 1,
+        updatedBy: Number(updatePostDto.updatedBy),
+        log: { ...post },
+      },
+    });
+
     const updatePost = {
       message: updatePostDto.message,
       title: updatePostDto.title,

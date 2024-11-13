@@ -92,6 +92,18 @@ export class UserService {
       if (!user)
         throw new NotFoundException(`User with the id ${userId} not found`);
 
+      try {
+        await this.prismaService.editLogs.create({
+          data: {
+            log: { ...user },
+            updatedBy: Number(updateUserDto.updatedBy),
+            editTypeId: 3,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+
       let updatedPassword: string;
 
       if (updateUserDto.password)
@@ -149,6 +161,18 @@ export class UserService {
     const passwordMatched = await argon.verify(user.password, oldPassword);
 
     if (!passwordMatched) throw new BadRequestException('Password incorrect');
+
+    try {
+      await this.prismaService.editLogs.create({
+        data: {
+          editTypeId: 4,
+          updatedBy: userId,
+          log: { password: oldPassword, hash: user.password },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
     const newHashedPassword = await argon.hash(newPassword);
 
