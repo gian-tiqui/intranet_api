@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -14,6 +14,11 @@ const REFRESH_LIMIT = 50;
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Get('user')
+  findByEmployeeId(@Query('employeeId') employeeId: number) {
+    return this.authService.fetchDataByEmployeeId(employeeId);
+  }
 
   @Post('verify')
   @RateLimit({
