@@ -4,6 +4,8 @@ import {
   UnauthorizedException,
   BadRequestException,
   NotFoundException,
+  HttpException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -49,6 +51,12 @@ export class AuthService {
   }
 
   async verify(employeeId: number) {
+    const user = await this.prisma.user.findFirst({
+      where: { employeeId: Number(employeeId) },
+    });
+
+    if (user) throw new HttpException('This account is already activated', 404);
+
     let data: RegisterDto[];
 
     try {
@@ -57,39 +65,48 @@ export class AuthService {
         'utf-8',
       );
       data = JSON.parse(rawData).employeesData;
+
+      if (!data || data.length === 0) {
+        throw new Error(
+          'Employee data is empty or not found in the JSON file.',
+        );
+      }
     } catch (error) {
-      console.error(error);
+      console.error('Error reading or parsing employee data:', error);
+      throw new InternalServerErrorException('Unable to verify employee ID.');
     }
 
     const found = data.find(
       (employee) => employee.employeeId === Number(employeeId),
     );
 
-    const signedId = await this.signEmployeeId(found.employeeId);
-
-    if (found) {
-      await this.mailerService.sendMail({
-        to: 'gian.tiqui.dev@gmail.com',
-        subject: 'Welcome to Our Service',
-        template: 'registration',
-        context: {
-          name: found.firstName,
-          id: signedId,
-        },
-      });
-
-      return {
-        message: 'ID Found',
-        statusCode: 200,
-      };
+    if (!found) {
+      throw new NotFoundException(`ID ${employeeId} not found.`);
     }
 
-    throw new NotFoundException(`ID ${employeeId} not found.`);
+    const signedId = await this.signEmployeeId(found.employeeId);
+
+    await this.mailerService.sendMail({
+      to: 'gian.tiqui.dev@gmail.com',
+      subject: 'Welcome to Our Service',
+      template: 'registration',
+      context: {
+        name: found.firstName,
+        id: signedId,
+      },
+    });
+
+    return {
+      message:
+        'Your ID was found. Please check your email for the activation link.',
+      statusCode: 200,
+    };
   }
 
   // Create user upon successful validation and hash the password using the mechanism of argon package
   async register(registerDto: RegisterDto) {
     const hashedPassword = await argon.hash(registerDto.password);
+    const formattedDob = new Date(registerDto.dob).toISOString();
 
     try {
       const user = await this.prisma.user.create({
@@ -99,7 +116,7 @@ export class AuthService {
           firstName: registerDto.firstName,
           middleName: registerDto.middleName,
           lastName: registerDto.lastName,
-          dob: registerDto.dob,
+          dob: formattedDob,
           gender: registerDto.gender,
           address: registerDto.address,
           city: registerDto.city,
