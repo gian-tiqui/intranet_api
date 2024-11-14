@@ -30,19 +30,19 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     }),
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.example.com',
+        host: process.env.MAIL_HOST,
         port: 587,
         secure: false,
         auth: {
-          user: 'your-email@example.com',
-          pass: 'your-password',
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD,
         },
       },
       defaults: {
-        from: '"No Reply" <no-reply@example.com>',
+        from: '"No Reply" <no-reply@meow.com>',
       },
       template: {
-        dir: join(__dirname, 'templates'),
+        dir: join(__dirname, '..', 'src', 'templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
