@@ -8,12 +8,12 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
-import { MailerService } from '@nestjs-modules/mailer';
+import * as argon from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -24,26 +24,57 @@ export class AuthService {
     private readonly mailerService: MailerService,
   ) {}
 
-  async verify(employeeId: number) {
-    let employeeIds: string[];
+  async fetchDataByEmployeeId(employeeId: number) {
+    let data: RegisterDto[];
 
     try {
       const rawData = fs.readFileSync(
         this.configService.get('EMPLOYEE_IDS_PATH'),
         'utf-8',
       );
-      employeeIds = JSON.parse(rawData).employeeIds;
+      data = JSON.parse(rawData).employeesData;
     } catch (error) {
       console.error(error);
     }
 
-    if (employeeIds.includes(String(employeeId))) {
+    const found = data.find(
+      (employee) => employee.employeeId === Number(employeeId),
+    );
+
+    if (found) {
+      return found;
+    }
+
+    throw new NotFoundException('Data not found');
+  }
+
+  async verify(employeeId: number) {
+    let data: RegisterDto[];
+
+    try {
+      const rawData = fs.readFileSync(
+        this.configService.get('EMPLOYEE_IDS_PATH'),
+        'utf-8',
+      );
+      data = JSON.parse(rawData).employeesData;
+    } catch (error) {
+      console.error(error);
+    }
+
+    const found = data.find(
+      (employee) => employee.employeeId === Number(employeeId),
+    );
+
+    const signedId = await this.signEmployeeId(found.employeeId);
+
+    if (found) {
       await this.mailerService.sendMail({
         to: 'gian.tiqui.dev@gmail.com',
         subject: 'Welcome to Our Service',
-        template: null,
+        template: 'registration',
         context: {
-          name: 'meow',
+          name: found.firstName,
+          id: signedId,
         },
       });
 
@@ -226,6 +257,19 @@ export class AuthService {
     return this.jwtService.signAsync(
       { sub: userId },
       { expiresIn: refreshTokenExpiration, secret: refreshTokenSecret },
+    );
+  }
+
+  private async signEmployeeId(employeeId: number): Promise<string> {
+    const employeeIdSecret =
+      this.configService.get<string>('EMPLOYEE_ID_SECRET');
+    const employeeIdExp = this.configService.get<string>(
+      'EMPLOYEE_ID_SECRET_EXP',
+    );
+
+    return this.jwtService.signAsync(
+      { sub: employeeId },
+      { expiresIn: employeeIdExp, secret: employeeIdSecret },
     );
   }
 }
