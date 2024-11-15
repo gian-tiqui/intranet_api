@@ -12,9 +12,12 @@ import * as argon from 'argon2';
 export class UserService {
   constructor(private prismaService: PrismaService) {}
 
-  async getAll(confirm?: string) {
+  async getAll(confirm?: string, deptId?: number) {
     const users = await this.prismaService.user.findMany({
-      where: { ...(confirm === 'false' && { confirmed: false }) },
+      where: {
+        ...(confirm === 'false' && { confirmed: false }),
+        ...(deptId && { deptId: Number(deptId) }),
+      },
       select: {
         password: false,
         department: true,
