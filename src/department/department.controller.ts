@@ -28,7 +28,7 @@ export class DepartmentController {
     keyPrefix: 'get_departments',
     points: FIND_ALL_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching the departments.',
   })
   @Get()
   findAll(@Query('departmentName') departmenName: string) {
@@ -42,7 +42,7 @@ export class DepartmentController {
     keyPrefix: 'one_department',
     points: FIND_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching a department.',
   })
   findById(@Param('id') deptId: number) {
     return this.departmentService.findOneById(deptId);
@@ -54,7 +54,7 @@ export class DepartmentController {
     keyPrefix: 'create_department',
     points: CREATE_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before creating a department.',
   })
   create(@Body() createDepartmentDto: CreateDepartmentDto) {
     return this.departmentService.create(createDepartmentDto);
@@ -65,7 +65,7 @@ export class DepartmentController {
     keyPrefix: 'update_department_by_id',
     points: UPDATE_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before pupdating a department.',
   })
   updateById(@Param('id') deptId, @Body() updateDeptDto: UpdateDeptDto) {
     return this.departmentService.updateById(deptId, updateDeptDto);
@@ -77,7 +77,7 @@ export class DepartmentController {
     keyPrefix: 'delete_department_by_id',
     points: DELETE_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before deleting a department.',
   })
   deleteById(@Param('id') deptId: number) {
     return this.departmentService.deleteById(deptId);

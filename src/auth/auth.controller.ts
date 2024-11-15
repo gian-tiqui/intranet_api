@@ -7,6 +7,7 @@ import { RateLimit } from 'nestjs-rate-limiter';
 import { LogoutDto } from './dto/logout.dto';
 
 const REGISTER_LIMIT = 5;
+const VERIFY_LIMIT = 5;
 const LOGIN_LIMIT = 10;
 const LOGOUT_LIMIT = 5;
 const REFRESH_LIMIT = 50;
@@ -20,12 +21,13 @@ export class AuthController {
     return this.authService.fetchDataByEmployeeId(employeeId);
   }
 
+  // Verify if id exists in the users data file
   @Post('verify')
   @RateLimit({
     keyPrefix: 'verify',
-    points: REGISTER_LIMIT,
+    points: VERIFY_LIMIT,
     duration: 60,
-    errorMessage: 'Please wait before creating an account again.',
+    errorMessage: 'Please wait before entering an id.',
   })
   verify(@Query('employeeId') employeeId: number) {
     return this.authService.verify(employeeId);
@@ -61,7 +63,7 @@ export class AuthController {
     keyPrefix: 'logout',
     points: LOGOUT_LIMIT,
     duration: 60,
-    errorMessage: 'Please wait before logging in again.',
+    errorMessage: 'Please wait before logging out again.',
   })
   logout(@Body() logoutDto: LogoutDto) {
     return this.authService.logout(logoutDto.userId);

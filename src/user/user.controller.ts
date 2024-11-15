@@ -31,7 +31,7 @@ export class UserController {
     keyPrefix: 'get_users',
     points: FIND_ALL_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching the users.',
   })
   getAll(@Query('confirm') confirm?: string, @Query('deptId') deptId?: number) {
     return this.userService.getAll(confirm, deptId);
@@ -42,7 +42,7 @@ export class UserController {
     keyPrefix: 'one_user',
     points: FIND_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching a user.',
   })
   getById(@Param('id') userId) {
     return this.userService.getById(userId);
@@ -53,7 +53,7 @@ export class UserController {
     keyPrefix: 'update_user_by_id',
     points: UPDATE_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before updating a user.',
   })
   updateById(@Param('id') userId, @Body() updateUserDto: UpdateUserDTO) {
     return this.userService.updateById(userId, updateUserDto);
@@ -64,7 +64,7 @@ export class UserController {
     keyPrefix: 'delete_user_by_id',
     points: DELETE_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before deleting a user.',
   })
   deleteById(@Param('id') userId) {
     return this.userService.deleteById(userId);
@@ -75,7 +75,7 @@ export class UserController {
     keyPrefix: 'change_user_password',
     points: PASSWORD_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before changing the password.',
   })
   changePassword(@Body() changePasswordDto: ChangePasswordDto) {
     console.log(changePasswordDto);
@@ -90,7 +90,7 @@ export class UserController {
     keyPrefix: 'get_user_history',
     points: 50,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching user history.',
   })
   @Get('history/:id')
   getPostReadsById(
