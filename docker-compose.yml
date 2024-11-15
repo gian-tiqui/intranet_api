@@ -6,6 +6,6 @@ services:
       - '8081:8081'
     environment:
       PORT: 8081
-      DATABASE_URL: 'postgresql://postgres.nbbopzgdfempxvosydap:plzsupabasework@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1'
+      DATABASE_URL: postgresql://postgres:boss%3Fbossing%21@host.docker.internal:5432/db_intranet_test
     command: >
       sh -c "npm run start:prod"
