@@ -15,7 +15,7 @@ export class MonitoringController {
     keyPrefix: 'read-status',
     points: 999999,
     duration: 1,
-    errorMessage: '?',
+    errorMessage: 'This will not trigger lol',
   })
   @Get('read-status')
   checkReadStatus(

@@ -31,7 +31,7 @@ export class CommentController {
     keyPrefix: 'all_comments',
     points: FIND_ALL_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching the comments.',
   })
   findAll(@Query('userId') userId: number) {
     return this.commentService.findAll(userId);
@@ -42,7 +42,7 @@ export class CommentController {
     keyPrefix: 'all_replies',
     points: FIND_ALL_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching the replies.',
   })
   findAllReplies(@Query('parentId') parentId?: number) {
     return this.commentService.findAllReplies(parentId);
@@ -53,7 +53,7 @@ export class CommentController {
     keyPrefix: 'find_comment_by_id',
     points: FIND_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before finding a comment by id',
   })
   findById(@Param('id') cid: number) {
     return this.commentService.findOneById(cid);
@@ -75,7 +75,7 @@ export class CommentController {
     keyPrefix: 'update_comment_by_id',
     points: UPDATE_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait a few seconds before commenting again.',
+    errorMessage: 'Please wait a few seconds before updating your comment.',
   })
   updateById(@Param('id') cid, @Body() updateCommentDto: UpdateCommentDto) {
     return this.commentService.updateById(cid, updateCommentDto);
@@ -86,7 +86,7 @@ export class CommentController {
     keyPrefix: 'delete_comment_by_id',
     points: DELETE_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait a few seconds before commenting again.',
+    errorMessage: 'Please wait a few seconds before deleting a comment.',
   })
   deleteById(@Param('id') cid: number) {
     return this.commentService.deleteById(cid);
