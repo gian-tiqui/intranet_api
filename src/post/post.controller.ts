@@ -35,7 +35,7 @@ export class PostController {
     keyPrefix: 'get_posts_for_admin',
     points: FIND_ALL_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching posts.',
   })
   findPostsForAdmin() {
     return this.postService.findPostsForAdmin();
@@ -47,7 +47,7 @@ export class PostController {
     keyPrefix: 'get_posts',
     points: FIND_ALL_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching posts.',
   })
   findAll(
     @Query('userId') userId: number = null, // Default to null or appropriate value
@@ -80,7 +80,7 @@ export class PostController {
     keyPrefix: 'get_post_by_level_and_id',
     points: FIND_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching posts by lid.',
   })
   findManyByLid(@Param('lid') lid: number, @Query('deptId') deptId: number) {
     return this.postService.findManyByLid(lid, deptId);
@@ -92,7 +92,7 @@ export class PostController {
     keyPrefix: 'get_post_by_id',
     points: FIND_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching a post.',
   })
   findById(
     @Param('id') postId: number,
@@ -120,7 +120,7 @@ export class PostController {
     keyPrefix: 'create_post',
     points: CREATE_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before creating a post.',
   })
   async createPost(
     @Body() createPostDto: CreatePostDto,
@@ -147,7 +147,7 @@ export class PostController {
     keyPrefix: 'update_post_by_id',
     points: UPDATE_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before updating a post.',
   })
   updateById(
     @Param('id') postId,
@@ -163,7 +163,7 @@ export class PostController {
     keyPrefix: 'delete_post_by_id',
     points: DELETE_BY_ID_POINTS,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before deleting a post.',
   })
   deleteById(@Param('id') postId: number) {
     return this.postService.deleteById(postId);

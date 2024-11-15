@@ -12,7 +12,7 @@ export class PostDepartmentController {
     keyPrefix: 'deptids',
     points: 99999,
     duration: 1,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before getting the department ids.',
   })
   @Get('deptIds')
   findAssociations(@Query('postId') postId: number) {

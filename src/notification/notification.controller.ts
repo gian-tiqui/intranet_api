@@ -39,7 +39,7 @@ export class NotificationController {
     keyPrefix: 'find_all_notifications',
     points: 50,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching all notifications.',
   })
   @Get()
   findAll(
