@@ -45,4 +45,7 @@ export class UpdateUserDTO {
 
   @IsNotEmpty()
   updatedBy: string;
+
+  @IsNotEmpty()
+  confirmed: boolean;
 }
