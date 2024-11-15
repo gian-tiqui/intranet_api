@@ -33,8 +33,8 @@ export class UserController {
     duration: 60,
     errorMessage: 'Please wait before posting again.',
   })
-  getAll(@Query('confirm') confirm?: string) {
-    return this.userService.getAll(confirm);
+  getAll(@Query('confirm') confirm?: string, @Query('deptId') deptId?: number) {
+    return this.userService.getAll(confirm, deptId);
   }
 
   @Get(':id')

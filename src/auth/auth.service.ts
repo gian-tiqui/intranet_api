@@ -87,7 +87,7 @@ export class AuthService {
     const signedId = await this.signEmployeeId(found.employeeId);
 
     await this.mailerService.sendMail({
-      to: 'gian.tiqui.dev@gmail.com',
+      to: found.email,
       subject: 'Welcome to Our Service',
       template: 'registration',
       context: {
