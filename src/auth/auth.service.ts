@@ -128,6 +128,7 @@ export class AuthService {
           deptId: registerDto.deptId,
           employeeId: registerDto.employeeId,
           lid: registerDto.lid,
+          confirmed: registerDto.lid >= 2,
         },
       });
 
@@ -173,6 +174,7 @@ export class AuthService {
       user.email,
       user.department,
       user.lid,
+      user.confirmed,
     );
 
     let refreshToken: string;
@@ -221,6 +223,7 @@ export class AuthService {
       user.email,
       user.department,
       user.lid,
+      user.confirmed,
     );
 
     return { access_token: accessToken };
@@ -253,6 +256,7 @@ export class AuthService {
       departmentCode: string;
     },
     lid: number,
+    confirmed: boolean,
   ): Promise<string> {
     return this.jwtService.signAsync({
       sub: userId,
@@ -263,6 +267,7 @@ export class AuthService {
       lastName,
       lid,
       departmentName: department.departmentName,
+      confirmed,
     });
   }
 

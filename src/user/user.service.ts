@@ -12,8 +12,9 @@ import * as argon from 'argon2';
 export class UserService {
   constructor(private prismaService: PrismaService) {}
 
-  async getAll() {
+  async getAll(confirm?: string) {
     const users = await this.prismaService.user.findMany({
+      where: { ...(confirm === 'false' && { confirmed: false }) },
       select: {
         password: false,
         department: true,
@@ -97,19 +98,7 @@ export class UserService {
           data: {
             log: { ...user },
             editTypeId: 3,
-            updatedBy: Number(_userId),
-          },
-        });
-      } catch (error) {
-        console.error(error);
-      }
-
-      try {
-        await this.prismaService.editLogs.create({
-          data: {
-            log: { ...user },
-            updatedBy: Number(updateUserDto.updatedBy),
-            editTypeId: 3,
+            updatedBy: 1,
           },
         });
       } catch (error) {
