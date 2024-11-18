@@ -284,6 +284,12 @@ export class PostService {
       },
     });
 
+    await this.prismaService.imageLocations.deleteMany({
+      where: {
+        postId: id,
+      },
+    });
+
     // Update image locations if new files are provided
     if (imageLocations.length > 0) {
       await this.prismaService.imageLocations.createMany({
