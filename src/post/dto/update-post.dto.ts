@@ -5,9 +5,6 @@ export class UpdatePostDto {
   message: string;
 
   @IsOptional()
-  imageLocation: string;
-
-  @IsOptional()
   title: string;
 
   @IsNotEmpty()
@@ -24,4 +21,7 @@ export class UpdatePostDto {
 
   @IsNotEmpty()
   updatedBy: number;
+
+  @IsNotEmpty()
+  addPhoto: string;
 }
