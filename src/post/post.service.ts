@@ -109,6 +109,9 @@ export class PostService {
         lid: Number(lid),
         postDepartments: { some: { deptId: Number(deptId) } },
       },
+      include: {
+        imageLocations: true,
+      },
     });
   }
 
@@ -284,15 +287,14 @@ export class PostService {
       },
     });
 
-    // await this.prismaService.imageLocations.deleteMany({
-    //   where: {
-    //     postId: id,
-    //   },
-    // });
+    if (updatePostDto.addPhoto !== 'true') {
+      await this.prismaService.imageLocations.deleteMany({
+        where: {
+          postId: id,
+        },
+      });
+    }
 
-    // @TODO: create a feature that will add an image or update the images by removing the previous image
-
-    // Update image locations if new files are provided
     if (imageLocations.length > 0) {
       await this.prismaService.imageLocations.createMany({
         data: imageLocations.map((loc) => ({
