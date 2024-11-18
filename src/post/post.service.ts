@@ -3,7 +3,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -51,7 +50,13 @@ export class PostService {
         : []),
       ...(userId ? [{ userId: iUserId }] : []),
       ...(imageLocation
-        ? [{ imageLocation: { contains: imageLocation } }]
+        ? [
+            {
+              imageLocations: {
+                some: { imageLocation: { contains: imageLocation } },
+              },
+            },
+          ]
         : []),
       ...(_public
         ? [{ public: Boolean(_public === 'true' ? true : false) }]
@@ -75,6 +80,7 @@ export class PostService {
           },
         },
         postDepartments: true,
+        imageLocations: true, // Include image locations in the results
       },
       orderBy: { createdAt: direction === 'desc' ? 'desc' : 'asc' },
       skip: Number(offset),
@@ -139,6 +145,7 @@ export class PostService {
             },
           },
         },
+        imageLocations: true,
       },
     });
 
@@ -151,22 +158,27 @@ export class PostService {
     };
   }
 
-  // Enhanced create method with improved error handling for file and deptIds processing
-  async create(createPostDto: CreatePostDto, memoFile: Express.Multer.File) {
+  async create(createPostDto: CreatePostDto, memoFiles: Express.Multer.File[]) {
     try {
-      let imageLocation = '';
+      const imageLocations = [];
 
-      if (memoFile) {
+      if (memoFiles && memoFiles.length > 0) {
         const postDir = path.join(__dirname, '..', '..', 'uploads', 'post');
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const filePath = path.join(
-          postDir,
-          `${uniqueSuffix}-${memoFile.originalname}`,
-        );
-
         await fs.mkdir(postDir, { recursive: true });
-        await fs.writeFile(filePath, memoFile.buffer);
-        imageLocation = `post/${uniqueSuffix}-${memoFile.originalname}`;
+
+        for (const file of memoFiles) {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const filePath = path.join(
+            postDir,
+            `${uniqueSuffix}-${file.originalname}`,
+          );
+
+          await fs.writeFile(filePath, file.buffer);
+          imageLocations.push({
+            imageLocation: `post/${uniqueSuffix}-${file.originalname}`,
+          });
+        }
       }
 
       const post = await this.prismaService.post.create({
@@ -174,12 +186,20 @@ export class PostService {
           userId: Number(createPostDto.userId),
           title: createPostDto.title,
           message: createPostDto.message,
-          imageLocation,
           public: createPostDto.public === 'public',
           lid: Number(createPostDto.lid),
           extractedText: createPostDto.extractedText,
         },
       });
+
+      if (imageLocations.length > 0 && post.pid) {
+        await this.prismaService.imageLocations.createMany({
+          data: imageLocations.map((loc) => ({
+            postId: post.pid,
+            imageLocation: loc.imageLocation,
+          })),
+        });
+      }
 
       const departmentIds = createPostDto.deptIds;
       if (departmentIds && departmentIds.length > 0) {
@@ -205,12 +225,10 @@ export class PostService {
     }
   }
 
-  // Enhanced updateById method with improved error handling for file update and deptIds processing
-  // WHY
   async updateById(
     postId: number,
     updatePostDto: UpdatePostDto,
-    newFile?: Express.Multer.File,
+    newFiles?: Express.Multer.File[],
   ) {
     const id = Number(postId);
 
@@ -221,7 +239,10 @@ export class PostService {
     const post = await this.prismaService.post.findFirst({
       where: { pid: id },
     });
-    if (!post) throw new NotFoundException(`Post with the id ${id} not found`);
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
 
     await this.prismaService.editLogs.create({
       data: {
@@ -231,54 +252,47 @@ export class PostService {
       },
     });
 
-    const updatePost = {
-      message: updatePostDto.message,
-      title: updatePostDto.title,
-      public: updatePostDto.public === 'public',
-      lid: Number(updatePostDto.lid),
-      imageLocation: post.imageLocation,
-      extractedText: updatePostDto.extractedText,
-    };
+    const imageLocations = [];
 
-    if (newFile) {
-      const oldFilePath = post.imageLocation
-        ? path.join(__dirname, '..', '..', 'uploads', post.imageLocation)
-        : null;
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const newFileName = `${uniqueSuffix}-${newFile.originalname}`;
-      const newFilePath = path.join(
-        __dirname,
-        '../../uploads/post',
-        newFileName,
-      );
+    if (newFiles && newFiles.length > 0) {
+      const postDir = path.join(__dirname, '..', '..', 'uploads', 'post');
+      await fs.mkdir(postDir, { recursive: true });
 
-      try {
-        if (
-          oldFilePath &&
-          (await fs
-            .access(oldFilePath)
-            .then(() => true)
-            .catch(() => false))
-        ) {
-          await fs.unlink(oldFilePath);
-          console.log('Old file deleted successfully:', oldFilePath);
-        } else {
-          console.warn('Old file not found or already deleted:', oldFilePath);
-        }
+      for (const file of newFiles) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const filePath = path.join(
+          postDir,
+          `${uniqueSuffix}-${file.originalname}`,
+        );
 
-        await fs.writeFile(newFilePath, newFile.buffer);
-        console.log('New file uploaded successfully:', newFilePath);
-        updatePost.imageLocation = `post/${newFileName}`;
-      } catch (err) {
-        console.error('Error handling file update:', err);
-        throw new InternalServerErrorException('File update failed');
+        await fs.writeFile(filePath, file.buffer);
+        imageLocations.push({
+          imageLocation: `post/${uniqueSuffix}-${file.originalname}`,
+        });
       }
     }
 
     const updatedPost = await this.prismaService.post.update({
       where: { pid: id },
-      data: { ...updatePost, edited: true },
+      data: {
+        title: updatePostDto.title,
+        message: updatePostDto.message,
+        public: updatePostDto.public === 'public',
+        lid: Number(updatePostDto.lid),
+        extractedText: updatePostDto.extractedText,
+        edited: true,
+      },
     });
+
+    // Update image locations if new files are provided
+    if (imageLocations.length > 0) {
+      await this.prismaService.imageLocations.createMany({
+        data: imageLocations.map((loc) => ({
+          postId: updatedPost.pid,
+          imageLocation: loc.imageLocation,
+        })),
+      });
+    }
 
     const newDeptIds = updatePostDto.deptIds;
     if (newDeptIds) {
@@ -309,50 +323,27 @@ export class PostService {
 
     return {
       message: 'Post updated successfully',
+      statusCode: 200,
       post: updatedPost,
     };
   }
 
-  // Enhanced deleteById method with improved error handling for file deletion
-  async deleteById(_postId: number) {
-    const postId = Number(_postId);
-
-    if (typeof postId !== 'number')
-      throw new BadRequestException('ID must be a number');
-
+  async removeById(postId: number) {
     const post = await this.prismaService.post.findFirst({
       where: { pid: postId },
     });
 
-    if (!post)
-      throw new NotFoundException(`Post with the id ${postId} not found`);
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
 
-    const deletedPost = await this.prismaService.post.delete({
+    await this.prismaService.post.delete({
       where: { pid: postId },
     });
 
-    const deleteFileName = deletedPost.imageLocation;
-
-    if (deleteFileName) {
-      const filePath = path.join(
-        __dirname,
-        '..',
-        '..',
-        'uploads',
-        deleteFileName,
-      );
-      try {
-        await this.unlinkAsync(filePath);
-        console.log('File deleted successfully:', filePath);
-      } catch (err) {
-        console.error('Error deleting file:', err);
-      }
-    }
-
     return {
       message: 'Post deleted successfully',
-      statusCode: 209,
-      deletedPost,
+      statusCode: 200,
     };
   }
 }

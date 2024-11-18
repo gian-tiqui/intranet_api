@@ -7,15 +7,15 @@ import {
   Post,
   Put,
   Query,
-  UploadedFile,
-  UseGuards,
+  UploadedFiles,
+  // UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
+// import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { RateLimit } from 'nestjs-rate-limiter';
 
 const FIND_ALL_POINTS = 50;
@@ -25,7 +25,7 @@ const UPDATE_BY_ID_POINTS = 10;
 const DELETE_BY_ID_POINTS = 10;
 
 // This guard accepts requests that are provided with valid access tokens
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
@@ -104,7 +104,7 @@ export class PostController {
   // This endpoint validates if the file is valid (image) and will create a new data after when it satisfies the checks
   @Post()
   @UseInterceptors(
-    FileInterceptor('memo', {
+    FilesInterceptor('memo', 10, {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -124,14 +124,14 @@ export class PostController {
   })
   async createPost(
     @Body() createPostDto: CreatePostDto,
-    @UploadedFile() memoFile: Express.Multer.File,
+    @UploadedFiles() memoFiles: Express.Multer.File[],
   ) {
-    return this.postService.create(createPostDto, memoFile);
+    return this.postService.create(createPostDto, memoFiles);
   }
 
   @Put(':id')
   @UseInterceptors(
-    FileInterceptor('newMemo', {
+    FilesInterceptor('newMemo', 10, {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -152,9 +152,9 @@ export class PostController {
   updateById(
     @Param('id') postId,
     @Body() updatePostDto: UpdatePostDto,
-    @UploadedFile() updatedMemoFile?: Express.Multer.File,
+    @UploadedFiles() updatedMemoFiles?: Express.Multer.File[],
   ) {
-    return this.postService.updateById(postId, updatePostDto, updatedMemoFile);
+    return this.postService.updateById(postId, updatePostDto, updatedMemoFiles);
   }
 
   // This endpoint deletes a post with the given id
@@ -166,6 +166,6 @@ export class PostController {
     errorMessage: 'Please wait before deleting a post.',
   })
   deleteById(@Param('id') postId: number) {
-    return this.postService.deleteById(postId);
+    return this.postService.removeById(postId);
   }
 }
