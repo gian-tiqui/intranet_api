@@ -284,11 +284,13 @@ export class PostService {
       },
     });
 
-    await this.prismaService.imageLocations.deleteMany({
-      where: {
-        postId: id,
-      },
-    });
+    // await this.prismaService.imageLocations.deleteMany({
+    //   where: {
+    //     postId: id,
+    //   },
+    // });
+
+    // @TODO: create a feature that will add an image or update the images by removing the previous image
 
     // Update image locations if new files are provided
     if (imageLocations.length > 0) {
