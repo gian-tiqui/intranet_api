@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -339,21 +340,27 @@ export class PostService {
   }
 
   async removeById(postId: number) {
-    const post = await this.prismaService.post.findFirst({
-      where: { pid: postId },
-    });
+    try {
+      const post = await this.prismaService.post.findFirst({
+        where: { pid: Number(postId) },
+      });
 
-    if (!post) {
-      throw new NotFoundException('Post not found');
+      if (!post) {
+        throw new NotFoundException('Post not found');
+      }
+
+      await this.prismaService.post.delete({
+        where: { pid: Number(postId) },
+      });
+
+      return {
+        message: 'Post deleted successfully',
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.error(error);
+
+      throw new InternalServerErrorException(error.message);
     }
-
-    await this.prismaService.post.delete({
-      where: { pid: postId },
-    });
-
-    return {
-      message: 'Post deleted successfully',
-      statusCode: 200,
-    };
   }
 }
