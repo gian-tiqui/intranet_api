@@ -88,8 +88,9 @@ model ImageLocations {
   imageLocation      String
   postId             Int
 
-  post               Post           @relation(fields: [postId], references: [pid])
+  post               Post           @relation(fields: [postId], references: [pid], onDelete: Cascade)
 }
+
 
 model PostDepartment {
   id                 Int            @id @default(autoincrement())
