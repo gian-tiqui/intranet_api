@@ -91,17 +91,17 @@ model ImageLocations {
   post               Post           @relation(fields: [postId], references: [pid], onDelete: Cascade)
 }
 
-
 model PostDepartment {
-  id                 Int            @id @default(autoincrement())
-  postId             Int
-  deptId             Int
+  id         Int      @id @default(autoincrement())
+  postId     Int
+  deptId     Int
 
-  post               Post           @relation(fields: [postId], references: [pid])
-  department         Department     @relation(fields: [deptId], references: [deptId])
+  post       Post     @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  department Department @relation(fields: [deptId], references: [deptId])
 
-  @@unique([postId, deptId]) 
+  @@unique([postId, deptId])
 }
+
 
 model PostReader {
   id                 Int            @id @default(autoincrement())
