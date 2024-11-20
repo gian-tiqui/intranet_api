@@ -104,7 +104,7 @@ export class PostController {
   // This endpoint validates if the file is valid (image) and will create a new data after when it satisfies the checks
   @Post()
   @UseInterceptors(
-    FilesInterceptor('memo', 10, {
+    FilesInterceptor('memo', 25, {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -131,7 +131,7 @@ export class PostController {
 
   @Put(':id')
   @UseInterceptors(
-    FilesInterceptor('newMemo', 10, {
+    FilesInterceptor('newMemo', 25, {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
