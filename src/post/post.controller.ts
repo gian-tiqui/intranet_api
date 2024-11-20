@@ -8,12 +8,12 @@ import {
   Put,
   Query,
   UploadedFiles,
-  // UseGuards,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
-// import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { RateLimit } from 'nestjs-rate-limiter';
@@ -25,7 +25,7 @@ const UPDATE_BY_ID_POINTS = 10;
 const DELETE_BY_ID_POINTS = 10;
 
 // This guard accepts requests that are provided with valid access tokens
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
@@ -104,7 +104,7 @@ export class PostController {
   // This endpoint validates if the file is valid (image) and will create a new data after when it satisfies the checks
   @Post()
   @UseInterceptors(
-    FilesInterceptor('memo', 10, {
+    FilesInterceptor('memo', 25, {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -131,7 +131,7 @@ export class PostController {
 
   @Put(':id')
   @UseInterceptors(
-    FilesInterceptor('newMemo', 10, {
+    FilesInterceptor('newMemo', 25, {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
