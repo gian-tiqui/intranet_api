@@ -1,6 +1,8 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { LevelService } from './level.service';
+import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('level')
 export class LevelController {
   constructor(private readonly levelService: LevelService) {}
