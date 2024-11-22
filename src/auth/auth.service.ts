@@ -36,6 +36,8 @@ export class AuthService {
       ? path.join(__dirname, '../data/employee-ids.json')
       : this.configService.get('EMPLOYEE_IDS_PATH');
 
+    console.log(filePath);
+
     try {
       const rawData = fs.readFileSync(filePath, 'utf-8');
       data = JSON.parse(rawData).employeesData;
