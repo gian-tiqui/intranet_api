@@ -32,9 +32,10 @@ export class AuthService {
 
     const isRender = this.configService.get('IS_RENDER');
 
-    const filePath = isRender
-      ? path.join(__dirname, '../data/employee-ids.json')
-      : this.configService.get('EMPLOYEE_IDS_PATH');
+    const filePath =
+      isRender === 'yes'
+        ? path.join(__dirname, '../data/employee-ids.json')
+        : this.configService.get('EMPLOYEE_IDS_PATH');
 
     console.log(filePath);
 
