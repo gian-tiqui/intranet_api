@@ -30,14 +30,7 @@ export class AuthService {
   async fetchDataByEmployeeId(employeeId: number) {
     let data: RegisterDto[];
 
-    const isRender = this.configService.get('IS_RENDER');
-
-    const filePath =
-      isRender === 'yes'
-        ? path.join(__dirname, '../data/employee-ids.json')
-        : this.configService.get('EMPLOYEE_IDS_PATH');
-
-    console.log(filePath);
+    const filePath = path.join(__dirname, '../data/employee-ids.json');
 
     try {
       const rawData = fs.readFileSync(filePath, 'utf-8');
