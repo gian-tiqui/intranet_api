@@ -105,7 +105,7 @@ export class PostService {
   }
 
   async findManyByLid(lid: number, deptId: number) {
-    return this.prismaService.post.findMany({
+    const posts = await this.prismaService.post.findMany({
       where: {
         lid: Number(lid),
         postDepartments: { some: { deptId: Number(deptId) } },
@@ -114,6 +114,18 @@ export class PostService {
         imageLocations: true,
       },
     });
+
+    const count = await this.prismaService.post.count({
+      where: {
+        lid: Number(lid),
+        postDepartments: { some: { deptId: Number(deptId) } },
+      },
+    });
+
+    return {
+      posts,
+      count,
+    };
   }
 
   // This method returns a post with the given id
