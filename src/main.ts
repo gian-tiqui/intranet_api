@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const PORT = process.env.PORT || 8080;
-  const liveUrl = 'https://wmc-intranet.vercel.app';
+  const liveUrl = process.env.VERCEL_ENV;
 
   app.enableCors({
     origin: ['http://localhost:3000', liveUrl],

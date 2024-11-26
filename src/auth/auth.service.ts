@@ -16,7 +16,6 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as argon from 'argon2';
-import * as path from 'path';
 
 @Injectable()
 export class AuthService {
@@ -30,17 +29,11 @@ export class AuthService {
   async fetchDataByEmployeeId(employeeId: number) {
     let data: RegisterDto[];
 
-    const isRender = this.configService.get('IS_RENDER');
-
-    const filePath =
-      isRender === 'yes'
-        ? path.join(__dirname, '../data/employee-ids.json')
-        : this.configService.get('EMPLOYEE_IDS_PATH');
-
-    console.log(filePath);
-
     try {
-      const rawData = fs.readFileSync(filePath, 'utf-8');
+      const rawData = fs.readFileSync(
+        this.configService.get('EMPLOYEE_IDS_PATH'),
+        'utf-8',
+      );
       data = JSON.parse(rawData).employeesData;
     } catch (error) {
       console.error(error);
