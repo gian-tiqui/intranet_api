@@ -144,7 +144,7 @@ model Notification {
   createdAt          DateTime  @default(now())
   
   post               Post?     @relation(fields: [postId], references: [pid]) 
-  user               User      @relation(fields: [userId], references: [id])
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   department         Department?  @relation(fields: [deptId], references: [deptId])
 }
 
