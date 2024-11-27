@@ -54,7 +54,7 @@ export class AuthService {
       where: { employeeId: Number(employeeId) },
     });
 
-    if (!user.confirmed)
+    if (user && !user.confirmed)
       throw new HttpException('This account is already pending', 404);
 
     if (user) throw new HttpException('This account is already activated', 404);
