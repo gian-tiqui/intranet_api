@@ -54,6 +54,9 @@ export class AuthService {
       where: { employeeId: Number(employeeId) },
     });
 
+    if (!user.confirmed)
+      throw new HttpException('This account is already activated', 404);
+
     if (user) throw new HttpException('This account is already activated', 404);
 
     let data: RegisterDto[];
