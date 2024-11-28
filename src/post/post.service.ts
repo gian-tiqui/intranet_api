@@ -44,8 +44,10 @@ export class PostService {
   ) {
     const iUserId = userId ? Number(userId) : undefined;
 
+    const _lid = typeof lid === 'string' ? Number(lid) : Number(lid[0]);
+
     const opts: any[] = [
-      ...(lid ? [{ lid: { lte: Number(lid[0]) } }] : []),
+      ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
       ...(search
         ? [{ extractedText: { contains: search.toLowerCase() } }]
         : []),
@@ -104,21 +106,35 @@ export class PostService {
     };
   }
 
-  async findManyByLid(lid: number, deptId: number) {
+  async findManyByLid(
+    lid: number,
+    deptId: number,
+    offset: number = 0,
+    limit: number = 10,
+    direction: string = 'desc',
+  ) {
+    const opts: any[] = [
+      { lid: Number(lid) },
+      { postDepartments: { some: { deptId: Number(deptId) } } },
+    ];
+
     const posts = await this.prismaService.post.findMany({
       where: {
-        lid: Number(lid),
-        postDepartments: { some: { deptId: Number(deptId) } },
+        AND: opts,
       },
       include: {
         imageLocations: true,
       },
+      orderBy: {
+        createdAt: direction === 'desc' ? 'desc' : 'asc',
+      },
+      skip: Number(offset),
+      take: Number(limit),
     });
 
     const count = await this.prismaService.post.count({
       where: {
-        lid: Number(lid),
-        postDepartments: { some: { deptId: Number(deptId) } },
+        AND: opts,
       },
     });
 
