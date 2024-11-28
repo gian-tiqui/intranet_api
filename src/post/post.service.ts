@@ -44,8 +44,10 @@ export class PostService {
   ) {
     const iUserId = userId ? Number(userId) : undefined;
 
+    const _lid = typeof lid === 'string' ? Number(lid) : Number(lid[0]);
+
     const opts: any[] = [
-      ...(lid ? [{ lid: { lte: Number(lid[0]) } }] : []),
+      ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
       ...(search
         ? [{ extractedText: { contains: search.toLowerCase() } }]
         : []),
