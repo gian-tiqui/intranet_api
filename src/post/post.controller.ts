@@ -82,8 +82,13 @@ export class PostController {
     duration: 60,
     errorMessage: 'Please wait before fetching posts by lid.',
   })
-  findManyByLid(@Param('lid') lid: number, @Query('deptId') deptId: number) {
-    return this.postService.findManyByLid(lid, deptId);
+  findManyByLid(
+    @Param('lid') lid: number,
+    @Query('deptId') deptId: number,
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ) {
+    return this.postService.findManyByLid(lid, deptId, offset, limit);
   }
 
   // This endpoint returns the post with the given id
