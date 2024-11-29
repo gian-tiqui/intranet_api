@@ -170,6 +170,44 @@
       "deptId": 2,
       "employeeId": 1119,
       "lid": 3
+    },
+    {
+      "email": "gian.tiqui.dev33331@gmail.com",
+      "password": "password",
+      "firstName": "IT",
+      "middleName": "",
+      "lastName": "Supervisor",
+      "lastNamePrefix": "",
+      "preferredName": "",
+      "suffix": "",
+      "address": "123 Elm St.",
+      "city": "Springfield",
+      "state": "IL",
+      "zipCode": 4000,
+      "dob": "1990-01-15T00:00:00.000Z",
+      "gender": "Male",
+      "deptId": 2,
+      "employeeId": 1120,
+      "lid": 2
+    },
+    {
+      "email": "gian.tiqui.dev33332@gmail.com",
+      "password": "password",
+      "firstName": "IT",
+      "middleName": "",
+      "lastName": "Staff",
+      "lastNamePrefix": "",
+      "preferredName": "",
+      "suffix": "",
+      "address": "123 Elm St.",
+      "city": "Springfield",
+      "state": "IL",
+      "zipCode": 4000,
+      "dob": "1990-01-15T00:00:00.000Z",
+      "gender": "Male",
+      "deptId": 2,
+      "employeeId": 1121,
+      "lid": 1
     }
   ]
 }
