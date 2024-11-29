@@ -22,7 +22,7 @@
     {
       "email": "gian.tiqui.dev@gmail.com",
       "password": "password",
-      "firstName": "IT",
+      "firstName": "Qm",
       "middleName": "",
       "lastName": "Head",
       "lastNamePrefix": "",
@@ -34,7 +34,7 @@
       "zipCode": 4000,
       "dob": "1990-01-15T00:00:00.000Z",
       "gender": "Female",
-      "deptId": 3,
+      "deptId": 2,
       "employeeId": 1112,
       "lid": 3
     },
