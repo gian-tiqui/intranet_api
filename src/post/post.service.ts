@@ -83,7 +83,7 @@ export class PostService {
           },
         },
         postDepartments: true,
-        imageLocations: true, // Include image locations in the results
+        imageLocations: true,
       },
       orderBy: { createdAt: direction === 'desc' ? 'desc' : 'asc' },
       skip: Number(offset),
