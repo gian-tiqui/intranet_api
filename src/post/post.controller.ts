@@ -18,7 +18,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { RateLimit } from 'nestjs-rate-limiter';
 
-const FIND_ALL_POINTS = 50;
+const FIND_ALL_POINTS = 1000;
 const FIND_BY_ID_POINTS = 1000;
 const CREATE_POINTS = 5;
 const UPDATE_BY_ID_POINTS = 10;
