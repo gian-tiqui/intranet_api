@@ -72,8 +72,8 @@ export class NotificationService {
       },
     });
 
-    console.log(userPostReads.postReads.length, 'user reads');
-    console.log(deptPostCounts.length, 'dept posts');
+    // console.log(userPostReads.postReads.length, 'user reads');
+    // console.log(deptPostCounts.length, 'dept posts');
 
     if (userPostReads.postReads.length !== deptPostCounts.length) {
       return {

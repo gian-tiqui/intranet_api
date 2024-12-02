@@ -433,8 +433,19 @@ export class AuthService {
 
     const signedId = await this.signEmployeeId(found.employeeId);
 
+    // Write a line here that will find the email of the user with the same dept ID and add a approver field so it will send to that user with the approver field with the value of true
+
+    const approver = await this.prisma.user.findFirst({
+      where: {
+        AND: {
+          deptId: Number(found.deptId),
+          lid: 2,
+        },
+      },
+    });
+
     await this.mailerService.sendMail({
-      to: found.email,
+      to: approver.email,
       subject: 'Welcome to Our Service',
       template: 'registration',
       context: {
