@@ -30,6 +30,16 @@ export class PostService {
     });
   }
 
+  async findAllSelfPosts(userId: number) {
+    const ownedPosts = await this.prismaService.post.findMany({
+      where: {
+        userId: Number(userId),
+      },
+    });
+
+    return ownedPosts;
+  }
+
   async findAll(
     lid: number,
     userId: number | undefined = undefined,
