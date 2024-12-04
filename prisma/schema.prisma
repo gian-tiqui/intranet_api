@@ -74,6 +74,7 @@ model Post {
   extractedText      String?        @db.Text
   lid                Int            
   typeId             Int?
+  folderId           Int?
 
   employeeLevel      EmployeeLevel  @relation(fields: [lid], references: [lid])
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -83,6 +84,17 @@ model Post {
   postDepartments    PostDepartment[] 
   imageLocations     ImageLocations[] 
   postType           PostType?       @relation(fields: [typeId], references: [id])
+  folder             Folder?         @relation(fields: [folderId], references: [id])
+}
+
+model Folder {
+  id                 Int @unique @default(autoincrement())
+  name               String
+  parentId           Int?
+
+  parentFolder       Folder?      @relation("SubFolders", fields: [parentId], references: [id])
+  subfolders         Folder[]     @relation("SubFolders")
+  posts              Post[]
 }
 
 model PostType {
@@ -125,18 +137,18 @@ model PostReader {
 }
 
 model Comment {
-  cid                Int      @id @default(autoincrement())
+  cid                Int       @id @default(autoincrement())
   userId             Int
   postId             Int?
   parentId           Int? 
-  message            String   @db.VarChar(255)
+  message            String    @db.VarChar(255)
   imageLocation      String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   post               Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade)
-  parentComment      Comment? @relation("CommentReplies", fields: [parentId], references: [cid])
+  parentComment      Comment?  @relation("CommentReplies", fields: [parentId], references: [cid])
   replies            Comment[] @relation("CommentReplies")
 
   @@index([parentId])
