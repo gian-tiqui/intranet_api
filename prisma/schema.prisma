@@ -25,18 +25,18 @@ model User {
   dob                DateTime @db.Date
   gender             String
   createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  refreshToken       String?  @unique
+  updatedAt          DateTime      @updatedAt
+  refreshToken       String?       @unique
   deptId             Int
-  employeeId         Int? @unique
+  employeeId         Int?          @unique
   lid                Int      
-  confirmed          Boolean  @default(false)
+  confirmed          Boolean       @default(false)
 
   notifications      Notification[]
   posts              Post[]
   comments           Comment[]
   postReads          PostReader[] 
-  department         Department   @relation(fields: [deptId], references: [deptId])
+  department         Department    @relation(fields: [deptId], references: [deptId])
   editLogs           EditLogs[]
   employeeLevel      EmployeeLevel @relation(fields: [lid], references: [lid])
 }
