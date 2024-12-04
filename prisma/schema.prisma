@@ -73,6 +73,7 @@ model Post {
   public             Boolean        @default(true)
   extractedText      String?        @db.Text
   lid                Int            
+  typeId             Int?
 
   employeeLevel      EmployeeLevel  @relation(fields: [lid], references: [lid])
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -80,7 +81,15 @@ model Post {
   readers            PostReader[] 
   notifications      Notification[]
   postDepartments    PostDepartment[] 
-  imageLocations     ImageLocations[]
+  imageLocations     ImageLocations[] 
+  postType           PostType?       @relation(fields: [typeId], references: [id])
+}
+
+model PostType {
+  id                 Int            @id @default(autoincrement())
+  type               String
+
+  posts              Post[]
 }
 
 model ImageLocations {
