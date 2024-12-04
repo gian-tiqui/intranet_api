@@ -41,6 +41,11 @@ export class PostController {
     return this.postService.findPostsForAdmin();
   }
 
+  @Get('my-posts')
+  findAllSelfPosts(@Query('userId') userId: number) {
+    return this.postService.findAllSelfPosts(userId);
+  }
+
   // This endpoint returns the filtered posts [filters are blank by default and will return all of the posts]
   @Get()
   @RateLimit({
