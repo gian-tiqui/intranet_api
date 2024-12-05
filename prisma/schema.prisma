@@ -95,6 +95,7 @@ model Folder {
   parentFolder       Folder?      @relation("SubFolders", fields: [parentId], references: [id])
   subfolders         Folder[]     @relation("SubFolders")
   posts              Post[]
+  icon               String?
 }
 
 model PostType {
