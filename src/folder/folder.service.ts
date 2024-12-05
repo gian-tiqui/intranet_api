@@ -102,7 +102,7 @@ export class FolderService {
 
   async getAllPostsInFolder(folderId: number) {
     const folderWithSubfolders = await this.prisma.folder.findUnique({
-      where: { id: folderId },
+      where: { id: +folderId },
       include: {
         subfolders: {
           include: { posts: true },
