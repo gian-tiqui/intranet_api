@@ -434,6 +434,14 @@ export class AuthService {
     };
   }
 
+  async forgotPassword(employeeId: number, secretCode: string, deptId: number) {
+    return {
+      employeeId: +employeeId,
+      secretCode,
+      deptId: +deptId,
+    };
+  }
+
   // This generates the access token with payloads in the args
   private async signToken(
     userId: number,
