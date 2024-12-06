@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -79,5 +79,14 @@ export class AuthController {
   })
   refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refresh(refreshTokenDto);
+  }
+
+  @Post('forgot-password')
+  forgotPassword(
+    @Param('employeeId') employeeId: number,
+    @Param('secretCode') secretCode: string,
+    @Param('deptId') deptId: number,
+  ) {
+    this.authService.forgotPassword(employeeId, secretCode, deptId);
   }
 }
