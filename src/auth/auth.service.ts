@@ -276,9 +276,12 @@ export class AuthService {
       },
     });
 
+    if (!approver)
+      return new BadRequestException('No supervisor yet for this department.');
+
     await this.mailerService.sendMail({
       to: approver.email,
-      subject: 'Welcome to Our Service',
+      subject: 'WMC Intranet Activation',
       template: 'registration',
       context: {
         name: found.firstName,
