@@ -83,14 +83,14 @@ export class FolderService {
 
   async updateFolder(folderId: number, name: string) {
     return this.prisma.folder.update({
-      where: { id: folderId },
+      where: { id: +folderId },
       data: { name },
     });
   }
 
   async deleteFolder(folderId: number) {
     const folder = await this.prisma.folder.findUnique({
-      where: { id: folderId },
+      where: { id: +folderId },
     });
 
     if (!folder) {
@@ -98,7 +98,7 @@ export class FolderService {
     }
 
     return this.prisma.folder.delete({
-      where: { id: folderId },
+      where: { id: +folderId },
     });
   }
 
