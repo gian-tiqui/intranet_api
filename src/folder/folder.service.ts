@@ -28,6 +28,7 @@ export class FolderService {
     return this.prisma.folder.create({
       data: {
         name,
+        icon: 'mynaui:folder-two',
       },
     });
   }
@@ -45,6 +46,7 @@ export class FolderService {
       data: {
         name,
         parentId: Number(parentId),
+        icon: 'mynaui:folder-two',
       },
     });
   }
@@ -63,7 +65,7 @@ export class FolderService {
 
   async getFolderById(folderId: number) {
     return this.prisma.folder.findUnique({
-      where: { id: folderId },
+      where: { id: +folderId },
       include: {
         subfolders: {
           include: {
