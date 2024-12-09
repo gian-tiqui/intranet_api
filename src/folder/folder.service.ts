@@ -83,7 +83,7 @@ export class FolderService {
 
   async updateFolder(folderId: number, name: string) {
     return this.prisma.folder.update({
-      where: { id: folderId },
+      where: { id: +folderId },
       data: { name },
     });
   }
