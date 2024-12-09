@@ -19,6 +19,12 @@ import { RateLimit } from 'nestjs-rate-limiter';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
+  @RateLimit({
+    keyPrefix: 'find_all_unreads',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before fetching all unread notifications.',
+  })
   @Get('unreads/:id')
   getUnreadsOfUserById(
     @Param('id') userId: number,
