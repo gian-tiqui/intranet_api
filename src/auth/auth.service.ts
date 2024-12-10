@@ -454,10 +454,12 @@ export class AuthService {
       refreshToken = await this.signRefreshToken(user.id);
     }
 
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken },
-    });
+    if (user.confirmed) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { refreshToken },
+      });
+    }
 
     return {
       message: 'Login successful',
