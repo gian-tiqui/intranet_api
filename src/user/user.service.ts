@@ -61,6 +61,7 @@ export class UserService {
         id: true,
         lastName: true,
         middleName: true,
+        employeeId: true,
       },
     });
 
@@ -123,7 +124,7 @@ export class UserService {
           data: {
             log: { ...user },
             editTypeId: 3,
-            updatedBy: 1,
+            updatedBy: userId,
           },
         });
       } catch (error) {
@@ -242,5 +243,48 @@ export class UserService {
     }
 
     return user.postReads;
+  }
+
+  async deactivateUser(
+    password: string,
+    employeeId: number,
+    deactivatorId: number,
+  ) {
+    const deactivator = await this.prismaService.user.findFirst({
+      where: { id: +deactivatorId },
+    });
+
+    if (!deactivator)
+      throw new NotFoundException(`User with the ${deactivatorId} not found`);
+
+    const passwordMatched = await argon.verify(deactivator.password, password);
+
+    if (!passwordMatched) throw new BadRequestException('Incorrect password.');
+
+    const userToDeactivate = await this.prismaService.user.findFirst({
+      where: { employeeId: +employeeId },
+    });
+
+    if (!userToDeactivate)
+      throw new NotFoundException(
+        `User with the employee id ${employeeId} not found`,
+      );
+
+    await this.prismaService.user.update({
+      where: { employeeId: +employeeId },
+      data: { confirmed: false },
+    });
+
+    await this.prismaService.editLogs.create({
+      data: {
+        updatedBy: deactivator.id,
+        log: { ...userToDeactivate },
+        editTypeId: 3,
+      },
+    });
+
+    return {
+      message: 'Deactivation successful',
+    };
   }
 }
