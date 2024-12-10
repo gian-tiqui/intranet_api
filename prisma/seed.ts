@@ -23,7 +23,6 @@ async function main() {
   }
   console.log('EditType seeded.');
 
-  // Seed EmployeeLevel
   const employeeLevels = [
     { level: 'All Employees' },
     { level: 'Supervisor' },
