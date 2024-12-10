@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
-  // Seed EditType
   const editTypes = [
     { id: 1, type: 'Post' },
     { id: 2, type: 'Comment' },
@@ -40,7 +39,6 @@ async function main() {
   }
   console.log('EmployeeLevel seeded.');
 
-  // Seed Department
   const departments = [
     { departmentName: 'Human Resource', departmentCode: 'HR' },
     { departmentName: 'Quality Management', departmentCode: 'QM' },
@@ -62,16 +60,16 @@ async function main() {
 
   console.log('Seeding users...');
 
-  const departmentsCount = 9; // Total number of departments
-  const usersPerDepartment = 4; // Number of users per department
+  const departmentsCount = 9;
+  const usersPerDepartment = 4;
 
   const users = [];
 
   for (let deptId = 1; deptId <= departmentsCount; deptId++) {
     for (let i = 0; i < usersPerDepartment; i++) {
-      const lid = i < 2 ? i + 3 : 1; // First two users have lid 3 and 4, others have lid 1
-      const email = `user${deptId}${i}@example.com`; // Generate unique email
-      const password = await argon.hash('password1'); // Hash the password
+      const lid = i < 2 ? i + 3 : 1;
+      const email = `user${deptId}${i}@example.com`;
+      const password = await argon.hash('password1');
 
       users.push({
         email,
