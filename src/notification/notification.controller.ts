@@ -82,6 +82,12 @@ export class NotificationController {
   }
 
   // Notify users in the department when a new post is created
+  @RateLimit({
+    keyPrefix: 'create-notifications-per-dept',
+    points: 1000,
+    duration: 60,
+    errorMessage: 'Please wait before fetching all notifications.',
+  })
   @Post('new-post')
   notifyDepartmentOfNewPost(
     @Query('deptId') deptId: number,

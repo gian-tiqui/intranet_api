@@ -62,7 +62,7 @@ async function main() {
 
   console.log('Seeding users...');
 
-  const departmentsCount = 8; // Total number of departments
+  const departmentsCount = 9; // Total number of departments
   const usersPerDepartment = 4; // Number of users per department
 
   const users = [];
@@ -91,6 +91,7 @@ async function main() {
         deptId,
         employeeId: 1000 + deptId * 10 + i,
         lid,
+        confirmed: lid >= 3 ? true : false,
       });
     }
   }
