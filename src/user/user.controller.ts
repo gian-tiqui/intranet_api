@@ -104,4 +104,13 @@ export class UserController {
   ) {
     return this.userService.getPostReadsById(userId, search);
   }
+
+  @Post('deactivate')
+  deactivateUser(
+    @Query('password') password: string,
+    @Query('employeeId') userId: number,
+    @Query('deactivatorId') deactivatorId: number,
+  ) {
+    return this.userService.deactivateUser(password, userId, deactivatorId);
+  }
 }
