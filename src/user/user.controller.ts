@@ -37,6 +37,11 @@ export class UserController {
     return this.userService.getAll(confirm, deptId);
   }
 
+  @Get('employeeId')
+  findByemployeeId(@Query('employeeId') employeeId: number) {
+    return this.userService.getByEmployeeId(employeeId);
+  }
+
   @Get(':id')
   @RateLimit({
     keyPrefix: 'one_user',

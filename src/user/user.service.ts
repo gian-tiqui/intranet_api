@@ -48,6 +48,28 @@ export class UserService {
     };
   }
 
+  async getByEmployeeId(employeeId: number) {
+    const user = await this.prismaService.user.findFirst({
+      where: { employeeId: +employeeId },
+      select: {
+        password: false,
+        department: true,
+        dob: true,
+        email: true,
+        firstName: true,
+        gender: true,
+        id: true,
+        lastName: true,
+        middleName: true,
+      },
+    });
+
+    if (!user)
+      throw new NotFoundException(`User with the id: ${employeeId} not found`);
+
+    return user;
+  }
+
   async getById(userId: number) {
     const user = await this.prismaService.user.findFirst({
       where: { id: Number(userId) },
