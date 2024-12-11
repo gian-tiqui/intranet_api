@@ -62,6 +62,7 @@ export class UserService {
         lastName: true,
         middleName: true,
         employeeId: true,
+        confirmed: true,
       },
     });
 
