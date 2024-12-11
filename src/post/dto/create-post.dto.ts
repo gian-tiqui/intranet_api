@@ -21,4 +21,7 @@ export class CreatePostDto {
 
   @IsOptional()
   extractedText: string;
+
+  @IsOptional()
+  subfolderId: number;
 }
