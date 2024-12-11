@@ -77,6 +77,7 @@ export class PostService {
       ...(deptId
         ? [{ postDepartments: { some: { deptId: Number(deptId) } } }]
         : []),
+      { typeId: null },
     ];
 
     const posts = await this.prismaService.post.findMany({
@@ -138,8 +139,8 @@ export class PostService {
       orderBy: {
         createdAt: direction === 'desc' ? 'desc' : 'asc',
       },
-      skip: Number(offset),
-      take: Number(limit),
+      skip: +offset,
+      take: +limit,
     });
 
     const count = await this.prismaService.post.count({
@@ -231,6 +232,9 @@ export class PostService {
           public: createPostDto.public === 'public',
           lid: Number(createPostDto.lid),
           extractedText: createPostDto.extractedText,
+          ...(createPostDto.subfolderId && {
+            folderId: +createPostDto.subfolderId,
+          }),
         },
       });
 
