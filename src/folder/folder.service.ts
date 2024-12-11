@@ -11,14 +11,10 @@ export class FolderService {
       include: {
         subfolders: {
           include: {
-            posts: {
-              include: { postType: true },
-            },
+            posts: true,
           },
         },
-        posts: {
-          include: { postType: true },
-        },
+        posts: true,
       },
     });
   }
@@ -57,9 +53,6 @@ export class FolderService {
         folderId,
         ...(typeId ? { typeId } : {}),
       },
-      include: {
-        postType: true,
-      },
     });
   }
 
@@ -69,14 +62,10 @@ export class FolderService {
       include: {
         subfolders: {
           include: {
-            posts: {
-              include: { postType: true },
-            },
+            posts: true,
           },
         },
-        posts: {
-          include: { postType: true },
-        },
+        posts: true,
       },
     });
   }

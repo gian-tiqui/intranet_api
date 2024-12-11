@@ -19,7 +19,6 @@ import { EditLogsModule } from './edit-logs/edit-logs.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { FolderModule } from './folder/folder.module';
-import { PostTypeModule } from './post-type/post-type.module';
 
 @Module({
   imports: [
@@ -65,7 +64,6 @@ import { PostTypeModule } from './post-type/post-type.module';
     PostDepartmentModule,
     EditLogsModule,
     FolderModule,
-    PostTypeModule,
   ],
   providers: [
     {
