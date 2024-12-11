@@ -77,6 +77,7 @@ export class PostService {
       ...(deptId
         ? [{ postDepartments: { some: { deptId: Number(deptId) } } }]
         : []),
+      { typeId: null },
     ];
 
     const posts = await this.prismaService.post.findMany({
