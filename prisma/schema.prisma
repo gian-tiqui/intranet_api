@@ -73,7 +73,6 @@ model Post {
   public             Boolean        @default(true)
   extractedText      String?        @db.Text
   lid                Int            
-  typeId             Int?
   folderId           Int?
 
   employeeLevel      EmployeeLevel  @relation(fields: [lid], references: [lid])
@@ -83,7 +82,6 @@ model Post {
   notifications      Notification[]
   postDepartments    PostDepartment[] 
   imageLocations     ImageLocations[] 
-  postType           PostType?       @relation(fields: [typeId], references: [id])
   folder             Folder?         @relation(fields: [folderId], references: [id])
 }
 
@@ -96,13 +94,6 @@ model Folder {
   subfolders         Folder[]     @relation("SubFolders")
   posts              Post[]
   icon               String?
-}
-
-model PostType {
-  id                 Int            @id @default(autoincrement())
-  type               String
-
-  posts              Post[]
 }
 
 model ImageLocations {
