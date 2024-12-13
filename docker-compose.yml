@@ -5,8 +5,7 @@ services:
     ports:
       - '8081:8081'
     environment:
-      DATABASE_URL: postgresql://postgres:boss%3Fbossing%21@host.docker.internal:5432/db_intranet_test
-    extra_hosts:
-      - 'host.docker.internal:172.25.65.93'
+      # Use host.docker.internal or the host's IP
+      DATABASE_URL: postgresql://postgres:boss%3Fbossing%21@10.255.255.254:5432/db_intranet_test
     command: >
       sh -c "npm run start:prod"
