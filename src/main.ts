@@ -19,7 +19,9 @@ async function bootstrap() {
 
   app.use(new ApiKeyMiddleware().use);
 
-  await app.listen(PORT);
+  await app.listen(PORT, '0.0.0.0', () =>
+    console.log(`Server started at port ${PORT}`),
+  );
 }
 
 bootstrap();

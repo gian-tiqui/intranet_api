@@ -4,7 +4,13 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN apk add --no-cache openssl
+# Main mirror
+# RUN apk add --no-cache openssl
+
+# Different mirror
+RUN echo "https://mirror1.hs-esslingen.de/pub/Mirrors/alpine/v3.21/main" > /etc/apk/repositories \
+    && echo "https://mirror1.hs-esslingen.de/pub/Mirrors/alpine/v3.21/community" >> /etc/apk/repositories \
+    && apk update && apk add --no-cache openssl
 
 RUN npm install
 
