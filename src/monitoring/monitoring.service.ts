@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class MonitoringService {
   constructor(private readonly prismaService: PrismaService) {}
-
+  //
   async checkReadStatus(userId: number, postId: number) {
     if (!postId) return;
     const read = await this.prismaService.postReader.findFirst({
