@@ -6,6 +6,6 @@ export class AppController {
 
   @Get()
   welcome() {
-    return 'hi';
+    return 'Intranet API';
   }
 }

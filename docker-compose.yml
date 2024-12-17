@@ -9,3 +9,5 @@ services:
       # DATABASE_URL: postgresql://postgres:boss%3Fbossing%21@host.docker.internal:5432/db_intranet_test
     command: >
       sh -c "npm run start:prod"
+    volumes:
+      - ./uploads/post:/usr/src/app/uploads/post
