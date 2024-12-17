@@ -1,13 +1,14 @@
-version: '3'
+version: '3.8'
+
 services:
-  intranet_api:
-    build: .
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./uploads:/usr/src/app/uploads
     ports:
       - '8081:8081'
-    environment:
-      DATABASE_URL: postgresql://gntq:meowmeow2001%3B@172.25.65.93:5432/db_intranet_test
-      # DATABASE_URL: postgresql://postgres:boss%3Fbossing%21@host.docker.internal:5432/db_intranet_test
-    command: >
-      sh -c "npm run start:prod"
-    volumes:
-      - ./uploads/post:/usr/src/app/uploads/post
+
+volumes:
+  uploads:
