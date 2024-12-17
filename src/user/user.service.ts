@@ -288,4 +288,27 @@ export class UserService {
       message: 'Deactivation successful',
     };
   }
+
+  async setSecretQuestion(question: string, answer: string, userId: number) {
+    const hashedQuestion: string = await argon.hash(question);
+    const hashedAnswer: string = await argon.hash(answer);
+
+    const result = await this.prismaService.user.update({
+      where: { id: +userId },
+      data: {
+        secretQuestion1: hashedQuestion,
+        secretAnswer1: hashedAnswer,
+      },
+    });
+
+    await this.prismaService.editLogs.create({
+      data: {
+        log: result,
+        updatedBy: +userId,
+        editTypeId: 3,
+      },
+    });
+
+    return { message: 'Secret question has been set' };
+  }
 }
