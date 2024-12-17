@@ -14,6 +14,8 @@ RUN echo "https://mirror1.hs-esslingen.de/pub/Mirrors/alpine/v3.21/main" > /etc/
 
 RUN npm install
 
+RUN mkdir -p /usr/src/app/uploads
+
 COPY . .
 
 # run when deploying in actual VM
