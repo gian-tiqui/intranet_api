@@ -31,6 +31,10 @@ model User {
   employeeId         Int?          @unique
   lid                Int      
   confirmed          Boolean       @default(false)
+  secretQuestion1    String?
+  secretAnswer1      String?
+  secretQuestion2    String?
+  secretAnswer2      String?
 
   notifications      Notification[]
   posts              Post[]
