@@ -113,4 +113,19 @@ export class UserController {
   ) {
     return this.userService.deactivateUser(password, userId, deactivatorId);
   }
+
+  @RateLimit({
+    keyPrefix: 'set_secret_question',
+    points: 5,
+    duration: 60,
+    errorMessage: 'Please wait before setting new question.',
+  })
+  @Post('secret-question')
+  setSecretQuestion(
+    @Query('question') question: string,
+    @Query('answer') answer: string,
+    @Query('userId') userId: number,
+  ) {
+    return this.userService.setSecretQuestion(question, answer, userId);
+  }
 }
