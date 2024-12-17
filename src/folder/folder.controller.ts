@@ -11,12 +11,19 @@ import {
 } from '@nestjs/common';
 import { FolderService } from './folder.service';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
+import { RateLimit } from 'nestjs-rate-limiter';
 
 @UseGuards(JwtAuthGuard)
 @Controller('folders')
 export class FolderController {
   constructor(private readonly folderService: FolderService) {}
 
+  @RateLimit({
+    keyPrefix: 'find_main_folders',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before fetching all unread notifications.',
+  })
   @Get()
   async getFolders() {
     return this.folderService.getFolders();
