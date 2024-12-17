@@ -206,7 +206,15 @@ export class PostService {
       const imageLocations = [];
 
       if (memoFiles && memoFiles.length > 0) {
-        const postDir = path.join(__dirname, '..', '..', 'uploads', 'post');
+        const postDir = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'uploads',
+          'post',
+        );
+
         await fs.mkdir(postDir, { recursive: true });
 
         for (const file of memoFiles) {
@@ -301,7 +309,7 @@ export class PostService {
     const imageLocations = [];
 
     if (newFiles && newFiles.length > 0) {
-      const postDir = path.join(__dirname, '..', '..', 'uploads', 'post');
+      const postDir = path.join(__dirname, '..', '..', '..', 'uploads', 'post');
       await fs.mkdir(postDir, { recursive: true });
 
       for (const file of newFiles) {
