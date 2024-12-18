@@ -50,8 +50,11 @@ async function main() {
     { departmentName: 'Administrator', departmentCode: 'ADMIN' },
     { departmentName: 'Marketing', departmentCode: 'MRKT' },
     { departmentName: 'Accounting', departmentCode: 'ACNT' },
-    { departmentName: 'Credit and Collection', departmentCode: 'CC' },
+    { departmentName: 'Ancillary', departmentCode: 'ANC' },
     { departmentName: 'Nursing Services Department', departmentCode: 'NSD' },
+    { departmentName: 'Supply Chain', departmentCode: 'SC' },
+    { departmentName: 'Support Services', departmentCode: 'SSD' },
+    { departmentName: 'Customer Experience', departmentCode: 'CED' },
     { departmentName: 'Executive', departmentCode: 'EXEC' },
   ];
 
@@ -64,7 +67,7 @@ async function main() {
   }
   console.log('Department seeded.');
 
-  const departmentsCount = 9;
+  const departmentsCount = departments.length;
   const usersPerDepartment = 6;
 
   const users = [];
