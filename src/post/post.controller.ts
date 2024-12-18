@@ -42,8 +42,13 @@ export class PostController {
   }
 
   @Get('my-posts')
-  findAllSelfPosts(@Query('userId') userId: number) {
-    return this.postService.findAllSelfPosts(userId);
+  findAllSelfPosts(
+    @Query('userId') userId: number,
+    @Query('direction') direction: string,
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ) {
+    return this.postService.findAllSelfPosts(userId, direction, offset, limit);
   }
 
   // This endpoint returns the filtered posts [filters are blank by default and will return all of the posts]
@@ -89,11 +94,10 @@ export class PostController {
   })
   findManyByLid(
     @Param('lid') lid: number,
-    @Query('deptId') deptId: number,
     @Query('offset') offset: number,
     @Query('limit') limit: number,
   ) {
-    return this.postService.findManyByLid(lid, deptId, offset, limit);
+    return this.postService.findManyByLid(lid, offset, limit);
   }
 
   // This endpoint returns the post with the given id

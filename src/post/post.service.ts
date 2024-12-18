@@ -30,14 +30,28 @@ export class PostService {
     });
   }
 
-  async findAllSelfPosts(userId: number) {
+  async findAllSelfPosts(
+    userId: number,
+    direction: string,
+    offset: number,
+    limit: number,
+  ) {
     const ownedPosts = await this.prismaService.post.findMany({
+      where: {
+        userId: Number(userId),
+      },
+      orderBy: { createdAt: direction === 'desc' ? 'desc' : 'asc' },
+      skip: +offset,
+      take: +limit,
+    });
+
+    const count = await this.prismaService.post.count({
       where: {
         userId: Number(userId),
       },
     });
 
-    return ownedPosts;
+    return { posts: ownedPosts, count };
   }
 
   async findAll(
@@ -119,19 +133,14 @@ export class PostService {
 
   async findManyByLid(
     lid: number,
-    deptId: number,
     offset: number = 0,
     limit: number = 10,
     direction: string = 'desc',
   ) {
-    const opts: any[] = [
-      { lid: Number(lid) },
-      { postDepartments: { some: { deptId: Number(deptId) } } },
-    ];
-
+    console.log(lid, offset, limit, direction);
     const posts = await this.prismaService.post.findMany({
       where: {
-        AND: opts,
+        lid: +lid,
       },
       include: {
         imageLocations: true,
@@ -145,7 +154,7 @@ export class PostService {
 
     const count = await this.prismaService.post.count({
       where: {
-        AND: opts,
+        lid: +lid,
       },
     });
 
@@ -204,6 +213,8 @@ export class PostService {
   async create(createPostDto: CreatePostDto, memoFiles: Express.Multer.File[]) {
     try {
       const imageLocations = [];
+
+      console.log(createPostDto.extractedText.length);
 
       if (memoFiles && memoFiles.length > 0) {
         const postDir = path.join(
@@ -326,6 +337,11 @@ export class PostService {
       }
     }
 
+    const updatedExtractedText =
+      updatePostDto.addPhoto !== 'true'
+        ? updatePostDto.extractedText
+        : updatePostDto.extractedText + post.extractedText;
+
     const updatedPost = await this.prismaService.post.update({
       where: { pid: id },
       data: {
@@ -333,7 +349,7 @@ export class PostService {
         message: updatePostDto.message,
         public: updatePostDto.public === 'public',
         lid: Number(updatePostDto.lid),
-        extractedText: updatePostDto.extractedText,
+        extractedText: updatedExtractedText,
         edited: true,
       },
     });
