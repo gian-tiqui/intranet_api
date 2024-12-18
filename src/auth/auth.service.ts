@@ -515,11 +515,39 @@ export class AuthService {
     };
   }
 
-  async forgotPassword(employeeId: number, secretCode: string, deptId: number) {
+  async forgotPassword(
+    employeeId: number,
+    answer: string,
+    newPassword: string,
+  ) {
+    const user = await this.prisma.user.findFirst({
+      where: { employeeId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isAnswerCorrect = await argon.verify(user.secretAnswer1, answer);
+    if (!isAnswerCorrect) {
+      throw new BadRequestException('Incorrect answer');
+    }
+
+    if (newPassword.length < 8) {
+      throw new BadRequestException(
+        'Password must be at least 8 characters long',
+      );
+    }
+
+    const hashedPassword = await argon.hash(newPassword);
+
+    await this.prisma.user.update({
+      where: { employeeId },
+      data: { password: hashedPassword },
+    });
+
     return {
-      employeeId: +employeeId,
-      secretCode,
-      deptId: +deptId,
+      message: 'Password reset successfully',
     };
   }
 
