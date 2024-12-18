@@ -137,7 +137,6 @@ export class PostService {
     limit: number = 10,
     direction: string = 'desc',
   ) {
-    console.log(lid, offset, limit, direction);
     const posts = await this.prismaService.post.findMany({
       where: {
         lid: +lid,
@@ -213,8 +212,6 @@ export class PostService {
   async create(createPostDto: CreatePostDto, memoFiles: Express.Multer.File[]) {
     try {
       const imageLocations = [];
-
-      console.log(createPostDto.extractedText.length);
 
       if (memoFiles && memoFiles.length > 0) {
         const postDir = path.join(
