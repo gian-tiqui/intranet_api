@@ -17,7 +17,7 @@ const REGISTER_LIMIT = 5;
 const VERIFY_LIMIT = 5;
 const LOGIN_LIMIT = 10;
 const LOGOUT_LIMIT = 5;
-const REFRESH_LIMIT = 50;
+const REFRESH_LIMIT = 500;
 
 @Controller('auth')
 export class AuthController {
@@ -61,6 +61,11 @@ export class AuthController {
     errorMessage: 'Please wait before logging in again.',
   })
   login(@Body() loginDto: LoginDto) {
+    const employeeIdChecker = Number.parseInt(loginDto.employeeId, 10);
+
+    if (isNaN(employeeIdChecker))
+      throw new BadRequestException(`Your employee id should be a number`);
+
     return this.authService.login(loginDto);
   }
 
