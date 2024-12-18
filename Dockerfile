@@ -19,7 +19,7 @@ RUN mkdir -p /usr/src/app/uploads
 COPY . .
 
 # run when deploying in actual VM
-# RUN npx prisma migrate deploy
+RUN npx prisma migrate deploy
 
 RUN npx prisma generate
 
