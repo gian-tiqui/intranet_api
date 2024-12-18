@@ -55,8 +55,6 @@ async function main() {
     { departmentName: 'Executive', departmentCode: 'EXEC' },
   ];
 
-  await prisma.department.deleteMany();
-
   for (const department of departments) {
     await prisma.department.upsert({
       where: { departmentName: department.departmentName },
@@ -67,14 +65,26 @@ async function main() {
   console.log('Department seeded.');
 
   const departmentsCount = 9;
-  const usersPerDepartment = 4;
+  const usersPerDepartment = 6;
 
   const users = [];
+  let employeeIdCounter = 1010;
 
   for (let deptId = 1; deptId <= departmentsCount; deptId++) {
     for (let i = 0; i < usersPerDepartment; i++) {
-      const lid = i < 2 ? i + 3 : 1;
-      const email = `user${deptId}${i}${uuidv4()}@example.com`;
+      let lid;
+
+      if (i === 0) {
+        lid = 2;
+      } else if (i === 1) {
+        lid = 3;
+      } else if (i === 2) {
+        lid = 4;
+      } else {
+        lid = 1;
+      }
+
+      const email = `user${deptId}${i}${uuidv4()}@westlakemed.com.ph`;
       const password = await argon.hash('password1');
 
       users.push({
@@ -93,15 +103,14 @@ async function main() {
         dob: new Date(1990, deptId % 12, 15 + i).toISOString(),
         gender: i % 2 === 0 ? 'Female' : 'Male',
         deptId,
-        employeeId: 1000 + deptId * 10 + i + Math.floor(Math.random() * 1000),
+        employeeId: employeeIdCounter++,
         lid,
         confirmed: lid >= 3 ? true : false,
       });
     }
   }
 
-  // Optionally delete existing users
-  await prisma.user.deleteMany(); // Ensure no duplicates
+  await prisma.user.deleteMany();
 
   for (const user of users) {
     await prisma.user.create({
