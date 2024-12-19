@@ -106,7 +106,7 @@ export class NotificationService {
     isRead?: boolean,
     deptId?: number,
   ) {
-    return await this.prismaService.notification.findMany({
+    const notifications = await this.prismaService.notification.findMany({
       where: {
         user: {
           lid: { lte: Number(lid) },
@@ -115,11 +115,12 @@ export class NotificationService {
         ...(userId && { userId: Number(userId) }),
         ...(isRead !== undefined && { isRead: isRead }),
         ...(deptId && { deptId: Number(deptId) }),
-        ...(lid && { post: { lid: { lte: Number(lid) } } }),
       },
 
       orderBy: { createdAt: 'desc' },
     });
+
+    return notifications;
   }
 
   // Fetch a single notification by ID
@@ -163,10 +164,16 @@ export class NotificationService {
 
     const notificationMessage = `${await this.getUserName(userId)} commented on your post: '${await this.getPostMessage(postId)}'`;
 
-    return this.createNotification(post.userId, notificationMessage, {
-      postId,
-      deptId: departmentId,
-    });
+    const createdNotif = this.createNotification(
+      post.userId,
+      notificationMessage,
+      {
+        postId,
+        deptId: departmentId,
+      },
+    );
+
+    return createdNotif;
   }
 
   // Notify about a reply on a comment
@@ -179,6 +186,7 @@ export class NotificationService {
           select: {
             post: {
               select: {
+                userId: true,
                 postDepartments: {
                   select: {
                     deptId: true,
@@ -201,10 +209,16 @@ export class NotificationService {
 
     const notificationMessage = `${await this.getUserName(userId)} replied to your comment: '${await this.getCommentMessage(commentId)}'`;
 
-    return this.createNotification(comment.userId, notificationMessage, {
-      commentId,
-      deptId: departmentId,
-    });
+    const createdNotif = this.createNotification(
+      comment.parentComment.post.userId,
+      notificationMessage,
+      {
+        commentId,
+        deptId: departmentId,
+      },
+    );
+
+    return createdNotif;
   }
 
   // Notify users in the department about a new post
@@ -239,7 +253,7 @@ export class NotificationService {
     message: string,
     relationIds: { postId?: number; commentId?: number; deptId?: number },
   ) {
-    return this.prismaService.notification.create({
+    const retval = this.prismaService.notification.create({
       data: {
         userId: userId,
         postId: Number(relationIds.postId) || null,
@@ -249,6 +263,8 @@ export class NotificationService {
         deptId: Number(relationIds.deptId) || null,
       },
     });
+
+    return retval;
   }
 
   // Get the user's full name

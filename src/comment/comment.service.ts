@@ -82,6 +82,7 @@ export class CommentService {
           message: createCommentDto.message,
           parentId: Number(createCommentDto.parentId),
         },
+        include: { parentComment: { include: { post: true } } },
       });
 
       return createdComment;
