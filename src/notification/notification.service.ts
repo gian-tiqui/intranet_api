@@ -116,7 +116,7 @@ export class NotificationService {
         ...(isRead !== undefined && { isRead: isRead }),
         ...(deptId && { deptId: Number(deptId) }),
       },
-
+      include: { comment: { include: { parentComment: true, post: true } } },
       orderBy: { createdAt: 'desc' },
     });
 
