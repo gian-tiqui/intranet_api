@@ -4,9 +4,21 @@ import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log('Seeding database...');
+const departments = [
+  { departmentName: 'Human Resource', departmentCode: 'HR' },
+  { departmentName: 'Quality Management', departmentCode: 'QM' },
+  { departmentName: 'Information Technology', departmentCode: 'IT' },
+  { departmentName: 'Marketing', departmentCode: 'MRKT' },
+  { departmentName: 'Accounting', departmentCode: 'ACNT' },
+  { departmentName: 'Ancillary', departmentCode: 'ANC' },
+  { departmentName: 'Nursing Services Department', departmentCode: 'NSD' },
+  { departmentName: 'Supply Chain', departmentCode: 'SC' },
+  { departmentName: 'Support Services', departmentCode: 'SSD' },
+  { departmentName: 'Customer Experience', departmentCode: 'CED' },
+  { departmentName: 'Executive', departmentCode: 'EXEC' },
+];
 
+async function seedEditTypes() {
   const editTypes = [
     { id: 1, type: 'Post' },
     { id: 2, type: 'Comment' },
@@ -25,7 +37,9 @@ async function main() {
     });
   }
   console.log('EditType seeded.');
+}
 
+async function seedEmployeeLevel() {
   const employeeLevels = [
     { level: 'All Employees' },
     { level: 'Supervisor' },
@@ -42,22 +56,9 @@ async function main() {
     });
   }
   console.log('EmployeeLevel seeded.');
+}
 
-  const departments = [
-    { departmentName: 'Human Resource', departmentCode: 'HR' },
-    { departmentName: 'Quality Management', departmentCode: 'QM' },
-    { departmentName: 'Information Technology', departmentCode: 'IT' },
-    { departmentName: 'Administrator', departmentCode: 'ADMIN' },
-    { departmentName: 'Marketing', departmentCode: 'MRKT' },
-    { departmentName: 'Accounting', departmentCode: 'ACNT' },
-    { departmentName: 'Ancillary', departmentCode: 'ANC' },
-    { departmentName: 'Nursing Services Department', departmentCode: 'NSD' },
-    { departmentName: 'Supply Chain', departmentCode: 'SC' },
-    { departmentName: 'Support Services', departmentCode: 'SSD' },
-    { departmentName: 'Customer Experience', departmentCode: 'CED' },
-    { departmentName: 'Executive', departmentCode: 'EXEC' },
-  ];
-
+async function seedDepartments() {
   for (const department of departments) {
     await prisma.department.upsert({
       where: { departmentName: department.departmentName },
@@ -66,7 +67,9 @@ async function main() {
     });
   }
   console.log('Department seeded.');
+}
 
+async function seedUsers() {
   const departmentsCount = departments.length;
   const usersPerDepartment = 6;
 
@@ -108,7 +111,7 @@ async function main() {
         deptId,
         employeeId: employeeIdCounter++,
         lid,
-        confirmed: lid >= 3 ? true : false,
+        confirmed: lid >= 2 ? true : false,
       });
     }
   }
@@ -122,6 +125,15 @@ async function main() {
   }
 
   console.log('Users seeded.');
+}
+
+async function main() {
+  console.log('Seeding database...');
+
+  seedEditTypes();
+  seedEmployeeLevel();
+  seedDepartments();
+  seedUsers();
 }
 
 main()
