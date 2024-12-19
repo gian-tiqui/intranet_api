@@ -145,6 +145,7 @@ model Comment {
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   post               Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade)
   parentComment      Comment?  @relation("CommentReplies", fields: [parentId], references: [cid])
+  notification       Notification[]
   replies            Comment[] @relation("CommentReplies")
 
   @@index([parentId])
@@ -163,6 +164,7 @@ model Notification {
   post               Post?     @relation(fields: [postId], references: [pid]) 
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   department         Department?  @relation(fields: [deptId], references: [deptId])
+  comment            Comment?  @relation(fields: [commentId], references: [cid])
 }
 
 model EditLogs {
