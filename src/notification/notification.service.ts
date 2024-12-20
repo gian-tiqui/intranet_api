@@ -116,7 +116,11 @@ export class NotificationService {
         ...(isRead !== undefined && { isRead: isRead }),
         ...(deptId && { deptId: Number(deptId) }),
       },
-      include: { comment: { include: { parentComment: true, post: true } } },
+      include: {
+        comment: {
+          include: { parentComment: { include: { post: true } }, post: true },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -142,7 +146,7 @@ export class NotificationService {
   }
 
   // Notify about a reply on a post
-  async notifyPostReply(userId: number, postId: number) {
+  async notifyPostReply(userId: number, postId: number, cid: number) {
     const post = await this.prismaService.post.findFirst({
       where: { pid: Number(postId) },
       select: {
@@ -170,6 +174,7 @@ export class NotificationService {
       {
         postId,
         deptId: departmentId,
+        commentId: cid,
       },
     );
 

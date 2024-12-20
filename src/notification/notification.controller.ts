@@ -68,8 +68,9 @@ export class NotificationController {
   createPostReply(
     @Query('userId') userId: number,
     @Query('postId') postId: number,
+    @Query('cid') cid: number,
   ) {
-    return this.notificationService.notifyPostReply(userId, postId);
+    return this.notificationService.notifyPostReply(userId, postId, cid);
   }
 
   // Create a notification for a reply on a comment
