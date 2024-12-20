@@ -73,7 +73,25 @@ export class PostService {
     const opts: any[] = [
       ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
       ...(search
-        ? [{ extractedText: { contains: search.toLowerCase() } }]
+        ? [
+            {
+              OR: [
+                { extractedText: { contains: search.toLowerCase() } },
+                {
+                  title: {
+                    contains: search.toLowerCase(),
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  message: {
+                    contains: search.toLowerCase(),
+                    mode: 'insensitive',
+                  },
+                },
+              ],
+            },
+          ]
         : []),
       ...(userId ? [{ userId: iUserId }] : []),
       ...(imageLocation
