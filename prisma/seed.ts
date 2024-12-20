@@ -2,6 +2,113 @@ import { PrismaClient } from '@prisma/client';
 import * as argon from 'argon2';
 import { v4 as uuidv4 } from 'uuid';
 
+const yap = console.log;
+
+type UserInfo = {
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  lid: number;
+  deptId: number;
+  gender: string;
+};
+
+const usersInfo: UserInfo[] = [
+  {
+    firstName: 'Jose Mari',
+    lastName: 'Prats',
+    deptId: 9,
+    lid: 5,
+    gender: 'Male',
+  },
+  {
+    firstName: 'Abet',
+    lastName: 'Yaunario',
+    deptId: 9,
+    lid: 5,
+    gender: 'Male',
+  },
+  {
+    firstName: 'Catherine',
+    lastName: 'Carparas',
+    deptId: 9,
+    lid: 5,
+    gender: 'Female',
+  },
+  {
+    firstName: 'Jona',
+    lastName: 'Yapchionco',
+    deptId: 3,
+    lid: 3,
+    gender: 'Female',
+  },
+  {
+    firstName: 'Marie Ana',
+    lastName: 'Alvarez',
+    deptId: 1,
+    lid: 3,
+    gender: 'Female',
+  },
+  {
+    firstName: 'Andy',
+    lastName: 'Pagasa',
+    deptId: 8,
+    lid: 3,
+    gender: 'Male',
+  },
+  {
+    firstName: 'Jason',
+    lastName: 'Abarca',
+    deptId: 5,
+    lid: 3,
+    gender: 'Male',
+  },
+  {
+    firstName: 'Sam',
+    lastName: 'Timtiman',
+    deptId: 4,
+    lid: 3,
+    gender: 'Female',
+  },
+  {
+    firstName: 'Ivy',
+    lastName: 'Tanamal-Perez',
+    deptId: 9,
+    lid: 3,
+    gender: 'Female',
+  },
+  {
+    firstName: 'Cathy',
+    lastName: 'Espinosa',
+    deptId: 2,
+    lid: 3,
+    gender: 'Female',
+  },
+  {
+    firstName: 'Jorrel',
+    lastName: 'Torres',
+    deptId: 8,
+    lid: 3,
+    gender: 'Male',
+  },
+  {
+    firstName: 'Armalyn',
+    lastName: 'Mariano',
+    deptId: 6,
+    lid: 3,
+    gender: 'Female',
+  },
+  {
+    firstName: 'Herbert',
+    lastName: 'Aquino',
+    deptId: 7,
+    lid: 3,
+    gender: 'Male',
+  },
+];
+
+yap(usersInfo);
+
 const prisma = new PrismaClient();
 
 const departments = [
