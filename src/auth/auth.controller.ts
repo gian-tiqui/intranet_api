@@ -17,7 +17,7 @@ const REGISTER_LIMIT = 5;
 const VERIFY_LIMIT = 5;
 const LOGIN_LIMIT = 10;
 const LOGOUT_LIMIT = 5;
-const REFRESH_LIMIT = 500;
+const REFRESH_LIMIT = 1000;
 
 @Controller('auth')
 export class AuthController {
