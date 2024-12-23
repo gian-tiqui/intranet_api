@@ -189,6 +189,7 @@ export class NotificationService {
         userId: true,
         parentComment: {
           select: {
+            userId: true,
             post: {
               select: {
                 userId: true,
@@ -215,7 +216,7 @@ export class NotificationService {
     const notificationMessage = `${await this.getUserName(userId)} replied to your comment: '${await this.getCommentMessage(commentId)}'`;
 
     const createdNotif = this.createNotification(
-      comment.parentComment.post.userId,
+      comment.parentComment.userId,
       notificationMessage,
       {
         commentId,
@@ -293,7 +294,7 @@ export class NotificationService {
 
     if (!post) throw new NotFoundException('Post not found');
 
-    return post.title || post.message;
+    return post.title || post.message || 'Untitled';
   }
 
   // Get comment message by commentId
