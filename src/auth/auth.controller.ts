@@ -99,7 +99,6 @@ export class AuthController {
     @Query('answer') answer: string,
     @Query('newPassword') newPassword: string,
   ) {
-    console.log(employeeId, answer, newPassword);
     if (!employeeId || !answer || !newPassword) {
       throw new BadRequestException('All fields are required');
     }
