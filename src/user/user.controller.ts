@@ -83,7 +83,6 @@ export class UserController {
     errorMessage: 'Please wait before changing the password.',
   })
   changePassword(@Body() changePasswordDto: ChangePasswordDto) {
-    console.log(changePasswordDto);
     return this.userService.changePassword(
       changePasswordDto.userId,
       changePasswordDto.oldPassword,

@@ -48,13 +48,8 @@ export class NotificationController {
     errorMessage: 'Please wait before fetching all notifications.',
   })
   @Get()
-  findAll(
-    @Query('lid') lid: number,
-    @Query('userId') userId?: number,
-    @Query('isRead') isRead?: boolean,
-    @Query('deptId') deptId?: number,
-  ) {
-    return this.notificationService.findAll(lid, userId, isRead, deptId);
+  findAll(@Query('userId') userId?: number, @Query('isRead') isRead?: boolean) {
+    return this.notificationService.findAll(userId, isRead);
   }
 
   // Retrieve a single notification by ID

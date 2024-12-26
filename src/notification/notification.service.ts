@@ -100,21 +100,11 @@ export class NotificationService {
   }
 
   // Fetch all notifications
-  async findAll(
-    lid: number,
-    userId?: number,
-    isRead?: boolean,
-    deptId?: number,
-  ) {
+  async findAll(userId?: number, isRead?: boolean) {
     const notifications = await this.prismaService.notification.findMany({
       where: {
-        user: {
-          lid: { lte: Number(lid) },
-        },
-
         ...(userId && { userId: Number(userId) }),
         ...(isRead !== undefined && { isRead: isRead }),
-        ...(deptId && { deptId: Number(deptId) }),
       },
       include: {
         comment: {
