@@ -157,6 +157,7 @@ export class PostService {
   ) {
     const posts = await this.prismaService.post.findMany({
       where: {
+        public: true,
         lid: +lid,
       },
       include: {
