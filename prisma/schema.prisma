@@ -94,7 +94,7 @@ model Folder {
   name               String
   parentId           Int?
 
-  parentFolder       Folder?      @relation("SubFolders", fields: [parentId], references: [id])
+  parentFolder       Folder?      @relation("SubFolders", fields: [parentId], references: [id], onDelete: Cascade)
   subfolders         Folder[]     @relation("SubFolders")
   posts              Post[]
   icon               String?
