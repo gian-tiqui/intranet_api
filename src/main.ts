@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-// import { ApiKeyMiddleware } from './middleware/api-key.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -16,8 +15,6 @@ async function bootstrap() {
       'Origin, Content-Type, Authorization, X-Requested-With, Cache-Control, x-api-key',
     credentials: true,
   });
-
-  // app.use(new ApiKeyMiddleware().use);
 
   await app.listen(PORT, '0.0.0.0', () =>
     console.log(`Server started at port ${PORT}`),

@@ -52,6 +52,7 @@ export class DepartmentService {
       data: {
         departmentName: createDepartmentDto.departmentName,
         departmentCode: createDepartmentDto.departmentCode,
+        divisionId: createDepartmentDto.divisionId,
       },
     });
 
