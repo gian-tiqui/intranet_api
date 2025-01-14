@@ -35,7 +35,6 @@ model User {
   secretAnswer1      String?
   secretQuestion2    String?
   secretAnswer2      String?
-
   notifications      Notification[]
   posts              Post[]
   comments           Comment[]
@@ -48,7 +47,6 @@ model User {
 model EmployeeLevel {
   lid                Int @id @default(autoincrement())
   level              String
-
   users              User[]
   posts              Post[]
 }
@@ -60,9 +58,20 @@ model Department {
   posts              PostDepartment[] 
   users              User[]
   notifications      Notification[]
-
+  divisionId         Int
+  division           Division       @relation(fields: [divisionId], references: [id], onDelete: Cascade)
   createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+// ANCILLARY, ADMIN, NSD
+model Division {
+  id                Int            @id @default(autoincrement())
+  divisionCode      String         @unique
+  divisionName      String         
+  departments       Department[]    
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 }
 
 model Post {
@@ -70,7 +79,6 @@ model Post {
   userId             Int
   title              String?        @db.VarChar(255)
   message            String?        @db.Text
-  
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   edited             Boolean        @default(false)
@@ -78,7 +86,6 @@ model Post {
   extractedText      String?        @db.Text
   lid                Int            
   folderId           Int?
-
   employeeLevel      EmployeeLevel  @relation(fields: [lid], references: [lid])
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments           Comment[]
@@ -93,28 +100,31 @@ model Folder {
   id                 Int @unique @default(autoincrement())
   name               String
   parentId           Int?
-
   parentFolder       Folder?      @relation("SubFolders", fields: [parentId], references: [id], onDelete: Cascade)
   subfolders         Folder[]     @relation("SubFolders")
   posts              Post[]
   icon               String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 }
 
 model ImageLocations {
   id                 Int            @id @default(autoincrement())
   imageLocation      String
   postId             Int
-
   post               Post           @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 }
 
 model PostDepartment {
   id         Int      @id @default(autoincrement())
   postId     Int
   deptId     Int
-
   post       Post     @relation(fields: [postId], references: [pid], onDelete: Cascade)
   department Department @relation(fields: [deptId], references: [deptId])
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 
   @@unique([postId, deptId])
 }
@@ -125,10 +135,10 @@ model PostReader {
   postId             Int
   userId             Int
   readAt             DateTime       @default(now())
-
   post               Post           @relation(fields: [postId], references: [pid], onDelete: Cascade)
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
   @@unique([postId, userId])
 }
 
@@ -141,7 +151,6 @@ model Comment {
   imageLocation      String?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
-
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   post               Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade)
   parentComment      Comment?  @relation("CommentReplies", fields: [parentId], references: [cid])
@@ -160,6 +169,7 @@ model Notification {
   message            String
   isRead             Boolean   @default(false)
   createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
   
   post               Post?     @relation(fields: [postId], references: [pid]) 
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -173,7 +183,7 @@ model EditLogs {
   updatedBy          Int
   editTypeId         Int
   createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 
   user               User @relation(fields: [updatedBy], references: [id])
   editType           EditType @relation(fields: [editTypeId], references: [id])
@@ -183,4 +193,7 @@ model EditType {
   id                Int         @id @default(autoincrement())
   type              String      
   editLogs          EditLogs[]
+
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 }
