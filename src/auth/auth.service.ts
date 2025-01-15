@@ -470,8 +470,6 @@ export class AuthService {
 
   // Validate if the refresh token exists in the user data and generate a new access token if valid
   async refresh(refreshTokenDto: RefreshTokenDto) {
-    console.log('refreshing token...');
-
     const { refreshToken } = refreshTokenDto;
 
     if (!refreshToken) {
