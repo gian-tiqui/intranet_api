@@ -16,6 +16,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // 10.10.10.31 in production
+
   await app.listen(PORT, '0.0.0.0', () =>
     console.log(`Server started at port ${PORT}`),
   );
