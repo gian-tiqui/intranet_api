@@ -9,14 +9,14 @@ async function bootstrap() {
   const liveUrl = process.env.VERCEL_ENV;
 
   app.enableCors({
-    origin: ['http://localhost:3000', liveUrl],
+    origin: ['http://10.10.10.30:3000', liveUrl],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders:
       'Origin, Content-Type, Authorization, X-Requested-With, Cache-Control, x-api-key',
     credentials: true,
   });
 
-  await app.listen(PORT, '10.10.10.30', () =>
+  await app.listen(PORT, '0.0.0.0', () =>
     console.log(`Server started at port ${PORT}`),
   );
 }
