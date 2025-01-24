@@ -1,8 +1,8 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
+  ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -36,7 +36,7 @@ export class AuthController {
     duration: 60,
     errorMessage: 'Please wait before entering an id.',
   })
-  verify(@Query('employeeId') employeeId: number) {
+  verify(@Query('employeeId', ParseIntPipe) employeeId: number) {
     return this.authService.verify(employeeId);
   }
 
@@ -61,11 +61,6 @@ export class AuthController {
     errorMessage: 'Please wait before logging in again.',
   })
   login(@Body() loginDto: LoginDto) {
-    const employeeIdChecker = Number.parseInt(loginDto.employeeId, 10);
-
-    if (isNaN(employeeIdChecker))
-      throw new BadRequestException(`Your employee id should be a number`);
-
     return this.authService.login(loginDto);
   }
 
@@ -95,19 +90,10 @@ export class AuthController {
 
   @Post('forgot-password')
   forgotPassword(
-    @Query('employeeId') employeeId: string,
-    @Query('answer') answer: string,
-    @Query('newPassword') newPassword: string,
+    @Query('employeeId', ParseIntPipe) employeeId: number,
+    @Query('answer', ParseIntPipe) answer: string,
+    @Query('newPassword', ParseIntPipe) newPassword: string,
   ) {
-    if (!employeeId || !answer || !newPassword) {
-      throw new BadRequestException('All fields are required');
-    }
-
-    const employeeIdAsNumber = parseInt(employeeId, 10);
-    if (isNaN(employeeIdAsNumber)) {
-      throw new BadRequestException('Invalid employee ID format');
-    }
-
-    return this.authService.forgotPassword(+employeeId, answer, newPassword);
+    return this.authService.forgotPassword(employeeId, answer, newPassword);
   }
 }

@@ -432,9 +432,7 @@ export class AuthService {
       loginDto.password,
     );
 
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Password invalid');
-    }
+    if (!isPasswordValid) throw new UnauthorizedException('Password invalid');
 
     const accessToken = await this.signToken(
       user.id,
