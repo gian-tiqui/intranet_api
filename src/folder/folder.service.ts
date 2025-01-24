@@ -31,7 +31,7 @@ export class FolderService {
 
   async createSubfolder(name: string, parentId: number) {
     const parentFolder = await this.prisma.folder.findUnique({
-      where: { id: Number(parentId) },
+      where: { id: parentId },
     });
 
     if (!parentFolder) {
@@ -41,7 +41,7 @@ export class FolderService {
     return this.prisma.folder.create({
       data: {
         name,
-        parentId: Number(parentId),
+        parentId: parentId,
         icon: 'mynaui:folder-two',
       },
     });
@@ -58,7 +58,7 @@ export class FolderService {
 
   async getFolderById(folderId: number) {
     return this.prisma.folder.findUnique({
-      where: { id: +folderId },
+      where: { id: folderId },
       include: {
         subfolders: {
           include: {
@@ -72,14 +72,14 @@ export class FolderService {
 
   async updateFolder(folderId: number, name: string) {
     return this.prisma.folder.update({
-      where: { id: +folderId },
+      where: { id: folderId },
       data: { name },
     });
   }
 
   async deleteFolder(folderId: number) {
     const folder = await this.prisma.folder.findUnique({
-      where: { id: +folderId },
+      where: { id: folderId },
     });
 
     if (!folder) {
@@ -87,13 +87,13 @@ export class FolderService {
     }
 
     return this.prisma.folder.delete({
-      where: { id: +folderId },
+      where: { id: folderId },
     });
   }
 
   async getAllPostsInFolder(folderId: number) {
     const folderWithSubfolders = await this.prisma.folder.findUnique({
-      where: { id: +folderId },
+      where: { id: folderId },
       include: {
         subfolders: {
           include: { posts: true },

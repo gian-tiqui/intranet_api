@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -24,9 +23,6 @@ export class DepartmentService {
 
   // This method finds a department and throws not found if it doesnt exist
   async findOneById(id: number) {
-    if (typeof id !== 'number')
-      throw new BadRequestException('ID must be a number');
-
     const department = await this.prismaService.department.findFirst({
       where: { deptId: id },
       include: { users: true, posts: true },
@@ -50,9 +46,7 @@ export class DepartmentService {
 
     const createdDepartment = await this.prismaService.department.create({
       data: {
-        departmentName: createDepartmentDto.departmentName,
-        departmentCode: createDepartmentDto.departmentCode,
-        divisionId: createDepartmentDto.divisionId,
+        ...createDepartmentDto,
       },
     });
 
@@ -64,23 +58,23 @@ export class DepartmentService {
   }
 
   async updateById(deptId: number, updateDeptDto: UpdateDeptDto) {
-    const did = Number(deptId);
-
     const department = await this.prismaService.department.findFirst({
-      where: { deptId: did },
+      where: { deptId },
     });
 
     if (!department)
-      throw new NotFoundException(`Department with the id: ${did} not found`);
+      throw new NotFoundException(
+        `Department with the id: ${deptId} not found`,
+      );
 
     const updatedDepartment = await this.prismaService.department.update({
-      where: { deptId: did },
+      where: { deptId },
       data: updateDeptDto,
     });
 
     if (updateDeptDto) {
       return {
-        message: `User with the id ${did} was updated`,
+        message: `User with the id ${deptId} was updated`,
         statusCode: 202,
         data: updatedDepartment,
       };
@@ -89,23 +83,18 @@ export class DepartmentService {
 
   // This method deletes a department with the provided ID in the url
   async deleteById(deptId: number) {
-    const iDeptId = Number(deptId);
-
-    if (typeof iDeptId !== 'number')
-      throw new BadRequestException('ID must be a number');
-
     const department = await this.prismaService.department.findFirst({
       where: {
-        deptId: iDeptId,
+        deptId,
       },
     });
 
     if (!department)
-      throw new NotFoundException(`Department with the ${iDeptId} not found`);
+      throw new NotFoundException(`Department with the ${deptId} not found`);
 
     const deletedDept = await this.prismaService.department.delete({
       where: {
-        deptId: iDeptId,
+        deptId,
       },
     });
 

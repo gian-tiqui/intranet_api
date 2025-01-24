@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -42,7 +41,7 @@ export class CommentService {
     const replies = await this.prismaService.comment.findMany({
       where: {
         postId: { equals: null },
-        ...(parentId && { parentId: Number(parentId) }),
+        ...(parentId && { parentId }),
       },
       include: { user: { select: { firstName: true, lastName: true } } },
     });
@@ -50,12 +49,7 @@ export class CommentService {
     return replies;
   }
 
-  async findOneById(_cid: number) {
-    const cid = Number(_cid);
-
-    if (typeof cid !== 'number')
-      throw new BadRequestException('ID must be a number');
-
+  async findOneById(cid: number) {
     const comment = await this.prismaService.comment.findFirst({
       where: {
         cid,
@@ -77,10 +71,7 @@ export class CommentService {
     try {
       const createdComment = await this.prismaService.comment.create({
         data: {
-          userId: Number(createCommentDto.userId),
-          postId: Number(createCommentDto.postId),
-          message: createCommentDto.message,
-          parentId: Number(createCommentDto.parentId),
+          ...createCommentDto,
         },
         include: { parentComment: { include: { post: true } } },
       });
@@ -92,13 +83,9 @@ export class CommentService {
   }
 
   async updateById(cid: number, updateCommentDto: UpdateCommentDto) {
-    const id = Number(cid);
-    if (typeof id !== 'number')
-      throw new BadRequestException('ID must be a number');
-
     const comment = await this.prismaService.comment.findFirst({
       where: {
-        cid: id,
+        cid,
       },
     });
 
@@ -116,7 +103,7 @@ export class CommentService {
     }
 
     if (!comment)
-      throw new NotFoundException(`Comment with the id ${id} not found`);
+      throw new NotFoundException(`Comment with the id ${cid} not found`);
 
     const updateComment = {
       message: updateCommentDto.message,
@@ -124,7 +111,7 @@ export class CommentService {
     };
 
     const updatedComment = await this.prismaService.comment.update({
-      where: { cid: id },
+      where: { cid },
       data: updateComment,
     });
 
@@ -136,25 +123,19 @@ export class CommentService {
   }
 
   async deleteById(cid: number) {
-    const id = Number(cid);
-
-    if (typeof id !== 'number') {
-      throw new BadRequestException('ID must be a number');
-    }
-
     const comment = await this.prismaService.comment.findFirst({
       where: {
-        cid: id,
+        cid,
       },
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment with the id ${id} not found`);
+      throw new NotFoundException(`Comment with the id ${cid} not found`);
     }
 
     const deletedComment = await this.prismaService.comment.delete({
       where: {
-        cid: id,
+        cid,
       },
     });
 

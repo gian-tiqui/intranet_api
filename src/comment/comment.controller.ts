@@ -45,7 +45,7 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait before fetching the replies.',
   })
-  findAllReplies(@Query('parentId') parentId?: number) {
+  findAllReplies(@Query('parentId', ParseIntPipe) parentId?: number) {
     return this.commentService.findAllReplies(parentId);
   }
 
@@ -56,7 +56,7 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait before finding a comment by id',
   })
-  findById(@Param('id') cid: number) {
+  findById(@Param('id', ParseIntPipe) cid: number) {
     return this.commentService.findOneById(cid);
   }
 
@@ -78,7 +78,10 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait a few seconds before updating your comment.',
   })
-  updateById(@Param('id') cid, @Body() updateCommentDto: UpdateCommentDto) {
+  updateById(
+    @Param('id', ParseIntPipe) cid,
+    @Body() updateCommentDto: UpdateCommentDto,
+  ) {
     return this.commentService.updateById(cid, updateCommentDto);
   }
 
@@ -89,7 +92,7 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait a few seconds before deleting a comment.',
   })
-  deleteById(@Param('id') cid: number) {
+  deleteById(@Param('id', ParseIntPipe) cid: number) {
     return this.commentService.deleteById(cid);
   }
 }
