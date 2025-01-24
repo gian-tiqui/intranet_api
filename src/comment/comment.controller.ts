@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -33,7 +34,7 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait before fetching the comments.',
   })
-  findAll(@Query('userId') userId: number) {
+  findAll(@Query('userId', ParseIntPipe) userId: number) {
     return this.commentService.findAll(userId);
   }
 

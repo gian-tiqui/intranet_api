@@ -4,21 +4,27 @@ import {
   IsOptional,
   IsString,
   IsDate,
+  IsInt,
 } from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
+  @IsOptional()
   email: string;
 
+  @IsString()
   @IsNotEmpty()
   password: string;
 
+  @IsString()
   @IsNotEmpty()
   firstName: string;
 
   @IsOptional()
+  @IsString()
   middleName?: string;
 
+  @IsString()
   @IsNotEmpty()
   lastName: string;
 
@@ -58,12 +64,15 @@ export class RegisterDto {
   @IsString()
   gender?: string;
 
+  @IsInt()
   @IsNotEmpty()
   deptId: number;
 
   @IsNotEmpty()
+  @IsInt()
   employeeId: number;
 
+  @IsInt()
   @IsNotEmpty()
   lid: number;
 }

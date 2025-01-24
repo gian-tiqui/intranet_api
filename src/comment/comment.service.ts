@@ -16,7 +16,7 @@ export class CommentService {
     const comments = await this.prismaService.comment.findMany({
       where: {
         parentId: null,
-        ...(userId && { userId: userId }),
+        ...(userId && { userId }),
       },
       include: {
         user: { select: { firstName: true, lastName: true, id: true } },
