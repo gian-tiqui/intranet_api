@@ -92,7 +92,7 @@ export class AuthController {
   forgotPassword(
     @Query('employeeId', ParseIntPipe) employeeId: number,
     @Query('answer') answer: string,
-    @Query('newPassword', ParseIntPipe) newPassword: string,
+    @Query('newPassword') newPassword: string,
   ) {
     return this.authService.forgotPassword(employeeId, answer, newPassword);
   }
