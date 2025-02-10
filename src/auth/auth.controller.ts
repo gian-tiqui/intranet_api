@@ -91,7 +91,7 @@ export class AuthController {
   @Post('forgot-password')
   forgotPassword(
     @Query('employeeId', ParseIntPipe) employeeId: number,
-    @Query('answer', ParseIntPipe) answer: string,
+    @Query('answer') answer: string,
     @Query('newPassword', ParseIntPipe) newPassword: string,
   ) {
     return this.authService.forgotPassword(employeeId, answer, newPassword);
