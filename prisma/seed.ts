@@ -280,7 +280,7 @@ async function seedUsers() {
       }
 
       const email = `user${deptId}${i}${uuidv4()}@westlakemed.com.ph`;
-      const password = await argon.hash('password1');
+      const password = await argon.hash('abcd_123');
 
       users.push({
         email,
