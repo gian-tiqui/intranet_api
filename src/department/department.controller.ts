@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -47,7 +48,7 @@ export class DepartmentController {
     duration: 60,
     errorMessage: 'Please wait before fetching a department.',
   })
-  findById(@Param('id') deptId: number) {
+  findById(@Param('id', ParseIntPipe) deptId: number) {
     return this.departmentService.findOneById(deptId);
   }
 
@@ -70,7 +71,10 @@ export class DepartmentController {
     duration: 60,
     errorMessage: 'Please wait before pupdating a department.',
   })
-  updateById(@Param('id') deptId, @Body() updateDeptDto: UpdateDeptDto) {
+  updateById(
+    @Param('id', ParseIntPipe) deptId: number,
+    @Body() updateDeptDto: UpdateDeptDto,
+  ) {
     return this.departmentService.updateById(deptId, updateDeptDto);
   }
 
@@ -82,7 +86,7 @@ export class DepartmentController {
     duration: 60,
     errorMessage: 'Please wait before deleting a department.',
   })
-  deleteById(@Param('id') deptId: number) {
+  deleteById(@Param('id', ParseIntPipe) deptId: number) {
     return this.departmentService.deleteById(deptId);
   }
 }

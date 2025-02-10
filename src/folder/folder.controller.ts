@@ -8,6 +8,7 @@ import {
   UseGuards,
   Put,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { FolderService } from './folder.service';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
@@ -36,7 +37,7 @@ export class FolderController {
 
   @Post(':parentId/subfolder')
   async createSubfolder(
-    @Param('parentId') parentId: number,
+    @Param('parentId', ParseIntPipe) parentId: number,
     @Body('name') name: string,
   ) {
     return this.folderService.createSubfolder(name, parentId);
@@ -44,35 +45,35 @@ export class FolderController {
 
   @Get(':folderId/posts')
   async getPostsByType(
-    @Param('folderId') folderId: number,
-    @Query('typeId') typeId?: number,
+    @Param('folderId', ParseIntPipe) folderId: number,
+    @Query('typeId', ParseIntPipe) typeId?: number,
   ) {
     return this.folderService.getPostsByType(
       folderId,
-      typeId ? +typeId : undefined,
+      typeId ? typeId : undefined,
     );
   }
 
   @Get(':folderId')
-  async getFolderById(@Param('folderId') folderId: number) {
+  async getFolderById(@Param('folderId', ParseIntPipe) folderId: number) {
     return this.folderService.getFolderById(folderId);
   }
 
   @Put(':folderId')
   async updateFolder(
-    @Param('folderId') folderId: number,
+    @Param('folderId', ParseIntPipe) folderId: number,
     @Body('name') name: string,
   ) {
     return this.folderService.updateFolder(folderId, name);
   }
 
   @Delete(':folderId')
-  async deleteFolder(@Param('folderId') folderId: number) {
+  async deleteFolder(@Param('folderId', ParseIntPipe) folderId: number) {
     return this.folderService.deleteFolder(folderId);
   }
 
   @Get(':folderId/all-posts')
-  async getAllPostsInFolder(@Param('folderId') folderId: number) {
+  async getAllPostsInFolder(@Param('folderId', ParseIntPipe) folderId: number) {
     return this.folderService.getAllPostsInFolder(folderId);
   }
 }

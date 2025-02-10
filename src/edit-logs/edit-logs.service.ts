@@ -8,7 +8,7 @@ export class EditLogsService {
   async findAll(editTypeId?: number) {
     return this.prismaService.editLogs.findMany({
       where: {
-        ...(editTypeId != null && { editTypeId: Number(editTypeId) }),
+        ...(editTypeId != null && { editTypeId }),
       },
     });
   }
