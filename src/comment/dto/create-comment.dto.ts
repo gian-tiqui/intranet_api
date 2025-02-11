@@ -1,4 +1,6 @@
+import { Transform } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import sanitize from 'src/utils/functions/sanitize';
 
 export class CreateCommentDto {
   @IsNotEmpty()
@@ -11,6 +13,7 @@ export class CreateCommentDto {
 
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => sanitize(value))
   message: string;
 
   @IsInt()
