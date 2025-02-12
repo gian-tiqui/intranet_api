@@ -48,4 +48,7 @@ export class UpdateUserDTO {
 
   @IsNotEmpty()
   confirmed: boolean;
+
+  @IsNotEmpty()
+  dob: Date;
 }
