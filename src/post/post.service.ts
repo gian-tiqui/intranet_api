@@ -253,6 +253,9 @@ export class PostService {
           );
 
           await fs.writeFile(filePath, file.buffer);
+
+          console.log('create file path: ', filePath);
+
           imageLocations.push({
             imageLocation: `post/${uniqueSuffix}-${file.originalname}`,
           });
@@ -347,6 +350,9 @@ export class PostService {
         );
 
         await fs.writeFile(filePath, file.buffer);
+
+        console.log('update file path: ', filePath);
+
         imageLocations.push({
           imageLocation: `post/${uniqueSuffix}-${file.originalname}`,
         });
