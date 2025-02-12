@@ -37,7 +37,6 @@ export class UpdatePostDto {
   extractedText: string;
 
   @IsNotEmpty()
-  @IsInt()
   updatedBy: number;
 
   @IsNotEmpty()

@@ -129,8 +129,8 @@ export class PostService {
         imageLocations: true,
       },
       orderBy: { createdAt: direction === 'desc' ? 'desc' : 'asc' },
-      skip: Number(offset),
-      take: Number(limit),
+      skip: Number(offset) || 0,
+      take: Number(limit) || 10,
     });
 
     const count = await this.prismaService.post.count({

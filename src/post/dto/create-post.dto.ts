@@ -5,7 +5,6 @@ import sanitizeSQL from 'src/utils/functions/sanitizeSQL';
 
 export class CreatePostDto {
   @IsNotEmpty()
-  @IsInt()
   userId: number;
 
   @IsOptional()
@@ -29,7 +28,6 @@ export class CreatePostDto {
   public: string;
 
   @IsNotEmpty()
-  @IsInt()
   lid: number;
 
   @IsOptional()
