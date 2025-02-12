@@ -142,6 +142,7 @@ export class UserService {
         data: {
           ...updateUserDto,
           password: updatedPassword,
+          dob: new Date(updateUserDto.dob),
           updatedAt: new Date(),
         },
       });
