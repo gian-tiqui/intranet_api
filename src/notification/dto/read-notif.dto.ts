@@ -1,9 +1,11 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class ReadNotifDto {
   @IsNotEmpty()
+  @IsInt()
   userId: number;
 
   @IsNotEmpty()
-  deptId;
+  @IsInt()
+  deptId: number;
 }
