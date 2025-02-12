@@ -76,6 +76,8 @@ export class CommentService {
         include: { parentComment: { include: { post: true } } },
       });
 
+      console.log(createdComment);
+
       return createdComment;
     } catch (error) {
       console.error(error);
