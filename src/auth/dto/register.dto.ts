@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -6,6 +7,8 @@ import {
   IsDate,
   IsInt,
 } from 'class-validator';
+import sanitize from 'src/utils/functions/sanitize';
+import sanitizeSQL from 'src/utils/functions/sanitizeSQL';
 
 export class RegisterDto {
   @IsEmail()
@@ -18,38 +21,56 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   firstName: string;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   middleName?: string;
 
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   lastName: string;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   lastNamePrefix?: string;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   preferredName?: string;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   suffix?: string;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   address?: string;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   city?: string;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   state?: string;
 
   @IsOptional()
@@ -62,6 +83,8 @@ export class RegisterDto {
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => sanitize(value))
+  @Transform(({ value }) => sanitizeSQL(value))
   gender?: string;
 
   @IsInt()
