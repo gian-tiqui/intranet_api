@@ -34,8 +34,8 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait before fetching the comments.',
   })
-  findAll(@Query('userId', ParseIntPipe) userId: number) {
-    return this.commentService.findAll(userId);
+  findAll(@Query('userId') userId: number) {
+    return this.commentService.findAll(+userId);
   }
 
   @Get('replies')
@@ -45,8 +45,8 @@ export class CommentController {
     duration: 60,
     errorMessage: 'Please wait before fetching the replies.',
   })
-  findAllReplies(@Query('parentId', ParseIntPipe) parentId?: number) {
-    return this.commentService.findAllReplies(parentId);
+  findAllReplies(@Query('parentId') parentId?: number) {
+    return this.commentService.findAllReplies(+parentId);
   }
 
   @Get(':id')
