@@ -16,12 +16,6 @@ import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 
-const FIND_ALL_POINTS = 100;
-const FIND_BY_ID_POINTS = 10;
-const CREATE_POINTS = 5;
-const UPDATE_BY_ID_POINTS = 10;
-const DELETE_BY_ID_POINTS = 10;
-
 @UseGuards(JwtAuthGuard)
 @Controller('comment')
 export class CommentController {
@@ -30,7 +24,7 @@ export class CommentController {
   @Get()
   @RateLimit({
     keyPrefix: 'all_comments',
-    points: FIND_ALL_POINTS,
+    points: 10,
     duration: 60,
     errorMessage: 'Please wait before fetching the comments.',
   })
@@ -41,7 +35,7 @@ export class CommentController {
   @Get('replies')
   @RateLimit({
     keyPrefix: 'all_replies',
-    points: FIND_ALL_POINTS,
+    points: 10,
     duration: 60,
     errorMessage: 'Please wait before fetching the replies.',
   })
@@ -52,7 +46,7 @@ export class CommentController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'find_comment_by_id',
-    points: FIND_BY_ID_POINTS,
+    points: 10,
     duration: 60,
     errorMessage: 'Please wait before finding a comment by id',
   })
@@ -63,7 +57,7 @@ export class CommentController {
   @Post()
   @RateLimit({
     keyPrefix: 'create_comment',
-    points: CREATE_POINTS,
+    points: 10,
     duration: 60,
     errorMessage: 'Please wait a few seconds before commenting again.',
   })
@@ -74,7 +68,7 @@ export class CommentController {
   @Put(':id')
   @RateLimit({
     keyPrefix: 'update_comment_by_id',
-    points: UPDATE_BY_ID_POINTS,
+    points: 10,
     duration: 60,
     errorMessage: 'Please wait a few seconds before updating your comment.',
   })
@@ -88,7 +82,7 @@ export class CommentController {
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_comment_by_id',
-    points: DELETE_BY_ID_POINTS,
+    points: 10,
     duration: 60,
     errorMessage: 'Please wait a few seconds before deleting a comment.',
   })
