@@ -7,10 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const PORT = process.env.PORT || 8080;
-  const liveUrl = process.env.VERCEL_ENV;
+
+  const prodClient = process.env.PROD_CLIENT;
+  const devClient = process.env.DEV_CLIENT;
 
   app.enableCors({
-    origin: ['http://10.10.10.30:3000', liveUrl, 'http://localhost:3000'],
+    origin: [prodClient, devClient],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders:
       'Origin, Content-Type, Authorization, X-Requested-With, Cache-Control, x-api-key',
