@@ -24,7 +24,7 @@ export class AuthController {
     duration: 60,
     errorMessage: 'Please wait before loading an employee.',
   })
-  findByEmployeeId(@Query('employeeId') employeeId: number) {
+  findByEmployeeId(@Query('employeeId', ParseIntPipe) employeeId: number) {
     return this.authService.fetchDataByEmployeeId(employeeId);
   }
 
