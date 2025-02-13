@@ -74,7 +74,7 @@ export class RegisterDto {
   state?: string;
 
   @IsOptional()
-  @IsString()
+  @IsInt()
   zipCode?: number;
 
   @IsOptional()

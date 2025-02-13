@@ -13,18 +13,18 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { LogoutDto } from './dto/logout.dto';
 
-const REGISTER_LIMIT = 5;
-const VERIFY_LIMIT = 5;
-const LOGIN_LIMIT = 10;
-const LOGOUT_LIMIT = 5;
-const REFRESH_LIMIT = 1000;
-
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Get('user')
-  findByEmployeeId(@Query('employeeId') employeeId: number) {
+  @RateLimit({
+    keyPrefix: 'find-employee-by-id',
+    points: 10,
+    duration: 60,
+    errorMessage: 'Please wait before loading an employee.',
+  })
+  findByEmployeeId(@Query('employeeId', ParseIntPipe) employeeId: number) {
     return this.authService.fetchDataByEmployeeId(employeeId);
   }
 
@@ -32,9 +32,9 @@ export class AuthController {
   @Post('verify')
   @RateLimit({
     keyPrefix: 'verify',
-    points: VERIFY_LIMIT,
+    points: 10,
     duration: 60,
-    errorMessage: 'Please wait before entering an id.',
+    errorMessage: 'Please wait before verifying again.',
   })
   verify(@Query('employeeId', ParseIntPipe) employeeId: number) {
     return this.authService.verify(employeeId);
@@ -44,7 +44,7 @@ export class AuthController {
   @Post('register')
   @RateLimit({
     keyPrefix: 'sign-up',
-    points: REGISTER_LIMIT,
+    points: 10,
     duration: 60,
     errorMessage: 'Please wait before creating an account again.',
   })
@@ -56,9 +56,9 @@ export class AuthController {
   @Post('login')
   @RateLimit({
     keyPrefix: 'sign-in',
-    points: LOGIN_LIMIT,
+    points: 10,
     duration: 60,
-    errorMessage: 'Please wait before logging in again.',
+    errorMessage: 'Please wait before logging in.',
   })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
@@ -68,9 +68,9 @@ export class AuthController {
   @Post('logout')
   @RateLimit({
     keyPrefix: 'logout',
-    points: LOGOUT_LIMIT,
+    points: 10,
     duration: 60,
-    errorMessage: 'Please wait before logging out again.',
+    errorMessage: 'Please wait before logging out.',
   })
   logout(@Body() logoutDto: LogoutDto) {
     return this.authService.logout(logoutDto.userId);
@@ -80,7 +80,7 @@ export class AuthController {
   @Post('refresh')
   @RateLimit({
     keyPrefix: 'refresh-token',
-    points: REFRESH_LIMIT,
+    points: 1000,
     duration: 60,
     errorMessage: 'Please wait before refreshing your token again.',
   })
@@ -89,6 +89,12 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @RateLimit({
+    keyPrefix: 'forgot-password',
+    points: 10,
+    duration: 60,
+    errorMessage: 'Please wait before refreshing your token again.',
+  })
   forgotPassword(
     @Query('employeeId', ParseIntPipe) employeeId: number,
     @Query('answer') answer: string,
