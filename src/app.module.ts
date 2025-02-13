@@ -27,7 +27,7 @@ import { DivisionModule } from './division/division.module';
       isGlobal: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', 'uploads'),
+      rootPath: join(__dirname, '..', '..', '..', '..', '..', 'uploads'),
       serveRoot: '/uploads',
     }),
     MailerModule.forRoot({
