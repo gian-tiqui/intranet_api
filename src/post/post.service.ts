@@ -332,7 +332,8 @@ export class PostService {
     const imageLocations = [];
 
     if (newFiles && newFiles.length > 0) {
-      const postDir = path.join(__dirname, '..', '..', '..', 'uploads', 'post');
+      const postDir = path.join(process.cwd(), 'uploads', 'post');
+
       await fs.mkdir(postDir, { recursive: true });
 
       for (const file of newFiles) {
