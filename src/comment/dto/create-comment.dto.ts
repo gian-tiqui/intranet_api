@@ -9,7 +9,7 @@ export class CreateCommentDto {
   userId: number;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsOptional()
   postId: number;
 
   @IsString()
