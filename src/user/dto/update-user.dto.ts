@@ -1,11 +1,5 @@
 import { Transform } from 'class-transformer';
-import {
-  IsEmail,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsInt, IsOptional, IsString } from 'class-validator';
 import sanitize from 'src/utils/functions/sanitize';
 import sanitizeSQL from 'src/utils/functions/sanitizeSQL';
 
@@ -78,13 +72,13 @@ export class UpdateUserDTO {
   @IsOptional()
   deptId?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsInt()
   updatedBy: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   confirmed: boolean;
 
-  @IsNotEmpty()
+  @IsOptional()
   dob: Date;
 }

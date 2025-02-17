@@ -27,6 +27,7 @@ export class UpdatePostDto {
   deptIds: string;
 
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
   lid: number;
 
