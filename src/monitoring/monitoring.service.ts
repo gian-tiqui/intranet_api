@@ -23,6 +23,7 @@ export class MonitoringService {
         postId: true,
       },
     });
+
     const usersWithIncompleteReads = await Promise.all(
       postCounts.map(async (postCount) => {
         const department = await this.prismaService.department.findUnique({
@@ -31,7 +32,7 @@ export class MonitoringService {
         });
 
         const posts = await this.prismaService.postDepartment.findMany({
-          where: { deptId: postCount.deptId },
+          where: { deptId: postCount.deptId, post: { folderId: null } },
           select: {
             post: {
               select: {
