@@ -90,11 +90,28 @@ export class CommentService {
 
   async create(createCommentDto: CreateCommentDto) {
     try {
+      const user = await this.prismaService.user.findFirst({
+        where: { id: createCommentDto.userId },
+      });
+
+      if (!user)
+        throw new NotFoundException(
+          `User with the id ${createCommentDto.userId} not found.`,
+        );
+
       const createdComment = await this.prismaService.comment.create({
         data: {
           ...createCommentDto,
         },
         include: { parentComment: { include: { post: true } } },
+      });
+
+      await this.prismaService.editLogs.create({
+        data: {
+          log: createdComment,
+          editTypeId: 2,
+          updatedBy: createCommentDto.userId,
+        },
       });
 
       return createdComment;

@@ -274,6 +274,15 @@ export class PostService {
     try {
       const imageLocations = [];
 
+      const user = await this.prismaService.user.findFirst({
+        where: { id: createPostDto.userId },
+      });
+
+      if (!user)
+        throw new NotFoundException(
+          `User with the id ${createPostDto.userId} not found.`,
+        );
+
       if (memoFiles && memoFiles.length > 0) {
         const postDir = path.join(process.cwd(), 'uploads', 'post');
 
@@ -354,6 +363,15 @@ export class PostService {
       if (isNaN(id)) {
         throw new BadRequestException('ID must be a number');
       }
+
+      const user = await this.prismaService.user.findFirst({
+        where: { id: updatePostDto.updatedBy },
+      });
+
+      if (!user)
+        throw new NotFoundException(
+          `User with the id ${updatePostDto.updatedBy} not found.`,
+        );
 
       const post = await this.prismaService.post.findFirst({
         where: { pid: id },
