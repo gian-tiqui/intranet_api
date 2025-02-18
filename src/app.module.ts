@@ -20,6 +20,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { FolderModule } from './folder/folder.module';
 import { DivisionModule } from './division/division.module';
+import { LoggerService } from './logger/logger.service';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { DivisionModule } from './division/division.module';
       provide: APP_GUARD,
       useClass: RateLimiterGuard,
     },
+    LoggerService,
   ],
   controllers: [AppController],
 })
