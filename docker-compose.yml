@@ -6,14 +6,11 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - intranet_api_uploads:/uploads
       - ./uploads:/usr/src/app/uploads
       - ./logs:/usr/src/app/logs
     ports:
       - '8081:8081'
 
 volumes:
-  intranet_api_uploads:
   uploads:
   logs:
-
