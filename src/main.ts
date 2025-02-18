@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
+import { LoggerService } from './logger/logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -10,6 +11,9 @@ async function bootstrap() {
 
   const prodClient = process.env.PROD_CLIENT;
   const devClient = process.env.DEV_CLIENT;
+
+  const logger = app.get(LoggerService);
+  app.useLogger(logger);
 
   app.enableCors({
     origin: [prodClient, devClient],

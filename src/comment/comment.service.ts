@@ -1,70 +1,91 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class CommentService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private readonly logger: LoggerService,
+  ) {}
 
   async findAll(userId: number) {
-    const comments = await this.prismaService.comment.findMany({
-      where: {
-        parentId: null,
-        ...(userId && { userId }),
-      },
-      include: {
-        user: { select: { firstName: true, lastName: true, id: true } },
-        replies: {
-          include: {
-            replies: true,
-          },
+    try {
+      const comments = await this.prismaService.comment.findMany({
+        where: {
+          parentId: null,
+          ...(userId && { userId }),
         },
-        post: {
-          select: {
-            postDepartments: {
-              select: { department: { select: { departmentName: true } } },
+        include: {
+          user: { select: { firstName: true, lastName: true, id: true } },
+          replies: {
+            include: {
+              replies: true,
+            },
+          },
+          post: {
+            select: {
+              postDepartments: {
+                select: { department: { select: { departmentName: true } } },
+              },
             },
           },
         },
-      },
-    });
+      });
 
-    return comments;
+      return comments;
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in fetching all comments: ',
+        error,
+      );
+
+      throw error;
+    }
   }
 
   async findAllReplies(parentId?: number) {
-    const replies = await this.prismaService.comment.findMany({
-      where: {
-        postId: { equals: null },
-        ...(parentId && { parentId }),
-      },
-      include: { user: { select: { firstName: true, lastName: true } } },
-    });
+    try {
+      const replies = await this.prismaService.comment.findMany({
+        where: {
+          postId: { equals: null },
+          ...(parentId && { parentId }),
+        },
+        include: { user: { select: { firstName: true, lastName: true } } },
+      });
 
-    return replies;
+      return replies;
+    } catch (error) {
+      this.logger.error('There was a problem in fetching all replies: ', error);
+
+      throw error;
+    }
   }
 
   async findOneById(cid: number) {
-    const comment = await this.prismaService.comment.findFirst({
-      where: {
-        cid,
-      },
-      include: { replies: { include: { replies: true } } },
-    });
+    try {
+      const comment = await this.prismaService.comment.findFirst({
+        where: {
+          cid,
+        },
+        include: { replies: { include: { replies: true } } },
+      });
 
-    if (!comment)
-      throw new NotFoundException(`Comment with the id ${cid} not found`);
+      if (!comment)
+        throw new NotFoundException(`Comment with the id ${cid} not found`);
 
-    return {
-      message: 'Comment retrieved',
-      statusCode: 200,
-      comment,
-    };
+      return {
+        message: 'Comment retrieved',
+        statusCode: 200,
+        comment,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in fetching a comment', error);
+
+      throw error;
+    }
   }
 
   async create(createCommentDto: CreateCommentDto) {
@@ -78,18 +99,20 @@ export class CommentService {
 
       return createdComment;
     } catch (error) {
+      this.logger.error('There was a problem in creating a comment: ', error);
+
       console.error(error);
     }
   }
 
   async updateById(cid: number, updateCommentDto: UpdateCommentDto) {
-    const comment = await this.prismaService.comment.findFirst({
-      where: {
-        cid,
-      },
-    });
-
     try {
+      const comment = await this.prismaService.comment.findFirst({
+        where: {
+          cid,
+        },
+      });
+
       await this.prismaService.editLogs.create({
         data: {
           editTypeId: 2,
@@ -97,52 +120,60 @@ export class CommentService {
           updatedBy: Number(updateCommentDto.updatedBy),
         },
       });
+
+      if (!comment)
+        throw new NotFoundException(`Comment with the id ${cid} not found`);
+
+      const updateComment = {
+        message: updateCommentDto.message,
+        imageLocation: '',
+      };
+
+      const updatedComment = await this.prismaService.comment.update({
+        where: { cid },
+        data: updateComment,
+      });
+
+      return {
+        statusCode: 204,
+        message: 'Comment updated',
+        comment: updatedComment,
+      };
     } catch (error) {
       console.error(error);
-      throw new ConflictException(error);
+      this.logger.error('There was a problem in updating the comment: ', error);
+
+      throw error;
     }
-
-    if (!comment)
-      throw new NotFoundException(`Comment with the id ${cid} not found`);
-
-    const updateComment = {
-      message: updateCommentDto.message,
-      imageLocation: '',
-    };
-
-    const updatedComment = await this.prismaService.comment.update({
-      where: { cid },
-      data: updateComment,
-    });
-
-    return {
-      statusCode: 204,
-      message: 'Comment updated',
-      comment: updatedComment,
-    };
   }
 
   async deleteById(cid: number) {
-    const comment = await this.prismaService.comment.findFirst({
-      where: {
-        cid,
-      },
-    });
+    try {
+      const comment = await this.prismaService.comment.findFirst({
+        where: {
+          cid,
+        },
+      });
 
-    if (!comment) {
-      throw new NotFoundException(`Comment with the id ${cid} not found`);
+      if (!comment) {
+        throw new NotFoundException(`Comment with the id ${cid} not found`);
+      }
+
+      const deletedComment = await this.prismaService.comment.delete({
+        where: {
+          cid,
+        },
+      });
+
+      return {
+        message: 'Comment deleted successfully',
+        statusCode: 209,
+        deletedComment,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in deleting the comment: ', error);
+
+      throw error;
     }
-
-    const deletedComment = await this.prismaService.comment.delete({
-      where: {
-        cid,
-      },
-    });
-
-    return {
-      message: 'Comment deleted successfully',
-      statusCode: 209,
-      deletedComment,
-    };
   }
 }

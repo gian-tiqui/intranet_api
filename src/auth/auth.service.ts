@@ -15,6 +15,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as argon from 'argon2';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly mailerService: MailerService,
+    private readonly logger: LoggerService,
   ) {
     this.accounts = [
       {
@@ -288,6 +290,8 @@ export class AuthService {
       data = JSON.parse(rawData).employeesData;
     } catch (error) {
       console.error(error);
+      this.logger.error('There was an error in fetching employee data', error);
+
       data = this.accounts;
     }
 
@@ -412,105 +416,124 @@ export class AuthService {
       };
     } catch (error) {
       console.error(error);
+      this.logger.error('There was a problem in registering a user: ', error);
       throw new ConflictException('User already exists');
     }
   }
 
   // Check if the user exists and the password is correct if the user exists and generate tokens for the app to use
   async login(loginDto: LoginDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { employeeId: Number(loginDto.employeeId) },
-      include: { department: true },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException(`User not found`);
-    }
-
-    const isPasswordValid = await argon.verify(
-      user.password,
-      loginDto.password,
-    );
-
-    if (!isPasswordValid) throw new UnauthorizedException('Password invalid');
-
-    const accessToken = await this.signToken(
-      user.id,
-      user.firstName,
-      user.lastName,
-      user.email,
-      user.department,
-      user.lid,
-      user.confirmed,
-    );
-
-    let refreshToken: string;
-
-    if (user.refreshToken) {
-      refreshToken = user.refreshToken;
-    } else {
-      refreshToken = await this.signRefreshToken(user.id);
-    }
-
-    if (user.confirmed) {
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { refreshToken },
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { employeeId: Number(loginDto.employeeId) },
+        include: { department: true },
       });
-    }
 
-    return {
-      message: 'Login successful',
-      statusCode: 200,
-      tokens: { accessToken, refreshToken },
-    };
+      if (!user) {
+        throw new UnauthorizedException(`User not found`);
+      }
+
+      const isPasswordValid = await argon.verify(
+        user.password,
+        loginDto.password,
+      );
+
+      if (!isPasswordValid) throw new UnauthorizedException('Password invalid');
+
+      const accessToken = await this.signToken(
+        user.id,
+        user.firstName,
+        user.lastName,
+        user.email,
+        user.department,
+        user.lid,
+        user.confirmed,
+      );
+
+      let refreshToken: string;
+
+      if (user.refreshToken) {
+        refreshToken = user.refreshToken;
+      } else {
+        refreshToken = await this.signRefreshToken(user.id);
+      }
+
+      if (user.confirmed) {
+        await this.prisma.user.update({
+          where: { id: user.id },
+          data: { refreshToken },
+        });
+      }
+
+      return {
+        message: 'Login successful',
+        statusCode: 200,
+        tokens: { accessToken, refreshToken },
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in logging in: ', error);
+
+      throw error;
+    }
   }
 
   // Validate if the refresh token exists in the user data and generate a new access token if valid
   async refresh(refreshTokenDto: RefreshTokenDto) {
-    const { refreshToken } = refreshTokenDto;
+    try {
+      const { refreshToken } = refreshTokenDto;
 
-    if (!refreshToken) {
-      throw new BadRequestException('No token provided');
+      if (!refreshToken) {
+        throw new BadRequestException('No token provided');
+      }
+
+      const user = await this.prisma.user.findFirst({
+        where: {
+          refreshToken: refreshToken,
+        },
+        include: { department: true },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      const accessToken = await this.signToken(
+        user.id,
+        user.firstName,
+        user.lastName,
+        user.email,
+        user.department,
+        user.lid,
+        user.confirmed,
+      );
+
+      return { access_token: accessToken };
+    } catch (error) {
+      this.logger.error('There was a problem in refreshing the token', error);
+
+      throw error;
     }
-
-    const user = await this.prisma.user.findFirst({
-      where: {
-        refreshToken: refreshToken,
-      },
-      include: { department: true },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    const accessToken = await this.signToken(
-      user.id,
-      user.firstName,
-      user.lastName,
-      user.email,
-      user.department,
-      user.lid,
-      user.confirmed,
-    );
-
-    return { access_token: accessToken };
   }
 
   // Remove the refresh token of the user upon logout
   async logout(userId: number) {
-    const logout = await this.prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken: null },
-    });
+    try {
+      const logout = await this.prisma.user.update({
+        where: { id: userId },
+        data: { refreshToken: null },
+      });
 
-    if (!logout) throw new ConflictException('Could not log you out');
+      if (!logout) throw new ConflictException('Could not log you out');
 
-    return {
-      message: 'Logged out successful',
-      statusCode: 204,
-    };
+      return {
+        message: 'Logged out successful',
+        statusCode: 204,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in logging out: ', error);
+
+      throw error;
+    }
   }
 
   async forgotPassword(
@@ -518,35 +541,44 @@ export class AuthService {
     answer: string,
     newPassword: string,
   ) {
-    const user = await this.prisma.user.findFirst({
-      where: { employeeId },
-    });
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: { employeeId },
+      });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
 
-    const isAnswerCorrect = await argon.verify(user.secretAnswer1, answer);
-    if (!isAnswerCorrect) {
-      throw new BadRequestException('Incorrect answer');
-    }
+      const isAnswerCorrect = await argon.verify(user.secretAnswer1, answer);
+      if (!isAnswerCorrect) {
+        throw new BadRequestException('Incorrect answer');
+      }
 
-    if (newPassword.length < 8) {
-      throw new BadRequestException(
-        'Password must be at least 8 characters long',
+      if (newPassword.length < 8) {
+        throw new BadRequestException(
+          'Password must be at least 8 characters long',
+        );
+      }
+
+      const hashedPassword = await argon.hash(newPassword);
+
+      await this.prisma.user.update({
+        where: { employeeId },
+        data: { password: hashedPassword },
+      });
+
+      return {
+        message: 'Password reset successfully',
+      };
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in retrieving the password: ',
+        error,
       );
+
+      throw error;
     }
-
-    const hashedPassword = await argon.hash(newPassword);
-
-    await this.prisma.user.update({
-      where: { employeeId },
-      data: { password: hashedPassword },
-    });
-
-    return {
-      message: 'Password reset successfully',
-    };
   }
 
   // This generates the access token with payloads in the args

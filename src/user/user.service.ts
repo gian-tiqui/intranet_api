@@ -7,107 +7,134 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import * as argon from 'argon2';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private readonly logger: LoggerService,
+  ) {}
 
   async getAll(confirm?: string, deptId?: number) {
-    const users = await this.prismaService.user.findMany({
-      where: {
-        ...(confirm === 'false' && { confirmed: false }),
-        ...(deptId && { deptId: Number(deptId) }),
-      },
-      select: {
-        password: false,
-        department: true,
-        address: true,
-        city: true,
-        createdAt: true,
-        deptId: true,
-        dob: true,
-        email: true,
-        firstName: true,
-        gender: true,
-        id: true,
-        lastName: true,
-        lastNamePrefix: true,
-        middleName: true,
-        preferredName: true,
-        state: true,
-        suffix: true,
-        updatedAt: true,
-        zipCode: true,
-      },
-    });
+    try {
+      const users = await this.prismaService.user.findMany({
+        where: {
+          ...(confirm === 'false' && { confirmed: false }),
+          ...(deptId && { deptId: Number(deptId) }),
+        },
+        select: {
+          password: false,
+          department: true,
+          address: true,
+          city: true,
+          createdAt: true,
+          deptId: true,
+          dob: true,
+          email: true,
+          firstName: true,
+          gender: true,
+          id: true,
+          lastName: true,
+          lastNamePrefix: true,
+          middleName: true,
+          preferredName: true,
+          state: true,
+          suffix: true,
+          updatedAt: true,
+          zipCode: true,
+        },
+      });
 
-    return {
-      message: 'Users retrieved',
-      statusCode: 200,
-      users: { users },
-    };
+      return {
+        message: 'Users retrieved',
+        statusCode: 200,
+        users: { users },
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in finding users: ', error);
+
+      throw error;
+    }
   }
 
   async getByEmployeeId(employeeId: number) {
-    const user = await this.prismaService.user.findFirst({
-      where: { employeeId: +employeeId },
-      select: {
-        password: false,
-        department: true,
-        dob: true,
-        email: true,
-        firstName: true,
-        gender: true,
-        id: true,
-        lastName: true,
-        middleName: true,
-        employeeId: true,
-        confirmed: true,
-      },
-    });
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: { employeeId: +employeeId },
+        select: {
+          password: false,
+          department: true,
+          dob: true,
+          email: true,
+          firstName: true,
+          gender: true,
+          id: true,
+          lastName: true,
+          middleName: true,
+          employeeId: true,
+          confirmed: true,
+        },
+      });
 
-    if (!user)
-      throw new NotFoundException(`User with the id: ${employeeId} not found`);
+      if (!user)
+        throw new NotFoundException(
+          `User with the id: ${employeeId} not found`,
+        );
 
-    return user;
+      return user;
+    } catch (error) {
+      this.logger.error(
+        'There was a problem by getting an employee by id: ',
+        error,
+      );
+
+      throw error;
+    }
   }
 
   async getById(userId: number) {
-    const user = await this.prismaService.user.findFirst({
-      where: { id: Number(userId) },
-      select: {
-        password: false,
-        department: true,
-        address: true,
-        city: true,
-        createdAt: true,
-        deptId: true,
-        dob: true,
-        email: true,
-        firstName: true,
-        gender: true,
-        id: true,
-        lastName: true,
-        lastNamePrefix: true,
-        middleName: true,
-        preferredName: true,
-        state: true,
-        suffix: true,
-        updatedAt: true,
-        zipCode: true,
-        notifications: true,
-      },
-    });
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: { id: Number(userId) },
+        select: {
+          password: false,
+          department: true,
+          address: true,
+          city: true,
+          createdAt: true,
+          deptId: true,
+          dob: true,
+          email: true,
+          firstName: true,
+          gender: true,
+          id: true,
+          lastName: true,
+          lastNamePrefix: true,
+          middleName: true,
+          preferredName: true,
+          state: true,
+          suffix: true,
+          updatedAt: true,
+          zipCode: true,
+          notifications: true,
+        },
+      });
 
-    if (!user) {
-      throw new NotFoundException(`User with the id ${userId} not found`);
+      if (!user) {
+        throw new NotFoundException(`User with the id ${userId} not found`);
+      }
+
+      return {
+        message: 'User retrieved',
+        statusCode: 200,
+        user,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in finding a user by id: ', error);
+
+      throw error;
     }
-
-    return {
-      message: 'User retrieved',
-      statusCode: 200,
-      user,
-    };
   }
 
   async updateById(_userId: number, updateUserDto: UpdateUserDTO) {
@@ -152,28 +179,35 @@ export class UserService {
         statusCode: 200,
       };
     } catch (error) {
+      this.logger.error('There was a problem in updating a user: ', error);
       throw new Error(`Could not update user: ${error.message}`);
     }
   }
 
   async deleteById(_id: number) {
-    const id = Number(_id);
+    try {
+      const id = Number(_id);
 
-    if (typeof id !== 'number')
-      throw new BadRequestException('ID should be a number');
+      if (typeof id !== 'number')
+        throw new BadRequestException('ID should be a number');
 
-    const user = await this.prismaService.user.findFirst({ where: { id } });
+      const user = await this.prismaService.user.findFirst({ where: { id } });
 
-    if (!user) {
-      throw new NotFoundException(`User with the id ${id} not found`);
+      if (!user) {
+        throw new NotFoundException(`User with the id ${id} not found`);
+      }
+
+      await this.prismaService.user.delete({ where: { id } });
+
+      return {
+        message: 'User deleted',
+        statusCode: 204,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in deleting a user: ', error);
+
+      throw error;
     }
-
-    await this.prismaService.user.delete({ where: { id } });
-
-    return {
-      message: 'User deleted',
-      statusCode: 204,
-    };
   }
 
   async changePassword(
@@ -181,70 +215,89 @@ export class UserService {
     oldPassword: string,
     newPassword: string,
   ) {
-    const id = Number(userId);
-
-    const user = await this.prismaService.user.findFirst({ where: { id } });
-
-    if (!user) throw new NotFoundException(`User with the id ${id} not found.`);
-
-    const passwordMatched = await argon.verify(user.password, oldPassword);
-
-    if (!passwordMatched) throw new BadRequestException('Password incorrect');
-
     try {
-      await this.prismaService.editLogs.create({
+      const id = Number(userId);
+
+      const user = await this.prismaService.user.findFirst({ where: { id } });
+
+      if (!user)
+        throw new NotFoundException(`User with the id ${id} not found.`);
+
+      const passwordMatched = await argon.verify(user.password, oldPassword);
+
+      if (!passwordMatched) throw new BadRequestException('Password incorrect');
+
+      try {
+        await this.prismaService.editLogs.create({
+          data: {
+            editTypeId: 4,
+            updatedBy: userId,
+            log: { password: oldPassword, hash: user.password },
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+
+      const newHashedPassword = await argon.hash(newPassword);
+
+      await this.prismaService.user.update({
+        where: { id },
         data: {
-          editTypeId: 4,
-          updatedBy: userId,
-          log: { password: oldPassword, hash: user.password },
+          password: newHashedPassword,
         },
       });
+
+      return {
+        message: 'Password updated successfully',
+        statusCode: 200,
+      };
     } catch (error) {
-      console.error(error);
+      this.logger.error(
+        'There was a problem in changing the password of the user: ',
+        error,
+      );
+
+      throw error;
     }
-
-    const newHashedPassword = await argon.hash(newPassword);
-
-    await this.prismaService.user.update({
-      where: { id },
-      data: {
-        password: newHashedPassword,
-      },
-    });
-
-    return {
-      message: 'Password updated successfully',
-      statusCode: 200,
-    };
   }
 
   async getPostReadsById(userId: number, search: string) {
-    const user = await this.prismaService.user.findFirst({
-      where: {
-        id: Number(userId),
-      },
-      select: {
-        postReads: {
-          where: {
-            post: {
-              OR: search
-                ? [
-                    { title: { contains: search } },
-                    { message: { contains: search } },
-                  ]
-                : undefined,
-            },
-          },
-          select: { post: true },
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: {
+          id: Number(userId),
         },
-      },
-    });
+        select: {
+          postReads: {
+            where: {
+              post: {
+                OR: search
+                  ? [
+                      { title: { contains: search } },
+                      { message: { contains: search } },
+                    ]
+                  : undefined,
+              },
+            },
+            select: { post: true },
+          },
+        },
+      });
 
-    if (!user) {
-      throw new NotFoundException(`User with the id ${userId} not found`);
+      if (!user) {
+        throw new NotFoundException(`User with the id ${userId} not found`);
+      }
+
+      return user.postReads;
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in getting post reads by id: ',
+        error,
+      );
+
+      throw error;
     }
-
-    return user.postReads;
   }
 
   async deactivateUser(
@@ -252,64 +305,86 @@ export class UserService {
     employeeId: number,
     deactivatorId: number,
   ) {
-    const deactivator = await this.prismaService.user.findFirst({
-      where: { id: +deactivatorId },
-    });
+    try {
+      const deactivator = await this.prismaService.user.findFirst({
+        where: { id: +deactivatorId },
+      });
 
-    if (!deactivator)
-      throw new NotFoundException(`User with the ${deactivatorId} not found`);
+      if (!deactivator)
+        throw new NotFoundException(`User with the ${deactivatorId} not found`);
 
-    const passwordMatched = await argon.verify(deactivator.password, password);
-
-    if (!passwordMatched) throw new BadRequestException('Incorrect password.');
-
-    const userToDeactivate = await this.prismaService.user.findFirst({
-      where: { employeeId: +employeeId },
-    });
-
-    if (!userToDeactivate)
-      throw new NotFoundException(
-        `User with the employee id ${employeeId} not found`,
+      const passwordMatched = await argon.verify(
+        deactivator.password,
+        password,
       );
 
-    await this.prismaService.user.update({
-      where: { employeeId: +employeeId },
-      data: { confirmed: false },
-    });
+      if (!passwordMatched)
+        throw new BadRequestException('Incorrect password.');
 
-    await this.prismaService.editLogs.create({
-      data: {
-        updatedBy: deactivator.id,
-        log: { ...userToDeactivate },
-        editTypeId: 3,
-      },
-    });
+      const userToDeactivate = await this.prismaService.user.findFirst({
+        where: { employeeId: +employeeId },
+      });
 
-    return {
-      message: 'Deactivation successful',
-    };
+      if (!userToDeactivate)
+        throw new NotFoundException(
+          `User with the employee id ${employeeId} not found`,
+        );
+
+      await this.prismaService.user.update({
+        where: { employeeId: +employeeId },
+        data: { confirmed: false },
+      });
+
+      await this.prismaService.editLogs.create({
+        data: {
+          updatedBy: deactivator.id,
+          log: { ...userToDeactivate },
+          editTypeId: 3,
+        },
+      });
+
+      return {
+        message: 'Deactivation successful',
+      };
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in deactivating the user: ',
+        error,
+      );
+
+      throw error;
+    }
   }
 
   async setSecretQuestion(question: string, answer: string, userId: number) {
-    const hashedQuestion: string = await argon.hash(question);
-    const hashedAnswer: string = await argon.hash(answer);
+    try {
+      const hashedQuestion: string = await argon.hash(question);
+      const hashedAnswer: string = await argon.hash(answer);
 
-    const result = await this.prismaService.user.update({
-      where: { id: +userId },
-      data: {
-        secretQuestion1: hashedQuestion,
-        secretAnswer1: hashedAnswer,
-      },
-    });
+      const result = await this.prismaService.user.update({
+        where: { id: +userId },
+        data: {
+          secretQuestion1: hashedQuestion,
+          secretAnswer1: hashedAnswer,
+        },
+      });
 
-    await this.prismaService.editLogs.create({
-      data: {
-        log: result,
-        updatedBy: +userId,
-        editTypeId: 3,
-      },
-    });
+      await this.prismaService.editLogs.create({
+        data: {
+          log: result,
+          updatedBy: +userId,
+          editTypeId: 3,
+        },
+      });
 
-    return { message: 'Secret question has been set' };
+      return { message: 'Secret question has been set' };
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in setting a secret question: ',
+        error,
+      );
+
+      throw error;
+    }
   }
 }

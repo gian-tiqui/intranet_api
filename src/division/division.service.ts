@@ -1,17 +1,15 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateDivisionDto } from './dto/create-division.dto';
 import { UpdateDivisionDto } from './dto/update-division.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class DivisionService {
-  private logger = new Logger('DivisionService');
-
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly logger: LoggerService,
+  ) {}
 
   create(createDivisionDto: CreateDivisionDto) {
     return 'This action adds a new division';
@@ -28,7 +26,10 @@ export class DivisionService {
         divisions,
       };
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(
+        'There was a problem in fetching all departments',
+        error,
+      );
 
       throw new InternalServerErrorException(
         `There was a problem in the server.`,
