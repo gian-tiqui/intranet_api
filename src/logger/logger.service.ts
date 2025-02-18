@@ -10,7 +10,7 @@ export class LoggerService {
 
   constructor() {
     const logDirectory = path.join(process.cwd(), 'logs'); // Ensures logs are in project root
-    console.log(path.join(process.cwd(), '..', '..', '..'));
+    console.log(logDirectory);
 
     if (!fs.existsSync(logDirectory)) {
       console.log('Creating log directory...');
