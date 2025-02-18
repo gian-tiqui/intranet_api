@@ -275,7 +275,7 @@ export class PostService {
       const imageLocations = [];
 
       const user = await this.prismaService.user.findFirst({
-        where: { id: createPostDto.userId },
+        where: { id: +createPostDto.userId },
       });
 
       if (!user)
@@ -365,7 +365,7 @@ export class PostService {
       }
 
       const user = await this.prismaService.user.findFirst({
-        where: { id: updatePostDto.updatedBy },
+        where: { id: +updatePostDto.updatedBy },
       });
 
       if (!user)

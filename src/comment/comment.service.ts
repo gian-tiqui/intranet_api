@@ -91,7 +91,7 @@ export class CommentService {
   async create(createCommentDto: CreateCommentDto) {
     try {
       const user = await this.prismaService.user.findFirst({
-        where: { id: createCommentDto.userId },
+        where: { id: +createCommentDto.userId },
       });
 
       if (!user)
