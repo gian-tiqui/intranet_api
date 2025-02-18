@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./uploads:/usr/src/app/uploads
+      - intranet_api_uploads:/uploads
     ports:
       - '8081:8081'
 
 volumes:
-  uploads:
+  intranet_api_uploads:
