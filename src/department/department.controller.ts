@@ -40,7 +40,6 @@ export class DepartmentController {
   }
 
   // One department fetcher endpoint
-
   @Get(':id')
   @RateLimit({
     keyPrefix: 'one_department',
