@@ -7,8 +7,10 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./uploads:/usr/src/app/uploads
+      - ./logs:/usr/src/app/logs
     ports:
       - '8081:8081'
 
 volumes:
   uploads:
+  logs:
