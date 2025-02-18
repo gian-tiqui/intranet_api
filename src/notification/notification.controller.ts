@@ -20,10 +20,11 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @RateLimit({
-    keyPrefix: 'find_all_unreads',
+    keyPrefix: 'find_unreads_of_a_user',
     points: 50,
     duration: 60,
-    errorMessage: 'Please wait before fetching all unread notifications.',
+    errorMessage:
+      'Please wait before fetching all unread notifications of a user.',
   })
   @Get('unreads/:id')
   getUnreadsOfUserById(
@@ -33,6 +34,12 @@ export class NotificationController {
     return this.notificationService.getUnreadPosts(userId, deptId);
   }
 
+  @RateLimit({
+    keyPrefix: 'find_all_unreads',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before fetching all unread notifications.',
+  })
   @Post('user-reads')
   checkUserReads(@Body() readNotifDto: ReadNotifDto) {
     return this.notificationService.checkUserReads(
@@ -54,12 +61,24 @@ export class NotificationController {
 
   // Retrieve a single notification by ID
   @Get(':id')
+  @RateLimit({
+    keyPrefix: 'find-notification',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before fetching a notification.',
+  })
   findById(@Param('id') nid: number) {
     return this.notificationService.findOneById(nid);
   }
 
   // Create a notification for a reply on a post
   @Post('post-reply')
+  @RateLimit({
+    keyPrefix: 'create_post_reply',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before creating a post reply.',
+  })
   createPostReply(
     @Query('userId') userId: number,
     @Query('postId') postId: number,
@@ -70,6 +89,12 @@ export class NotificationController {
 
   // Create a notification for a reply on a comment
   @Post('comment-reply')
+  @RateLimit({
+    keyPrefix: 'create-comment-reply',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before creating a comment reply.',
+  })
   createCommentReply(
     @Query('userId') userId: number,
     @Query('commentId') commentId: number,
@@ -93,12 +118,24 @@ export class NotificationController {
   }
 
   @Put('read/:id')
+  @RateLimit({
+    keyPrefix: 'verify-read-notif',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before verifying read notif.',
+  })
   readNotification(@Param('id') id: number) {
     return this.notificationService.notificationRead(id);
   }
 
   // Delete a notification by ID
   @Delete(':id')
+  @RateLimit({
+    keyPrefix: 'delete-notif',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before deleting a notification.',
+  })
   deleteById(@Param('id') nid: number) {
     return this.notificationService.deleteById(nid);
   }

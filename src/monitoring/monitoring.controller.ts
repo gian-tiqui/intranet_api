@@ -9,15 +9,21 @@ export class MonitoringController {
   constructor(private readonly monitoringService: MonitoringService) {}
 
   @Get('/users')
+  @RateLimit({
+    keyPrefix: 'monitoring',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before checking monitoring.',
+  })
   monitor() {
     return this.monitoringService.getUsersWithIncompleteReads();
   }
 
   @RateLimit({
     keyPrefix: 'read-status',
-    points: 999999,
+    points: 100,
     duration: 1,
-    errorMessage: 'This will not trigger lol',
+    errorMessage: 'Please wait before checking read status',
   })
   @Get('read-status')
   checkReadStatus(
