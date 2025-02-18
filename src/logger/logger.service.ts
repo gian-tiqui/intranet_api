@@ -10,6 +10,8 @@ export class LoggerService {
 
   constructor() {
     const logDirectory = path.join(process.cwd(), 'logs'); // Ensures logs are in project root
+    console.log(process.cwd());
+    console.log(__dirname);
 
     console.log('Log directory path:', logDirectory);
 
