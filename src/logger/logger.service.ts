@@ -9,38 +9,41 @@ export class LoggerService {
   private logger: winston.Logger;
 
   constructor() {
-    const logDirectory = path.join(process.cwd(), 'logs');
+    const logDirectory = path.join(process.cwd(), 'logs'); // Ensures logs are in project root
 
-    // Ensure the logs directory exists
+    console.log('Log directory path:', logDirectory);
+
     if (!fs.existsSync(logDirectory)) {
+      console.log('Creating log directory...');
       fs.mkdirSync(logDirectory, { recursive: true });
+    } else {
+      console.log('Log directory already exists.');
     }
 
-    console.log(logDirectory);
-
-    // Configure daily rotating log file
     const transport = new winstonDailyRotateFile({
       filename: path.join(logDirectory, '%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
-      zippedArchive: true, // Compress old logs
-      maxSize: '20m', // Max file size before rotation
-      maxFiles: '30d', // Retain log files for 30 days
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '30d',
     });
 
     this.logger = winston.createLogger({
-      level: 'info', // Default log level (can be 'info', 'warn', 'error', etc.)
+      level: 'info',
       format: winston.format.combine(
-        winston.format.timestamp(), // Add timestamp
-        winston.format.errors({ stack: true }), // Include error stack trace
+        winston.format.timestamp(),
+        winston.format.errors({ stack: true }),
         winston.format.printf(({ timestamp, level, message, stack }) => {
           return `${timestamp} [${level}]: ${message} ${stack || ''}`;
         }),
       ),
       transports: [
-        new winston.transports.Console({ level: 'info' }), // Log to console as well
-        transport, // Log to file with rotation
+        new winston.transports.Console({ level: 'info' }),
+        transport,
       ],
     });
+
+    this.logger.info('Logger initialized');
   }
 
   log(message: string) {
