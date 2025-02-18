@@ -16,6 +16,8 @@ export class LoggerService {
       fs.mkdirSync(logDirectory, { recursive: true });
     }
 
+    console.log(logDirectory);
+
     // Configure daily rotating log file
     const transport = new winstonDailyRotateFile({
       filename: path.join(logDirectory, '%DATE%.log'),
