@@ -10,7 +10,7 @@ export class PostDepartmentController {
 
   @RateLimit({
     keyPrefix: 'deptids',
-    points: 99999,
+    points: 150,
     duration: 1,
     errorMessage: 'Please wait before getting the department ids.',
   })

@@ -15,12 +15,6 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 
-const FIND_ALL_POINTS = 20;
-const FIND_BY_ID_POINTS = 20;
-const PASSWORD_POINTS = 10;
-const UPDATE_BY_ID_POINTS = 20;
-const DELETE_BY_ID_POINTS = 20;
-
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
@@ -29,7 +23,7 @@ export class UserController {
   @Get()
   @RateLimit({
     keyPrefix: 'get_users',
-    points: FIND_ALL_POINTS,
+    points: 50,
     duration: 60,
     errorMessage: 'Please wait before fetching the users.',
   })
@@ -38,14 +32,20 @@ export class UserController {
   }
 
   @Get('employeeId')
-  findByemployeeId(@Query('employeeId') employeeId: number) {
+  @RateLimit({
+    keyPrefix: 'get_user',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before fetching an employee.',
+  })
+  findByEmployeeId(@Query('employeeId') employeeId: number) {
     return this.userService.getByEmployeeId(employeeId);
   }
 
   @Get(':id')
   @RateLimit({
-    keyPrefix: 'one_user',
-    points: FIND_BY_ID_POINTS,
+    keyPrefix: 'get_user_byId',
+    points: 50,
     duration: 60,
     errorMessage: 'Please wait before fetching a user.',
   })
@@ -56,7 +56,7 @@ export class UserController {
   @Put(':id')
   @RateLimit({
     keyPrefix: 'update_user_by_id',
-    points: UPDATE_BY_ID_POINTS,
+    points: 50,
     duration: 60,
     errorMessage: 'Please wait before updating a user.',
   })
@@ -67,7 +67,7 @@ export class UserController {
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_user_by_id',
-    points: DELETE_BY_ID_POINTS,
+    points: 50,
     duration: 60,
     errorMessage: 'Please wait before deleting a user.',
   })
@@ -78,7 +78,7 @@ export class UserController {
   @Post('password')
   @RateLimit({
     keyPrefix: 'change_user_password',
-    points: PASSWORD_POINTS,
+    points: 50,
     duration: 60,
     errorMessage: 'Please wait before changing the password.',
   })
@@ -105,6 +105,12 @@ export class UserController {
   }
 
   @Post('deactivate')
+  @RateLimit({
+    keyPrefix: 'deactivate_user',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before deactivating user password.',
+  })
   deactivateUser(
     @Query('password') password: string,
     @Query('employeeId') userId: number,

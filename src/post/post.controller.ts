@@ -18,12 +18,6 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { RateLimit } from 'nestjs-rate-limiter';
 
-const FIND_ALL_POINTS = 1000;
-const FIND_BY_ID_POINTS = 1000;
-const CREATE_POINTS = 5;
-const UPDATE_BY_ID_POINTS = 10;
-const DELETE_BY_ID_POINTS = 10;
-
 // This guard accepts requests that are provided with valid access tokens
 @UseGuards(JwtAuthGuard)
 @Controller('post')
@@ -33,7 +27,7 @@ export class PostController {
   @Get('admin')
   @RateLimit({
     keyPrefix: 'get_posts_for_admin',
-    points: FIND_ALL_POINTS,
+    points: 100,
     duration: 60,
     errorMessage: 'Please wait before fetching posts.',
   })
@@ -55,7 +49,7 @@ export class PostController {
   @Get()
   @RateLimit({
     keyPrefix: 'get_posts',
-    points: FIND_ALL_POINTS,
+    points: 100,
     duration: 60,
     errorMessage: 'Please wait before fetching posts.',
   })
@@ -88,7 +82,7 @@ export class PostController {
   @Get('level/:lid')
   @RateLimit({
     keyPrefix: 'get_post_by_level_and_id',
-    points: FIND_BY_ID_POINTS,
+    points: 100,
     duration: 60,
     errorMessage: 'Please wait before fetching posts by lid.',
   })
@@ -104,7 +98,7 @@ export class PostController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'get_post_by_id',
-    points: FIND_BY_ID_POINTS,
+    points: 100,
     duration: 60,
     errorMessage: 'Please wait before fetching a post.',
   })
@@ -132,7 +126,7 @@ export class PostController {
   )
   @RateLimit({
     keyPrefix: 'create_post',
-    points: CREATE_POINTS,
+    points: 100,
     duration: 60,
     errorMessage: 'Please wait before creating a post.',
   })
@@ -159,7 +153,7 @@ export class PostController {
   )
   @RateLimit({
     keyPrefix: 'update_post_by_id',
-    points: UPDATE_BY_ID_POINTS,
+    points: 100,
     duration: 60,
     errorMessage: 'Please wait before updating a post.',
   })
@@ -175,7 +169,7 @@ export class PostController {
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_post_by_id',
-    points: DELETE_BY_ID_POINTS,
+    points: 100,
     duration: 60,
     errorMessage: 'Please wait before deleting a post.',
   })
