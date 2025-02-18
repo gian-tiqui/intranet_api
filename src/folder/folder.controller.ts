@@ -31,11 +31,23 @@ export class FolderController {
   }
 
   @Post()
+  @RateLimit({
+    keyPrefix: 'create_main_folder',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before creating a new folder.',
+  })
   async createMainFolder(@Body('name') name: string) {
     return this.folderService.createMainFolder(name);
   }
 
   @Post(':parentId/subfolder')
+  @RateLimit({
+    keyPrefix: 'create_sub_folder',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before creating a new sub folder.',
+  })
   async createSubfolder(
     @Param('parentId', ParseIntPipe) parentId: number,
     @Body('name') name: string,
@@ -44,6 +56,12 @@ export class FolderController {
   }
 
   @Get(':folderId/posts')
+  @RateLimit({
+    keyPrefix: 'get_folder_files',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before loading folder files.',
+  })
   async getPostsByType(
     @Param('folderId', ParseIntPipe) folderId: number,
     @Query('typeId', ParseIntPipe) typeId?: number,
@@ -55,11 +73,23 @@ export class FolderController {
   }
 
   @Get(':folderId')
+  @RateLimit({
+    keyPrefix: 'get_folder',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before getting a folder.',
+  })
   async getFolderById(@Param('folderId', ParseIntPipe) folderId: number) {
     return this.folderService.getFolderById(folderId);
   }
 
   @Put(':folderId')
+  @RateLimit({
+    keyPrefix: 'update_folder',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before updating a folder.',
+  })
   async updateFolder(
     @Param('folderId', ParseIntPipe) folderId: number,
     @Body('name') name: string,
@@ -68,11 +98,23 @@ export class FolderController {
   }
 
   @Delete(':folderId')
+  @RateLimit({
+    keyPrefix: 'delete_folder',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before deleting a folder.',
+  })
   async deleteFolder(@Param('folderId', ParseIntPipe) folderId: number) {
     return this.folderService.deleteFolder(folderId);
   }
 
   @Get(':folderId/all-posts')
+  @RateLimit({
+    keyPrefix: 'get_folder_posts',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before loading folder files.',
+  })
   async getAllPostsInFolder(@Param('folderId', ParseIntPipe) folderId: number) {
     return this.folderService.getAllPostsInFolder(folderId);
   }
