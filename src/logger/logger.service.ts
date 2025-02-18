@@ -1,15 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import * as winston from 'winston';
 import * as winstonDailyRotateFile from 'winston-daily-rotate-file';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class LoggerService {
   private logger: winston.Logger;
 
   constructor() {
+    const logDirectory = path.join(__dirname, '../../logs');
+
+    // Ensure log directory exists
+    if (!fs.existsSync(logDirectory)) {
+      fs.mkdirSync(logDirectory, { recursive: true });
+    }
+
     // Configure daily rotating log file
     const transport = new winstonDailyRotateFile({
-      filename: 'logs/%DATE%.log', // Specify the log file location and format
+      filename: `${logDirectory}/%DATE%.log`, // Use absolute path
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true, // Compress old logs
       maxSize: '20m', // Max file size before rotation
@@ -32,22 +41,18 @@ export class LoggerService {
     });
   }
 
-  // Required by NestJS LoggerService interface
   log(message: string) {
     this.logger.info(message);
   }
 
-  // Log info messages
   info(message: string) {
     this.logger.info(message);
   }
 
-  // Log warn messages
   warn(message: string) {
     this.logger.warn(message);
   }
 
-  // Log error messages
   error(message: string, trace: string) {
     this.logger.error(message, trace);
   }
