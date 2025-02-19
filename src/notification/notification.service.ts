@@ -26,6 +26,7 @@ export class NotificationService {
             {
               postDepartments: { some: { deptId: Number(deptId) } },
               lid: { lte: Number(user.lid) },
+              folderId: null,
             },
           ],
         },
@@ -81,6 +82,7 @@ export class NotificationService {
             {
               postDepartments: { some: { deptId: Number(deptId) } },
               lid: { lte: Number(userPostReads.lid) },
+              folderId: null,
             },
           ],
         },
