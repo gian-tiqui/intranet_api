@@ -5,8 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - LOG_DIR=/usr/src/app/logs
     volumes:
-      - ./logs:/logs
+      - ./logs:/usr/src/app/logs
       - ./uploads:/usr/src/app/uploads
     ports:
       - '8081:8081'
