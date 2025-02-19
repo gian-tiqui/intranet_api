@@ -13,10 +13,7 @@ export class LoggerService {
       process.env.LOG_DIR || path.join(process.cwd(), 'logs');
 
     if (!fs.existsSync(logDirectory)) {
-      console.log('Creating log directory...');
       fs.mkdirSync(logDirectory, { recursive: true });
-    } else {
-      console.log('Log directory already exists.');
     }
 
     const transport = new winstonDailyRotateFile({
