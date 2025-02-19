@@ -9,13 +9,9 @@ export class LoggerService {
   private logger: winston.Logger;
 
   constructor() {
-    // Use environment variable or fallback to default location
     const logDirectory =
       process.env.LOG_DIR || path.join(process.cwd(), 'logs');
 
-    console.log('Log Directory: ', logDirectory);
-
-    // Ensure the directory exists
     if (!fs.existsSync(logDirectory)) {
       console.log('Creating log directory...');
       fs.mkdirSync(logDirectory, { recursive: true });
@@ -23,7 +19,6 @@ export class LoggerService {
       console.log('Log directory already exists.');
     }
 
-    // Set up rotating file transport
     const transport = new winstonDailyRotateFile({
       filename: path.join(logDirectory, '%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
