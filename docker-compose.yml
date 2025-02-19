@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
+      - ./logs:/logs
       - ./uploads:/usr/src/app/uploads
-      - ./logs:/usr/src/app/logs
     ports:
       - '8081:8081'
 
