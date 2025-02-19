@@ -11,7 +11,7 @@ export class LevelController {
   @Get()
   @RateLimit({
     keyPrefix: 'find_all_levels',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before fetching all levels.',
   })

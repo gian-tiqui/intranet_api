@@ -21,8 +21,8 @@ export class MonitoringController {
 
   @RateLimit({
     keyPrefix: 'read-status',
-    points: 100,
-    duration: 1,
+    points: 150,
+    duration: 5,
     errorMessage: 'Please wait before checking read status',
   })
   @Get('read-status')

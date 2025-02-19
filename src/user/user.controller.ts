@@ -23,7 +23,7 @@ export class UserController {
   @Get()
   @RateLimit({
     keyPrefix: 'get_users',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before fetching the users.',
   })
@@ -34,7 +34,7 @@ export class UserController {
   @Get('employeeId')
   @RateLimit({
     keyPrefix: 'get_user',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before fetching an employee.',
   })
@@ -45,7 +45,7 @@ export class UserController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'get_user_byId',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before fetching a user.',
   })
@@ -56,7 +56,7 @@ export class UserController {
   @Put(':id')
   @RateLimit({
     keyPrefix: 'update_user_by_id',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before updating a user.',
   })
@@ -67,7 +67,7 @@ export class UserController {
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_user_by_id',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before deleting a user.',
   })
@@ -78,7 +78,7 @@ export class UserController {
   @Post('password')
   @RateLimit({
     keyPrefix: 'change_user_password',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before changing the password.',
   })
@@ -92,7 +92,7 @@ export class UserController {
 
   @RateLimit({
     keyPrefix: 'get_user_history',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before fetching user history.',
   })
@@ -107,7 +107,7 @@ export class UserController {
   @Post('deactivate')
   @RateLimit({
     keyPrefix: 'deactivate_user',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before deactivating user password.',
   })
@@ -121,7 +121,7 @@ export class UserController {
 
   @RateLimit({
     keyPrefix: 'set_secret_question',
-    points: 5,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before setting new question.',
   })

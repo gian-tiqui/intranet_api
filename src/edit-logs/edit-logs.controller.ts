@@ -17,7 +17,7 @@ export class EditLogsController {
   @Get()
   @RateLimit({
     keyPrefix: 'get_logs',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before fetching all logs.',
   })

@@ -20,8 +20,8 @@ export class AuthController {
   @Get('user')
   @RateLimit({
     keyPrefix: 'find-employee-by-id',
-    points: 10,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before loading an employee.',
   })
   findByEmployeeId(@Query('employeeId', ParseIntPipe) employeeId: number) {
@@ -32,8 +32,8 @@ export class AuthController {
   @Post('verify')
   @RateLimit({
     keyPrefix: 'verify',
-    points: 10,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before verifying again.',
   })
   verify(@Query('employeeId', ParseIntPipe) employeeId: number) {
@@ -44,8 +44,8 @@ export class AuthController {
   @Post('register')
   @RateLimit({
     keyPrefix: 'sign-up',
-    points: 10,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before creating an account again.',
   })
   register(@Body() registerDto: RegisterDto) {
@@ -56,8 +56,8 @@ export class AuthController {
   @Post('login')
   @RateLimit({
     keyPrefix: 'sign-in',
-    points: 10,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before logging in.',
   })
   login(@Body() loginDto: LoginDto) {
@@ -68,8 +68,8 @@ export class AuthController {
   @Post('logout')
   @RateLimit({
     keyPrefix: 'logout',
-    points: 10,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before logging out.',
   })
   logout(@Body() logoutDto: LogoutDto) {
@@ -80,8 +80,8 @@ export class AuthController {
   @Post('refresh')
   @RateLimit({
     keyPrefix: 'refresh-token',
-    points: 1000,
-    duration: 60,
+    points: 5000,
+    duration: 20,
     errorMessage: 'Please wait before refreshing your token again.',
   })
   refresh(@Body() refreshTokenDto: RefreshTokenDto) {
@@ -91,8 +91,8 @@ export class AuthController {
   @Post('forgot-password')
   @RateLimit({
     keyPrefix: 'forgot-password',
-    points: 10,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before refreshing your token again.',
   })
   forgotPassword(
