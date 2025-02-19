@@ -79,6 +79,7 @@ export class RegisterDto {
 
   @IsOptional()
   @IsDate()
+  @Transform(({ value }) => (value ? new Date(value) : null))
   dob?: Date;
 
   @IsOptional()
