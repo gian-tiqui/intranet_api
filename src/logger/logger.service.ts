@@ -9,8 +9,8 @@ export class LoggerService {
   private logger: winston.Logger;
 
   constructor() {
-    const logDirectory = path.join(process.cwd(), 'logs'); // Ensures logs are in project root
-    console.log(logDirectory);
+    const logDirectory = path.join(process.cwd(), 'logs');
+    console.log('dir name', __dirname);
 
     if (!fs.existsSync(logDirectory)) {
       console.log('Creating log directory...');
