@@ -34,7 +34,7 @@ export class PostReaderController {
   @Post()
   @RateLimit({
     keyPrefix: 'create_post_reader',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before creating a postreader.',
   })

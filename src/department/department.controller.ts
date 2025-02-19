@@ -16,12 +16,6 @@ import { UpdateDeptDto } from './dto/update-department.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 
-const FIND_ALL_POINTS = 50;
-const FIND_BY_ID_POINTS = 50;
-const CREATE_POINTS = 5;
-const UPDATE_BY_ID_POINTS = 10;
-const DELETE_BY_ID_POINTS = 10;
-
 @UseGuards(JwtAuthGuard)
 @Controller('department')
 export class DepartmentController {
@@ -30,8 +24,8 @@ export class DepartmentController {
   // Departments fetching endpoint
   @RateLimit({
     keyPrefix: 'get_departments',
-    points: FIND_ALL_POINTS,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before fetching the departments.',
   })
   @Get()
@@ -43,8 +37,8 @@ export class DepartmentController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'one_department',
-    points: FIND_BY_ID_POINTS,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before fetching a department.',
   })
   findById(@Param('id', ParseIntPipe) deptId: number) {
@@ -55,8 +49,8 @@ export class DepartmentController {
   @Post()
   @RateLimit({
     keyPrefix: 'create_department',
-    points: CREATE_POINTS,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before creating a department.',
   })
   create(@Body() createDepartmentDto: CreateDepartmentDto) {
@@ -66,8 +60,8 @@ export class DepartmentController {
   @Put(':id')
   @RateLimit({
     keyPrefix: 'update_department_by_id',
-    points: UPDATE_BY_ID_POINTS,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before pupdating a department.',
   })
   updateById(
@@ -81,8 +75,8 @@ export class DepartmentController {
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_department_by_id',
-    points: DELETE_BY_ID_POINTS,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before deleting a department.',
   })
   deleteById(@Param('id', ParseIntPipe) deptId: number) {

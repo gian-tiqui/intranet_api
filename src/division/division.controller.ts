@@ -19,8 +19,8 @@ export class DivisionController {
   @Post()
   @RateLimit({
     keyPrefix: 'create_division',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before creating a new division.',
   })
   create(@Body() createDivisionDto: CreateDivisionDto) {
@@ -30,8 +30,8 @@ export class DivisionController {
   @Get()
   @RateLimit({
     keyPrefix: 'get_all_divisions',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before fetching divisions.',
   })
   findAll() {
@@ -41,8 +41,8 @@ export class DivisionController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'find-division',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before finding a new division.',
   })
   findOne(@Param('id') id: string) {
@@ -52,8 +52,8 @@ export class DivisionController {
   @Patch(':id')
   @RateLimit({
     keyPrefix: 'update-folder',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before updating a folder.',
   })
   update(
@@ -66,8 +66,8 @@ export class DivisionController {
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_folder',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 20,
     errorMessage: 'Please wait before deleting.',
   })
   remove(@Param('id') id: string) {

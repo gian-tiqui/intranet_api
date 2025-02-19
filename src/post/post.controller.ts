@@ -27,7 +27,7 @@ export class PostController {
   @Get('admin')
   @RateLimit({
     keyPrefix: 'get_posts_for_admin',
-    points: 100,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before fetching posts.',
   })
@@ -49,7 +49,7 @@ export class PostController {
   @Get()
   @RateLimit({
     keyPrefix: 'get_posts',
-    points: 100,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before fetching posts.',
   })
@@ -82,7 +82,7 @@ export class PostController {
   @Get('level/:lid')
   @RateLimit({
     keyPrefix: 'get_post_by_level_and_id',
-    points: 100,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before fetching posts by lid.',
   })
@@ -98,7 +98,7 @@ export class PostController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'get_post_by_id',
-    points: 100,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before fetching a post.',
   })
@@ -126,7 +126,7 @@ export class PostController {
   )
   @RateLimit({
     keyPrefix: 'create_post',
-    points: 100,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before creating a post.',
   })
@@ -153,7 +153,7 @@ export class PostController {
   )
   @RateLimit({
     keyPrefix: 'update_post_by_id',
-    points: 100,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before updating a post.',
   })
@@ -169,7 +169,7 @@ export class PostController {
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_post_by_id',
-    points: 100,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before deleting a post.',
   })

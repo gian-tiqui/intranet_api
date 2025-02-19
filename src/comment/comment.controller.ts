@@ -24,7 +24,7 @@ export class CommentController {
   @Get()
   @RateLimit({
     keyPrefix: 'all_comments',
-    points: 10,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before fetching the comments.',
   })
@@ -35,7 +35,7 @@ export class CommentController {
   @Get('replies')
   @RateLimit({
     keyPrefix: 'all_replies',
-    points: 10,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before fetching the replies.',
   })
@@ -46,7 +46,7 @@ export class CommentController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'find_comment_by_id',
-    points: 10,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait before finding a comment by id',
   })
@@ -57,7 +57,7 @@ export class CommentController {
   @Post()
   @RateLimit({
     keyPrefix: 'create_comment',
-    points: 10,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait a few seconds before commenting again.',
   })
@@ -68,7 +68,7 @@ export class CommentController {
   @Put(':id')
   @RateLimit({
     keyPrefix: 'update_comment_by_id',
-    points: 10,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait a few seconds before updating your comment.',
   })
@@ -82,7 +82,7 @@ export class CommentController {
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_comment_by_id',
-    points: 10,
+    points: 500,
     duration: 60,
     errorMessage: 'Please wait a few seconds before deleting a comment.',
   })

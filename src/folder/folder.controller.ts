@@ -21,8 +21,8 @@ export class FolderController {
 
   @RateLimit({
     keyPrefix: 'find_main_folders',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 10,
     errorMessage: 'Please wait before fetching all unread notifications.',
   })
   @Get()
@@ -33,8 +33,8 @@ export class FolderController {
   @Post()
   @RateLimit({
     keyPrefix: 'create_main_folder',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 10,
     errorMessage: 'Please wait before creating a new folder.',
   })
   async createMainFolder(@Body('name') name: string) {
@@ -44,8 +44,8 @@ export class FolderController {
   @Post(':parentId/subfolder')
   @RateLimit({
     keyPrefix: 'create_sub_folder',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 10,
     errorMessage: 'Please wait before creating a new sub folder.',
   })
   async createSubfolder(
@@ -58,8 +58,8 @@ export class FolderController {
   @Get(':folderId/posts')
   @RateLimit({
     keyPrefix: 'get_folder_files',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 10,
     errorMessage: 'Please wait before loading folder files.',
   })
   async getPostsByType(
@@ -75,8 +75,8 @@ export class FolderController {
   @Get(':folderId')
   @RateLimit({
     keyPrefix: 'get_folder',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 10,
     errorMessage: 'Please wait before getting a folder.',
   })
   async getFolderById(@Param('folderId', ParseIntPipe) folderId: number) {
@@ -86,8 +86,8 @@ export class FolderController {
   @Put(':folderId')
   @RateLimit({
     keyPrefix: 'update_folder',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 10,
     errorMessage: 'Please wait before updating a folder.',
   })
   async updateFolder(
@@ -100,8 +100,8 @@ export class FolderController {
   @Delete(':folderId')
   @RateLimit({
     keyPrefix: 'delete_folder',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 10,
     errorMessage: 'Please wait before deleting a folder.',
   })
   async deleteFolder(@Param('folderId', ParseIntPipe) folderId: number) {
@@ -111,8 +111,8 @@ export class FolderController {
   @Get(':folderId/all-posts')
   @RateLimit({
     keyPrefix: 'get_folder_posts',
-    points: 50,
-    duration: 60,
+    points: 150,
+    duration: 10,
     errorMessage: 'Please wait before loading folder files.',
   })
   async getAllPostsInFolder(@Param('folderId', ParseIntPipe) folderId: number) {

@@ -21,7 +21,7 @@ export class NotificationController {
 
   @RateLimit({
     keyPrefix: 'find_unreads_of_a_user',
-    points: 50,
+    points: 1500,
     duration: 60,
     errorMessage:
       'Please wait before fetching all unread notifications of a user.',
@@ -36,7 +36,7 @@ export class NotificationController {
 
   @RateLimit({
     keyPrefix: 'find_all_unreads',
-    points: 50,
+    points: 1500,
     duration: 60,
     errorMessage: 'Please wait before fetching all unread notifications.',
   })
@@ -50,7 +50,7 @@ export class NotificationController {
 
   @RateLimit({
     keyPrefix: 'find_all_notifications',
-    points: 50,
+    points: 1500,
     duration: 60,
     errorMessage: 'Please wait before fetching all notifications.',
   })
@@ -63,7 +63,7 @@ export class NotificationController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'find-notification',
-    points: 50,
+    points: 1500,
     duration: 60,
     errorMessage: 'Please wait before fetching a notification.',
   })
@@ -75,7 +75,7 @@ export class NotificationController {
   @Post('post-reply')
   @RateLimit({
     keyPrefix: 'create_post_reply',
-    points: 50,
+    points: 1500,
     duration: 60,
     errorMessage: 'Please wait before creating a post reply.',
   })
@@ -91,7 +91,7 @@ export class NotificationController {
   @Post('comment-reply')
   @RateLimit({
     keyPrefix: 'create-comment-reply',
-    points: 50,
+    points: 1500,
     duration: 60,
     errorMessage: 'Please wait before creating a comment reply.',
   })
@@ -120,7 +120,7 @@ export class NotificationController {
   @Put('read/:id')
   @RateLimit({
     keyPrefix: 'verify-read-notif',
-    points: 50,
+    points: 1500,
     duration: 60,
     errorMessage: 'Please wait before verifying read notif.',
   })
