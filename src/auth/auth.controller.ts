@@ -99,7 +99,13 @@ export class AuthController {
     @Query('employeeId', ParseIntPipe) employeeId: number,
     @Query('answer') answer: string,
     @Query('newPassword') newPassword: string,
+    @Query('secretQuestion1') secretQuestion1: string,
   ) {
-    return this.authService.forgotPassword(employeeId, answer, newPassword);
+    return this.authService.forgotPassword(
+      employeeId,
+      answer,
+      newPassword,
+      secretQuestion1,
+    );
   }
 }

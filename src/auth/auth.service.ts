@@ -540,6 +540,7 @@ export class AuthService {
     employeeId: number,
     answer: string,
     newPassword: string,
+    secretQuestion1: string,
   ) {
     try {
       const user = await this.prisma.user.findFirst({
@@ -553,6 +554,14 @@ export class AuthService {
       const isAnswerCorrect = await argon.verify(user.secretAnswer1, answer);
       if (!isAnswerCorrect) {
         throw new BadRequestException('Incorrect answer');
+      }
+
+      const isQuestionMatching = await argon.verify(
+        user.secretQuestion1,
+        secretQuestion1,
+      );
+      if (!isQuestionMatching) {
+        throw new BadRequestException(`Incorrect question`);
       }
 
       if (newPassword.length < 8) {
