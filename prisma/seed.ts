@@ -320,12 +320,12 @@ async function seedUsers() {
 async function main() {
   console.log('Seeding database...');
 
-  updateDepartments();
+  // updateDepartments();
 
-  // seedEditTypes();
-  // seedEmployeeLevel().then(() =>
-  //   seedDivision().then(() => seedDepartments().then(() => seedUsers())),
-  // );
+  seedEditTypes();
+  seedEmployeeLevel().then(() =>
+    seedDivision().then(() => seedDepartments().then(() => seedUsers())),
+  );
 }
 
 main()
