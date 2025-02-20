@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -113,8 +114,13 @@ export class NotificationController {
   notifyDepartmentOfNewPost(
     @Query('deptId') deptId: number,
     @Query('postId') postId: number,
+    @Query('lid', ParseIntPipe) lid: number,
   ) {
-    return this.notificationService.notifyDepartmentOfNewPost(deptId, postId);
+    return this.notificationService.notifyDepartmentOfNewPost(
+      deptId,
+      postId,
+      lid,
+    );
   }
 
   @Put('read/:id')

@@ -267,10 +267,10 @@ export class NotificationService {
   }
 
   // Notify users in the department about a new post
-  async notifyDepartmentOfNewPost(deptId: number, postId: number) {
+  async notifyDepartmentOfNewPost(deptId: number, postId: number, lid: number) {
     try {
       const users = await this.prismaService.user.findMany({
-        where: { deptId: Number(deptId) },
+        where: { deptId: Number(deptId), lid: { gte: lid } },
         select: { id: true },
       });
 

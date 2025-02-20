@@ -83,7 +83,9 @@ export class PostService {
     try {
       const iUserId = userId ? Number(userId) : undefined;
 
-      const _lid = typeof lid === 'string' ? Number(lid) : Number(lid[0]);
+      const _lid = lid;
+
+      console.log(_lid);
 
       const opts: any[] = [
         ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
@@ -469,6 +471,7 @@ export class PostService {
             this.notificationService.notifyDepartmentOfNewPost(
               Number(deptId),
               id,
+              updatePostDto.lid,
             ),
           );
       }
