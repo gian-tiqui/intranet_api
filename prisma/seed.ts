@@ -158,6 +158,7 @@ const departments: {
   },
   { departmentCode: 'LAB', departmentName: 'Laboratory', divisionId: 2 },
   { departmentCode: 'DIET', departmentName: 'Dietary', divisionId: 2 },
+  { departmentCode: 'ADM', departmentName: 'Admin', divisionId: 1 },
 ];
 async function seedEditTypes() {
   const editTypes = [
@@ -319,12 +320,12 @@ async function seedUsers() {
 async function main() {
   console.log('Seeding database...');
 
-  // updateDepartments();
+  updateDepartments();
 
-  seedEditTypes();
-  seedEmployeeLevel().then(() =>
-    seedDivision().then(() => seedDepartments().then(() => seedUsers())),
-  );
+  // seedEditTypes();
+  // seedEmployeeLevel().then(() =>
+  //   seedDivision().then(() => seedDepartments().then(() => seedUsers())),
+  // );
 }
 
 main()
