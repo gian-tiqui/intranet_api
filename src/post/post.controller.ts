@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -77,6 +78,20 @@ export class PostController {
       direction,
       deptId,
     );
+  }
+
+  @Get(':deptId/level/:lid')
+  @RateLimit({
+    keyPrefix: 'get_dept_post_by_lid',
+    points: 500,
+    duration: 60,
+    errorMessage: 'Please wait before fetching dept posts by lid',
+  })
+  findDeptPostsByLid(
+    @Param('deptId', ParseIntPipe) deptId: number,
+    @Param('lid', ParseIntPipe) lid: number,
+  ) {
+    return this.postService.findDeptPostsByLid(deptId, lid);
   }
 
   @Get('level/:lid')
