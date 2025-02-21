@@ -177,6 +177,7 @@ export class PostService {
           postDepartments: {
             some: { deptId: deptId },
           },
+          folderId: null,
         },
         orderBy: { createdAt: 'desc' },
       });
@@ -187,6 +188,7 @@ export class PostService {
           postDepartments: {
             some: { deptId: deptId },
           },
+          folderId: null,
         },
       });
 
