@@ -7,7 +7,7 @@ export class AppController {
 
   @Get()
   @RateLimit({
-    keyPrefix: 'get_users',
+    keyPrefix: 'intranet-main-endpoint',
     points: 10,
     duration: 60,
     errorMessage: 'Please wait before hitting main.',
