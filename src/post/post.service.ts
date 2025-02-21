@@ -85,8 +85,6 @@ export class PostService {
 
       const _lid = lid;
 
-      console.log(_lid);
-
       const opts: any[] = [
         ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
         ...(search
@@ -166,6 +164,41 @@ export class PostService {
       };
     } catch (error) {
       this.logger.error('Error occured while fetching all posts', error);
+
+      throw error;
+    }
+  }
+
+  async findDeptPostsByLid(deptId: number, lid: number) {
+    try {
+      const deptPostsByLid = await this.prismaService.post.findMany({
+        where: {
+          lid: { lte: lid },
+          postDepartments: {
+            some: { deptId: deptId },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const count = await this.prismaService.post.count({
+        where: {
+          lid: { lte: lid },
+          postDepartments: {
+            some: { deptId: deptId },
+          },
+        },
+      });
+
+      return {
+        posts: deptPostsByLid,
+        count,
+      };
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in fetching department posts by lid',
+        error,
+      );
 
       throw error;
     }
