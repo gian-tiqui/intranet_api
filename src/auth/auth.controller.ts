@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  ParseIntPipe,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -24,7 +17,7 @@ export class AuthController {
     duration: 20,
     errorMessage: 'Please wait before loading an employee.',
   })
-  findByEmployeeId(@Query('employeeId', ParseIntPipe) employeeId: number) {
+  findByEmployeeId(@Query('employeeId') employeeId: string) {
     return this.authService.fetchDataByEmployeeId(employeeId);
   }
 
@@ -36,7 +29,7 @@ export class AuthController {
     duration: 20,
     errorMessage: 'Please wait before verifying again.',
   })
-  verify(@Query('employeeId', ParseIntPipe) employeeId: number) {
+  verify(@Query('employeeId') employeeId: string) {
     return this.authService.verify(employeeId);
   }
 
@@ -96,7 +89,7 @@ export class AuthController {
     errorMessage: 'Please wait before refreshing your token again.',
   })
   forgotPassword(
-    @Query('employeeId', ParseIntPipe) employeeId: number,
+    @Query('employeeId') employeeId: string,
     @Query('answer') answer: string,
     @Query('newPassword') newPassword: string,
     @Query('secretQuestion1') secretQuestion1: string,

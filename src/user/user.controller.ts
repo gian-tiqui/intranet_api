@@ -38,7 +38,7 @@ export class UserController {
     duration: 60,
     errorMessage: 'Please wait before fetching an employee.',
   })
-  findByEmployeeId(@Query('employeeId') employeeId: number) {
+  findByEmployeeId(@Query('employeeId') employeeId: string) {
     return this.userService.getByEmployeeId(employeeId);
   }
 
@@ -113,7 +113,7 @@ export class UserController {
   })
   deactivateUser(
     @Query('password') password: string,
-    @Query('employeeId') userId: number,
+    @Query('employeeId') userId: string,
     @Query('deactivatorId') deactivatorId: number,
   ) {
     return this.userService.deactivateUser(password, userId, deactivatorId);

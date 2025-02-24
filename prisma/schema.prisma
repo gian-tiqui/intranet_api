@@ -27,7 +27,7 @@ model User {
   updatedAt          DateTime      @updatedAt
   refreshToken       String?       @unique
   deptId             Int
-  employeeId         Int?          @unique
+  employeeId         String?       @unique
   lid                Int      
   confirmed          Boolean       @default(false)
   secretQuestion1    String?

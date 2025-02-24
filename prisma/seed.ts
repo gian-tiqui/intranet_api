@@ -299,7 +299,7 @@ async function seedUsers() {
         dob: new Date(1990, deptId % 12, 15 + i).toISOString(),
         gender: i % 2 === 0 ? 'Female' : 'Male',
         deptId,
-        employeeId: employeeIdCounter++,
+        employeeId: `0000${employeeIdCounter++}`,
         lid,
         confirmed: lid >= 2 ? true : false,
       });

@@ -93,8 +93,8 @@ export class RegisterDto {
   deptId: number;
 
   @IsNotEmpty()
-  @IsInt()
-  employeeId: number;
+  @IsString()
+  employeeId: string;
 
   @IsInt()
   @IsNotEmpty()
