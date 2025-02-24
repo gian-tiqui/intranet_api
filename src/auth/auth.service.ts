@@ -279,7 +279,7 @@ export class AuthService {
     ];
   }
 
-  async fetchDataByEmployeeId(employeeId: number) {
+  async fetchDataByEmployeeId(employeeId: string) {
     let data: RegisterDto[];
 
     try {
@@ -295,9 +295,7 @@ export class AuthService {
       data = this.accounts;
     }
 
-    const found = data.find(
-      (employee) => employee.employeeId === Number(employeeId),
-    );
+    const found = data.find((employee) => employee.employeeId === employeeId);
 
     if (found) {
       return found;
@@ -306,9 +304,9 @@ export class AuthService {
     throw new NotFoundException('Data not found');
   }
 
-  async verify(employeeId: number) {
+  async verify(employeeId: string) {
     const user = await this.prisma.user.findFirst({
-      where: { employeeId: Number(employeeId) },
+      where: { employeeId },
     });
 
     if (user && user.confirmed == false)
@@ -335,9 +333,7 @@ export class AuthService {
       data = this.accounts;
     }
 
-    const found = data.find(
-      (employee) => employee.employeeId === Number(employeeId),
-    );
+    const found = data.find((employee) => employee.employeeId === employeeId);
 
     if (!found) {
       throw new NotFoundException(`ID ${employeeId} not found.`);
@@ -425,7 +421,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     try {
       const user = await this.prisma.user.findUnique({
-        where: { employeeId: Number(loginDto.employeeId) },
+        where: { employeeId: loginDto.employeeId },
         include: { department: true },
       });
 
@@ -537,7 +533,7 @@ export class AuthService {
   }
 
   async forgotPassword(
-    employeeId: number,
+    employeeId: string,
     answer: string,
     newPassword: string,
     secretQuestion1: string,
@@ -628,7 +624,7 @@ export class AuthService {
     );
   }
 
-  private async signEmployeeId(employeeId: number): Promise<string> {
+  private async signEmployeeId(employeeId: string): Promise<string> {
     const employeeIdSecret =
       this.configService.get<string>('EMPLOYEE_ID_SECRET');
     const employeeIdExp = this.configService.get<string>(
