@@ -89,7 +89,7 @@ model Post {
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments           Comment[]
   readers            PostReader[] 
-  notifications      Notification[]
+  notifications      Notification[] 
   postDepartments    PostDepartment[] 
   imageLocations     ImageLocations[] 
   folder             Folder?         @relation(fields: [folderId], references: [id])
@@ -170,7 +170,7 @@ model Notification {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   
-  post               Post?     @relation(fields: [postId], references: [pid]) 
+  post               Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade) 
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   department         Department?  @relation(fields: [deptId], references: [deptId])
   comment            Comment?  @relation(fields: [commentId], references: [cid])

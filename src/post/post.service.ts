@@ -261,7 +261,9 @@ export class PostService {
         where: { pid: id },
         include: {
           postDepartments: {
-            select: { department: { select: { departmentName: true } } },
+            select: {
+              department: { select: { departmentName: true, deptId: true } },
+            },
           },
           user: {
             select: { firstName: true, lastName: true, createdAt: true },

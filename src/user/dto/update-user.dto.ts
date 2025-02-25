@@ -10,6 +10,10 @@ export class UpdateUserDTO {
   @Transform(({ value }) => sanitizeSQL(value))
   email: string;
 
+  @IsString()
+  @IsOptional()
+  employeeId?: string;
+
   @IsOptional()
   @Transform(({ value }) => sanitize(value))
   @Transform(({ value }) => sanitizeSQL(value))
