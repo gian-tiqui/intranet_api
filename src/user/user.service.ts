@@ -112,6 +112,7 @@ export class UserService {
           lastName: true,
           lastNamePrefix: true,
           middleName: true,
+          employeeId: true,
           preferredName: true,
           state: true,
           suffix: true,
@@ -307,7 +308,7 @@ export class UserService {
   ) {
     try {
       const deactivator = await this.prismaService.user.findFirst({
-        where: { id: +deactivatorId },
+        where: { id: deactivatorId },
       });
 
       if (!deactivator)
@@ -322,7 +323,7 @@ export class UserService {
         throw new BadRequestException('Incorrect password.');
 
       const userToDeactivate = await this.prismaService.user.findFirst({
-        where: { employeeId: employeeId },
+        where: { employeeId },
       });
 
       if (!userToDeactivate)
