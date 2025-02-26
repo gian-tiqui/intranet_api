@@ -13,6 +13,7 @@ import {
 import { FolderService } from './folder.service';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 import { RateLimit } from 'nestjs-rate-limiter';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('folders')
@@ -26,8 +27,8 @@ export class FolderController {
     errorMessage: 'Please wait before fetching all unread notifications.',
   })
   @Get()
-  async getFolders() {
-    return this.folderService.getFolders();
+  async getFolders(@Query() query: FindAllDto) {
+    return this.folderService.getFolders(query);
   }
 
   @Post()

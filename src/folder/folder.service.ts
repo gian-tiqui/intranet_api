@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoggerService } from 'src/logger/logger.service';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class FolderService {
@@ -9,19 +11,65 @@ export class FolderService {
     private readonly logger: LoggerService,
   ) {}
 
-  async getFolders() {
+  async getFolders(query: FindAllDto) {
     try {
-      return this.prisma.folder.findMany({
-        where: { parentId: null },
-        include: {
-          subfolders: {
-            include: {
-              posts: true,
-            },
-          },
-          posts: true,
-        },
+      const { search, skip, take } = query;
+
+      const where: Prisma.FolderWhereInput = {
+        parentId: null,
+        ...(search && {
+          OR: [{ name: { contains: search, mode: 'insensitive' } }],
+        }),
+      };
+
+      const folders = await this.prisma.folder.findMany({
+        where,
+        skip,
+        take,
       });
+
+      const count = await this.prisma.folder.count({
+        where,
+      });
+
+      return {
+        message: 'Folders loaded successfully.',
+        folders,
+        count,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in fetching the folders: ', error);
+
+      throw error;
+    }
+  }
+
+  async getFoldersSubfolder(folderId: number, query: FindAllDto) {
+    try {
+      const { search, skip, take } = query;
+
+      const where: Prisma.FolderWhereInput = {
+        ...(search && {
+          OR: [{ name: { contains: search, mode: 'insensitive' } }],
+        }),
+        parentId: folderId,
+      };
+
+      const folders = await this.prisma.folder.findMany({
+        where,
+        skip,
+        take,
+      });
+
+      const count = await this.prisma.folder.count({
+        where,
+      });
+
+      return {
+        message: 'Folders loaded successfully.',
+        folders,
+        count,
+      };
     } catch (error) {
       this.logger.error('There was a problem in fetching the folders: ', error);
 
