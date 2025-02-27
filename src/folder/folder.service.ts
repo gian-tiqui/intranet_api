@@ -13,10 +13,10 @@ export class FolderService {
 
   async getFolders(query: FindAllDto) {
     try {
-      const { search, skip, take } = query;
+      const { search, skip, take, includeSubfolders } = query;
 
       const where: Prisma.FolderWhereInput = {
-        parentId: null,
+        ...(includeSubfolders === 0 && { parentId: null }),
         ...(search && {
           OR: [{ name: { contains: search, mode: 'insensitive' } }],
         }),

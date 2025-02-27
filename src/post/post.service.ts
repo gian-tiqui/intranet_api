@@ -351,9 +351,7 @@ export class PostService {
           public: createPostDto.public === 'public',
           lid: Number(createPostDto.lid),
           extractedText: createPostDto.extractedText,
-          ...(createPostDto.subfolderId && {
-            folderId: +createPostDto.subfolderId,
-          }),
+          ...(createPostDto.folderId && { folderId: createPostDto.folderId }),
         },
       });
 

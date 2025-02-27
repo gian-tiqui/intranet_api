@@ -39,5 +39,5 @@ export class CreatePostDto {
   @IsOptional()
   @IsInt()
   @Transform(({ value }) => parseInt(value, 10))
-  subfolderId: number;
+  folderId?: number;
 }
