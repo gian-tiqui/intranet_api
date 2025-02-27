@@ -26,6 +26,7 @@ export class FolderService {
         where,
         skip,
         take,
+        orderBy: { name: 'asc' },
       });
 
       const count = await this.prisma.folder.count({
@@ -176,9 +177,13 @@ export class FolderService {
         throw new Error(`Folder with ID ${folderId} not found`);
       }
 
-      return this.prisma.folder.delete({
+      await this.prisma.folder.delete({
         where: { id: folderId },
       });
+
+      return {
+        message: 'Folder deleted successfully.',
+      };
     } catch (error) {
       this.logger.error('There was a problem in deleting a folder: ', error);
 
