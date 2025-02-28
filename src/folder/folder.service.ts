@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
 import { Prisma } from '@prisma/client';
 import { CreateFolderDto } from './create-folder.dto';
 import { UpdateFolderDto } from './update-folder.dto';
+import errorHandler from 'src/utils/functions/errorHandler';
 
 @Injectable()
 export class FolderService {
@@ -153,6 +154,49 @@ export class FolderService {
       this.logger.error('There was a problem in finding a folder:', error);
 
       throw error;
+    }
+  }
+
+  async getFolderPosts(folderId: number, query: FindAllDto) {
+    try {
+      const { search, skip, take } = query;
+
+      const where: Prisma.PostWhereInput = {
+        folderId,
+        ...(search && {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { extractedText: { contains: search, mode: 'insensitive' } },
+            { message: { contains: search, mode: 'insensitive' } },
+          ],
+        }),
+      };
+
+      const folder = await this.prisma.folder.findFirst({
+        where: { id: folderId },
+      });
+
+      if (!folder)
+        throw new NotFoundException(`Folder with the id ${folderId} not found`);
+
+      const post = await this.prisma.post.findMany({
+        where,
+        orderBy: { title: 'asc' },
+        skip,
+        take,
+      });
+
+      const count = await this.prisma.post.findMany({
+        where,
+      });
+
+      return {
+        message: `Posts of the folder with the id ${folderId} loaded successfully.`,
+        post,
+        count,
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
     }
   }
 
