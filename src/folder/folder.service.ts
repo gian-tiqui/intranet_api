@@ -3,6 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
 import { Prisma } from '@prisma/client';
+import { CreateFolderDto } from './create-folder.dto';
+import { UpdateFolderDto } from './update-folder.dto';
 
 @Injectable()
 export class FolderService {
@@ -79,11 +81,11 @@ export class FolderService {
   }
 
   // Create a main folder
-  async createMainFolder(name: string) {
+  async createMainFolder(createFolderDto: CreateFolderDto) {
     try {
       return this.prisma.folder.create({
         data: {
-          name,
+          ...createFolderDto,
           icon: 'mynaui:folder-two',
         },
       });
@@ -154,11 +156,11 @@ export class FolderService {
     }
   }
 
-  async updateFolder(folderId: number, name: string) {
+  async updateFolder(folderId: number, updateFolderDto: UpdateFolderDto) {
     try {
       return this.prisma.folder.update({
         where: { id: folderId },
-        data: { name },
+        data: { ...updateFolderDto },
       });
     } catch (error) {
       this.logger.error('There was a problem in updating a folder: ', error);

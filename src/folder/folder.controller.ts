@@ -14,6 +14,8 @@ import { FolderService } from './folder.service';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import { CreateFolderDto } from './create-folder.dto';
+import { UpdateFolderDto } from './update-folder.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('folders')
@@ -38,8 +40,8 @@ export class FolderController {
     duration: 10,
     errorMessage: 'Please wait before creating a new folder.',
   })
-  async createMainFolder(@Body('name') name: string) {
-    return this.folderService.createMainFolder(name);
+  async createMainFolder(@Body() createFolderDto: CreateFolderDto) {
+    return this.folderService.createMainFolder(createFolderDto);
   }
 
   @Post(':parentId/subfolder')
@@ -93,9 +95,9 @@ export class FolderController {
   })
   async updateFolder(
     @Param('folderId', ParseIntPipe) folderId: number,
-    @Body('name') name: string,
+    @Body() updateFolderDto: UpdateFolderDto,
   ) {
-    return this.folderService.updateFolder(folderId, name);
+    return this.folderService.updateFolder(folderId, updateFolderDto);
   }
 
   @Delete(':folderId')
