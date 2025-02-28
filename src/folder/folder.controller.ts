@@ -75,6 +75,20 @@ export class FolderController {
     );
   }
 
+  @Get(':folderId/post')
+  @RateLimit({
+    keyPrefix: 'get_folder_posts',
+    points: 150,
+    duration: 10,
+    errorMessage: 'Please wait before loading folder posts.',
+  })
+  async getFolderPostsByFolderId(
+    @Param('folderId', ParseIntPipe) folderId: number,
+    @Query() query: FindAllDto,
+  ) {
+    return this.folderService.getFolderPosts(folderId, query);
+  }
+
   @Get(':folderId')
   @RateLimit({
     keyPrefix: 'get_folder',
