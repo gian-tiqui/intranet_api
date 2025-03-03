@@ -260,6 +260,8 @@ export class PostService {
       const post = await this.prismaService.post.findFirst({
         where: { pid: id },
         include: {
+          employeeLevel: true,
+          folder: true,
           postDepartments: {
             select: {
               department: { select: { departmentName: true, deptId: true } },
@@ -394,6 +396,7 @@ export class PostService {
     updatePostDto: UpdatePostDto,
     newFiles?: Express.Multer.File[],
   ) {
+    console.log(updatePostDto.lid);
     try {
       const id = Number(postId);
 

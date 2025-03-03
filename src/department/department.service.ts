@@ -7,6 +7,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDeptDto } from './dto/update-department.dto';
 import { LoggerService } from 'src/logger/logger.service';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import errorHandler from 'src/utils/functions/errorHandler';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class DepartmentService {
@@ -153,4 +156,43 @@ export class DepartmentService {
       throw error;
     }
   }
+
+  /**
+   * V2 Starts here
+   */
+
+  findDepartments = async (query: FindAllDto) => {
+    const { search, skip, take } = query;
+
+    try {
+      const where: Prisma.DepartmentWhereInput = {
+        ...(search && {
+          OR: [
+            { departmentCode: { contains: search, mode: 'insensitive' } },
+            { departmentName: { contains: search, mode: 'insensitive' } },
+          ],
+        }),
+      };
+
+      const departments = await this.prismaService.department.findMany({
+        where,
+        orderBy: { departmentName: 'asc' },
+        include: { posts: true, users: true },
+        skip,
+        take,
+      });
+
+      const count = await this.prismaService.department.count({
+        where,
+      });
+
+      return {
+        message: 'Departments loaded successfully.',
+        departments,
+        count,
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  };
 }
