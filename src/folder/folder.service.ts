@@ -182,6 +182,7 @@ export class FolderService {
       const post = await this.prisma.post.findMany({
         where,
         orderBy: { title: 'asc' },
+        include: { imageLocations: true },
         skip,
         take,
       });

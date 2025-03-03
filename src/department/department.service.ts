@@ -10,6 +10,7 @@ import { LoggerService } from 'src/logger/logger.service';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
 import errorHandler from 'src/utils/functions/errorHandler';
 import { Prisma } from '@prisma/client';
+import convertDatesToString from 'src/utils/functions/convertDates';
 
 @Injectable()
 export class DepartmentService {
@@ -185,6 +186,8 @@ export class DepartmentService {
       const count = await this.prismaService.department.count({
         where,
       });
+
+      convertDatesToString(departments);
 
       return {
         message: 'Departments loaded successfully.',
