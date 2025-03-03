@@ -15,6 +15,7 @@ import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDeptDto } from './dto/update-department.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('department')
@@ -29,8 +30,8 @@ export class DepartmentController {
     errorMessage: 'Please wait before fetching the departments.',
   })
   @Get()
-  findAll(@Query('departmentName') departmenName: string) {
-    return this.departmentService.findAll(departmenName);
+  findAll(@Query() query: FindAllDto) {
+    return this.departmentService.findDepartments(query);
   }
 
   // One department fetcher endpoint
