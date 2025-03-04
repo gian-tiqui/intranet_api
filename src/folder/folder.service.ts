@@ -97,7 +97,7 @@ export class FolderService {
     }
   }
 
-  async createSubfolder(name: string, parentId: number) {
+  async createSubfolder(query: CreateFolderDto, parentId: number) {
     try {
       const parentFolder = await this.prisma.folder.findUnique({
         where: { id: parentId },
@@ -109,13 +109,15 @@ export class FolderService {
 
       return this.prisma.folder.create({
         data: {
-          name,
+          ...query,
           parentId: parentId,
           icon: 'mynaui:folder-two',
         },
       });
     } catch (error) {
       this.logger.error('There was a problem in creating a subfolder: ', error);
+
+      throw error;
     }
   }
 
@@ -269,4 +271,43 @@ export class FolderService {
       throw error;
     }
   }
+
+  getFolderSubfolders = async (folderId: number, query: FindAllDto) => {
+    try {
+      const { search, skip, take } = query;
+
+      const where: Prisma.FolderWhereInput = {
+        ...(search && { name: { contains: search, mode: 'insensitive' } }),
+        parentId: folderId,
+      };
+
+      const parentFolder = await this.prisma.folder.findFirst({
+        where: { id: folderId },
+      });
+
+      if (!parentFolder)
+        throw new NotFoundException(
+          `Parent folder with the id ${folderId} not found.`,
+        );
+
+      const subfolders = await this.prisma.folder.findMany({
+        where,
+        skip,
+        take,
+        orderBy: { name: 'asc' },
+      });
+
+      const count = await this.prisma.folder.count({ where });
+
+      const retval = {
+        message: `Subfolders of folder with the id ${folderId} loaded successfully.`,
+        subfolders,
+        count,
+      };
+
+      return retval;
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  };
 }

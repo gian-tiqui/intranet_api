@@ -53,9 +53,9 @@ export class FolderController {
   })
   async createSubfolder(
     @Param('parentId', ParseIntPipe) parentId: number,
-    @Body('name') name: string,
+    @Body() createFolder: CreateFolderDto,
   ) {
-    return this.folderService.createSubfolder(name, parentId);
+    return this.folderService.createSubfolder(createFolder, parentId);
   }
 
   @Get(':folderId/posts')
@@ -87,6 +87,20 @@ export class FolderController {
     @Query() query: FindAllDto,
   ) {
     return this.folderService.getFolderPosts(folderId, query);
+  }
+
+  @Get(':folderId/subfolder')
+  @RateLimit({
+    keyPrefix: 'get_folder_subfolder',
+    points: 150,
+    duration: 10,
+    errorMessage: `Please wait before loading folder's subfolder`,
+  })
+  getFolderSubfoldersByFolderId(
+    @Param('folderId', ParseIntPipe) folderId,
+    @Query() query: FindAllDto,
+  ) {
+    return this.folderService.getFolderSubfolders(folderId, query);
   }
 
   @Get(':folderId')
