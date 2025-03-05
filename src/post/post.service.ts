@@ -352,6 +352,7 @@ export class PostService {
           message: createPostDto.message,
           public: createPostDto.public === 'public',
           lid: Number(createPostDto.lid),
+          downloadable: createPostDto.downloadable === 1 ? true : false,
           extractedText: createPostDto.extractedText,
           ...(createPostDto.folderId && { folderId: createPostDto.folderId }),
         },
@@ -396,7 +397,6 @@ export class PostService {
     updatePostDto: UpdatePostDto,
     newFiles?: Express.Multer.File[],
   ) {
-    console.log(updatePostDto.lid);
     try {
       const id = Number(postId);
 
@@ -466,6 +466,8 @@ export class PostService {
           lid: Number(updatePostDto.lid),
           extractedText: updatedExtractedText,
           edited: true,
+          folderId: updatePostDto.folderId,
+          downloadable: updatePostDto.downloadable === 1 ? true : false,
         },
       });
 

@@ -43,4 +43,14 @@ export class UpdatePostDto {
   @IsNotEmpty()
   @IsString()
   addPhoto: string;
+
+  @IsInt()
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  downloadable?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  folderId?: number;
 }
