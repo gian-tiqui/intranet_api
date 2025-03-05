@@ -41,6 +41,7 @@ model User {
   department         Department    @relation(fields: [deptId], references: [deptId])
   editLogs           EditLogs[]
   employeeLevel      EmployeeLevel @relation(fields: [lid], references: [lid])
+  tickets            Ticket[]
 }
 
 model EmployeeLevel {
@@ -196,6 +197,28 @@ model EditType {
   type              String      
   editLogs          EditLogs[]
 
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+model Ticket {
+  id                Int        @id @default(autoincrement())
+  title             String
+  issue             String     
+  statusId          Int?        @default(1)
+  ticketStatus      TicketStatus? @relation(fields: [statusId], references: [id])
+  issueerId         Int
+  issuer            User       @relation(fields: [issueerId], references: [id])
+  startedAt         DateTime?
+  resolvedAt        DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+model TicketStatus {
+  id                Int        @id @default(autoincrement())
+  status            String
+  tickets           Ticket[]    
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 }
