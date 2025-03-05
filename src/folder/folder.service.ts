@@ -16,7 +16,7 @@ export class FolderService {
 
   async getFolders(query: FindAllDto) {
     try {
-      const { search, skip, take, includeSubfolders } = query;
+      const { search, skip, take, includeSubfolders, depth } = query;
 
       const where: Prisma.FolderWhereInput = {
         ...(includeSubfolders === 0 && { parentId: null }),
@@ -25,8 +25,18 @@ export class FolderService {
         }),
       };
 
+      const buildInclude = (depth: number): Prisma.FolderInclude => {
+        if (depth <= 0 || !depth) return {};
+        return {
+          subfolders: {
+            include: buildInclude(depth - 1),
+          },
+        };
+      };
+
       const folders = await this.prisma.folder.findMany({
         where,
+        include: buildInclude(depth || 1),
         skip,
         take,
         orderBy: { name: 'asc' },
@@ -43,7 +53,6 @@ export class FolderService {
       };
     } catch (error) {
       this.logger.error('There was a problem in fetching the folders: ', error);
-
       throw error;
     }
   }

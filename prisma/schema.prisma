@@ -85,6 +85,7 @@ model Post {
   extractedText      String?        @db.Text
   lid                Int            
   folderId           Int?
+  downloadable       Boolean        @default(false)
   employeeLevel      EmployeeLevel  @relation(fields: [lid], references: [lid])
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments           Comment[]

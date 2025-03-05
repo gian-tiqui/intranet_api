@@ -22,4 +22,9 @@ export class FindAllDto {
   @Max(2)
   @Min(0)
   includeSubfolders?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  depth?: number;
 }

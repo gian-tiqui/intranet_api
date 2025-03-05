@@ -40,4 +40,9 @@ export class CreatePostDto {
   @IsInt()
   @Transform(({ value }) => parseInt(value, 10))
   folderId?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  downloadable?: number;
 }
