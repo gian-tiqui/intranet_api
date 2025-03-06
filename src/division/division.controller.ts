@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { DivisionService } from './division.service';
 import { CreateDivisionDto } from './dto/create-division.dto';
 import { UpdateDivisionDto } from './dto/update-division.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
 
 @Controller('division')
 export class DivisionController {
@@ -34,8 +36,8 @@ export class DivisionController {
     duration: 20,
     errorMessage: 'Please wait before fetching divisions.',
   })
-  findAll() {
-    return this.divisionService.findAll();
+  findAll(@Query() query: FindAllDto) {
+    return this.divisionService.findAll(query);
   }
 
   @Get(':id')

@@ -38,7 +38,7 @@ model User {
   posts              Post[]
   comments           Comment[]
   postReads          PostReader[] 
-  department         Department    @relation(fields: [deptId], references: [deptId])
+  department         Department    @relation(fields: [deptId], references: [deptId], onDelete: Cascade)
   editLogs           EditLogs[]
   employeeLevel      EmployeeLevel @relation(fields: [lid], references: [lid])
   tickets            Ticket[]
@@ -125,7 +125,7 @@ model PostDepartment {
   postId     Int
   deptId     Int
   post       Post     @relation(fields: [postId], references: [pid], onDelete: Cascade)
-  department Department @relation(fields: [deptId], references: [deptId])
+  department Department @relation(fields: [deptId], references: [deptId], onDelete: Cascade)
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
@@ -176,7 +176,7 @@ model Notification {
   
   post               Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade) 
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  department         Department?  @relation(fields: [deptId], references: [deptId])
+  department         Department?  @relation(fields: [deptId], references: [deptId], onDelete: Cascade)
   comment            Comment?  @relation(fields: [commentId], references: [cid])
 }
 
