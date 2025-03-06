@@ -3,6 +3,9 @@ import { CreateDivisionDto } from './dto/create-division.dto';
 import { UpdateDivisionDto } from './dto/update-division.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoggerService } from 'src/logger/logger.service';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import { Prisma } from '@prisma/client';
+import errorHandler from 'src/utils/functions/errorHandler';
 
 @Injectable()
 export class DivisionService {
@@ -15,25 +18,37 @@ export class DivisionService {
     return 'This action adds a new division';
   }
 
-  async findAll() {
+  async findAll(query: FindAllDto) {
     try {
+      const { search, skip, take } = query;
+
+      const where: Prisma.DivisionWhereInput = {
+        ...(search && {
+          OR: [
+            { divisionName: { contains: search, mode: 'insensitive' } },
+            { divisionCode: { contains: search, mode: 'insensitive' } },
+          ],
+        }),
+      };
+
       const divisions = await this.prismaService.division.findMany({
+        where,
         include: { departments: { select: { deptId: true } } },
+        skip,
+        take,
+      });
+
+      const count = await this.prismaService.division.count({
+        where,
       });
 
       return {
         message: 'Divisions loaded successfully.',
         divisions,
+        count,
       };
     } catch (error) {
-      this.logger.error(
-        'There was a problem in fetching all departments',
-        error,
-      );
-
-      throw new InternalServerErrorException(
-        `There was a problem in the server.`,
-      );
+      errorHandler(error, this.logger);
     }
   }
 
