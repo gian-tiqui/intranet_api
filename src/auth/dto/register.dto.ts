@@ -99,4 +99,8 @@ export class RegisterDto {
   @IsInt()
   @IsNotEmpty()
   lid: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  divisionId: number;
 }

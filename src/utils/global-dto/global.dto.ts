@@ -27,4 +27,13 @@ export class FindAllDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   depth?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  deptId?: number;
+
+  @IsString()
+  @IsOptional()
+  confirm?: string;
 }

@@ -85,4 +85,12 @@ export class UpdateUserDTO {
 
   @IsOptional()
   dob: Date;
+
+  @IsOptional()
+  @IsInt()
+  divisionId: number;
+
+  @IsInt()
+  @IsOptional()
+  lid: number;
 }

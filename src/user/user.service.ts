@@ -8,6 +8,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import * as argon from 'argon2';
 import { LoggerService } from 'src/logger/logger.service';
+import { Prisma } from '@prisma/client';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
 
 @Injectable()
 export class UserService {
@@ -16,40 +18,50 @@ export class UserService {
     private readonly logger: LoggerService,
   ) {}
 
-  async getAll(confirm?: string, deptId?: number) {
+  async getAll(query: FindAllDto) {
     try {
+      const { deptId, confirm, search } = query;
+
+      const where: Prisma.UserWhereInput = {
+        ...(search && {
+          OR: [
+            { firstName: { contains: search, mode: 'insensitive' } },
+            { middleName: { contains: search, mode: 'insensitive' } },
+            { lastName: { contains: search, mode: 'insensitive' } },
+            {
+              department: {
+                departmentName: { contains: search, mode: 'insensitive' },
+              },
+            },
+            {
+              employeeLevel: {
+                level: {
+                  contains:
+                    search.toLowerCase() === 'staff' ? 'All Employees' : search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+            { employeeId: { contains: search, mode: 'insensitive' } },
+          ],
+        }),
+
+        ...(confirm === 'false' && { confirmed: false }),
+        ...(deptId && { deptId: Number(deptId) }),
+      };
+
       const users = await this.prismaService.user.findMany({
-        where: {
-          ...(confirm === 'false' && { confirmed: false }),
-          ...(deptId && { deptId: Number(deptId) }),
-        },
-        select: {
-          password: false,
-          department: true,
-          address: true,
-          city: true,
-          createdAt: true,
-          deptId: true,
-          dob: true,
-          email: true,
-          firstName: true,
-          gender: true,
-          id: true,
-          lastName: true,
-          lastNamePrefix: true,
-          middleName: true,
-          preferredName: true,
-          state: true,
-          suffix: true,
-          updatedAt: true,
-          zipCode: true,
-        },
+        where,
+        include: { department: true, employeeLevel: true },
       });
+
+      const count = await this.prismaService.user.count({ where });
 
       return {
         message: 'Users retrieved',
         statusCode: 200,
-        users: { users },
+        users,
+        count,
       };
     } catch (error) {
       this.logger.error('There was a problem in finding users: ', error);
@@ -97,29 +109,7 @@ export class UserService {
     try {
       const user = await this.prismaService.user.findFirst({
         where: { id: Number(userId) },
-        select: {
-          password: false,
-          department: true,
-          address: true,
-          city: true,
-          createdAt: true,
-          deptId: true,
-          dob: true,
-          email: true,
-          firstName: true,
-          gender: true,
-          id: true,
-          lastName: true,
-          lastNamePrefix: true,
-          middleName: true,
-          employeeId: true,
-          preferredName: true,
-          state: true,
-          suffix: true,
-          updatedAt: true,
-          zipCode: true,
-          notifications: true,
-        },
+        include: { department: true, employeeLevel: true, division: true },
       });
 
       if (!user) {
@@ -165,16 +155,26 @@ export class UserService {
       if (updateUserDto.password)
         updatedPassword = await argon.hash(updateUserDto.password);
 
+      const { divisionId, deptId, lid, updatedBy, ...updatedData } =
+        updateUserDto;
+
       const updatedUser = await this.prismaService.user.update({
         where: { id: userId },
         data: {
-          ...updateUserDto,
+          ...updatedData,
+          division: { connect: { id: divisionId } },
+          department: { connect: { deptId } },
+          employeeLevel: { connect: { lid } },
           password: updatedPassword,
           ...(updateUserDto.dob && { dob: new Date(updateUserDto.dob) }),
           updatedAt: new Date(),
         },
       });
-      if (!updatedUser) throw new ConflictException('Something went wrong');
+      if (!updatedUser) {
+        console.log(updatedBy);
+
+        throw new ConflictException('Something went wrong');
+      }
       return {
         message: 'Update successful',
         statusCode: 200,
