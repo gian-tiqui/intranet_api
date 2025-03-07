@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -14,6 +15,7 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -27,8 +29,8 @@ export class UserController {
     duration: 60,
     errorMessage: 'Please wait before fetching the users.',
   })
-  getAll(@Query('confirm') confirm?: string, @Query('deptId') deptId?: number) {
-    return this.userService.getAll(confirm, deptId);
+  getAll(@Query() query: FindAllDto) {
+    return this.userService.getAll(query);
   }
 
   @Get('employeeId')
@@ -114,7 +116,7 @@ export class UserController {
   deactivateUser(
     @Query('password') password: string,
     @Query('employeeId') userId: string,
-    @Query('deactivatorId') deactivatorId: number,
+    @Query('deactivatorId', ParseIntPipe) deactivatorId: number,
   ) {
     return this.userService.deactivateUser(password, userId, deactivatorId);
   }

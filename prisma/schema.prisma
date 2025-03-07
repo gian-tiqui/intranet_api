@@ -22,7 +22,7 @@ model User {
   state              String?
   zipCode            Int?
   dob                DateTime @db.Date
-  gender             String
+  gender             String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime      @updatedAt
   refreshToken       String?       @unique
@@ -34,6 +34,8 @@ model User {
   secretAnswer1      String?
   secretQuestion2    String?
   secretAnswer2      String?
+  divisionId         Int?
+  division           Division?    @relation(fields: [divisionId], references: [id])
   notifications      Notification[]
   posts              Post[]
   comments           Comment[]
@@ -72,6 +74,7 @@ model Division {
   departments       Department[]    
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
+  users             User[]
 }
 
 model Post {
