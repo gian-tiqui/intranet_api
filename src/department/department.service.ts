@@ -45,7 +45,7 @@ export class DepartmentService {
     try {
       const department = await this.prismaService.department.findFirst({
         where: { deptId: id },
-        include: { users: true, posts: true },
+        include: { users: true, posts: true, division: true },
       });
 
       if (!department)
