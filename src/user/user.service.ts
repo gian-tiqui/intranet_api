@@ -162,9 +162,9 @@ export class UserService {
         where: { id: userId },
         data: {
           ...updatedData,
-          division: { connect: { id: divisionId } },
-          department: { connect: { deptId } },
-          employeeLevel: { connect: { lid } },
+          ...(divisionId && { division: { connect: { id: divisionId } } }),
+          ...(deptId && { department: { connect: { deptId } } }),
+          ...(lid && { employeeLevel: { connect: { lid } } }),
           password: updatedPassword,
           ...(updateUserDto.dob && { dob: new Date(updateUserDto.dob) }),
           updatedAt: new Date(),
