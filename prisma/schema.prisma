@@ -191,7 +191,7 @@ model EditLogs {
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
-  user               User @relation(fields: [updatedBy], references: [id])
+  user               User @relation(fields: [updatedBy], references: [id], onDelete: Cascade)
   editType           EditType @relation(fields: [editTypeId], references: [id])
 }
 
