@@ -16,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as argon from 'argon2';
 import { LoggerService } from 'src/logger/logger.service';
+import errorHandler from 'src/utils/functions/errorHandler';
 
 @Injectable()
 export class AuthService {
@@ -636,4 +637,26 @@ export class AuthService {
       { expiresIn: employeeIdExp, secret: employeeIdSecret },
     );
   }
+
+  lockUserLogin = async (employeeId: string) => {
+    try {
+      const user = await this.prisma.user.findFirst({ where: { employeeId } });
+
+      if (!user)
+        throw new NotFoundException(
+          `User with the id ${employeeId} not found.`,
+        );
+
+      await this.prisma.user.update({
+        where: { employeeId },
+        data: { confirmed: false },
+      });
+
+      return {
+        message: 'User deactivated successfully',
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  };
 }

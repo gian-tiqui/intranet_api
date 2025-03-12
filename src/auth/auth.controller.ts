@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -100,5 +100,16 @@ export class AuthController {
       newPassword,
       secretQuestion1,
     );
+  }
+
+  @RateLimit({
+    keyPrefix: 'lock-user',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before locking a user.',
+  })
+  @Post(':employeeId/lock-user')
+  lockUser(@Param('employeeId') employeeId: string) {
+    return this.authService.lockUserLogin(employeeId);
   }
 }
