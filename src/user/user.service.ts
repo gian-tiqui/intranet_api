@@ -281,7 +281,7 @@ export class UserService {
                   : undefined,
               },
             },
-            select: { post: true },
+            select: { post: true, createdAt: true, updatedAt: true },
           },
         },
       });
