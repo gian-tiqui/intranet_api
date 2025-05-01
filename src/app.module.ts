@@ -21,6 +21,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { FolderModule } from './folder/folder.module';
 import { DivisionModule } from './division/division.module';
 import { LoggerService } from './logger/logger.service';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { LoggerService } from './logger/logger.service';
     EditLogsModule,
     FolderModule,
     DivisionModule,
+    SearchModule,
   ],
   providers: [
     {

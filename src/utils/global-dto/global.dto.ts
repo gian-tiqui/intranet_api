@@ -36,4 +36,9 @@ export class FindAllDto {
   @IsString()
   @IsOptional()
   confirm?: string;
+
+  @IsInt()
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  lid?: number;
 }
