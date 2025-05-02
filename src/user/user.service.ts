@@ -109,12 +109,22 @@ export class UserService {
     try {
       const user = await this.prismaService.user.findFirst({
         where: { id: Number(userId) },
-        include: { department: true, employeeLevel: true, division: true },
+        select: {
+          department: { include: { division: true } },
+          employeeLevel: true,
+          firstName: true,
+          middleName: true,
+          lastName: true,
+          email: true,
+        },
       });
 
       if (!user) {
         throw new NotFoundException(`User with the id ${userId} not found`);
       }
+
+      if (user.employeeLevel.level.toLowerCase() === 'all employees')
+        user.employeeLevel.level = 'Staff';
 
       return {
         message: 'User retrieved',
