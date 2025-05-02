@@ -23,6 +23,12 @@ export class SearchService {
               { lastName: { contains: lowerSearch, mode: 'insensitive' } },
             ],
           },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            middleName: true,
+          },
         }),
         this.prismaService.folder.findMany({
           where: {
