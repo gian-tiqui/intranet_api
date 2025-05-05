@@ -56,6 +56,7 @@ export class NotificationService {
         message: 'Unread posts retrieved',
         statusCode: 200,
         unreadPosts,
+        count: unreadPosts.length,
       };
     } catch (error) {
       this.logger.error(
@@ -90,7 +91,7 @@ export class NotificationService {
 
       if (userPostReads.postReads.length < deptPostCounts.length) {
         return {
-          message: `This user have not read all of the department's post.`,
+          message: `There are some posts that you haven't read.`,
           statusCode: 200,
           readAll: false,
         };
