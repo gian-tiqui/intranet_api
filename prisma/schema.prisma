@@ -89,6 +89,7 @@ model Post {
   extractedText      String?        @db.Text
   lid                Int            
   folderId           Int?
+  isPublished        Boolean        @default(false)
   downloadable       Boolean        @default(false)
   employeeLevel      EmployeeLevel  @relation(fields: [lid], references: [lid])
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -107,6 +108,7 @@ model Folder {
   parentFolder       Folder?      @relation("SubFolders", fields: [parentId], references: [id], onDelete: Cascade)
   subfolders         Folder[]     @relation("SubFolders")
   posts              Post[]
+  isPublished        Boolean      @default(false)
   textColor          String?
   folderColor        String?
   icon               String?
