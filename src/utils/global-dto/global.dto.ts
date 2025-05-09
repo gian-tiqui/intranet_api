@@ -41,4 +41,9 @@ export class FindAllDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   lid?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  isPublished?: number;
 }

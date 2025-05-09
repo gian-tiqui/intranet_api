@@ -148,17 +148,21 @@ export class FolderService {
     }
   }
 
-  async getFolderById(folderId: number) {
+  async getFolderById(folderId: number, query: FindAllDto) {
+    const { isPublished } = query;
+
     try {
       return this.prisma.folder.findUnique({
         where: { id: folderId },
         include: {
           subfolders: {
             include: {
-              posts: true,
+              posts: {
+                where: { isPublished: true },
+              },
             },
           },
-          posts: true,
+          posts: { where: { isPublished: true } },
         },
       });
     } catch (error) {
@@ -181,6 +185,7 @@ export class FolderService {
             { message: { contains: search, mode: 'insensitive' } },
           ],
         }),
+        isPublished: true,
       };
 
       const folder = await this.prisma.folder.findFirst({

@@ -42,8 +42,15 @@ export class PostController {
     @Query('direction') direction: string,
     @Query('offset') offset: number,
     @Query('limit') limit: number,
+    @Query('isPublished', ParseIntPipe) isPublished: number,
   ) {
-    return this.postService.findAllSelfPosts(userId, direction, offset, limit);
+    return this.postService.findAllSelfPosts(
+      userId,
+      direction,
+      offset,
+      limit,
+      isPublished,
+    );
   }
 
   // This endpoint returns the filtered posts [filters are blank by default and will return all of the posts]
@@ -65,6 +72,7 @@ export class PostController {
     @Query('limit') limit: number = 100,
     @Query('direction') direction: string,
     @Query('deptId') deptId: number = null,
+    @Query('isPublished', ParseIntPipe) isPublished: number,
   ) {
     return this.postService.findAll(
       lid,
@@ -77,6 +85,7 @@ export class PostController {
       limit,
       direction,
       deptId,
+      isPublished,
     );
   }
 
@@ -90,8 +99,9 @@ export class PostController {
   findDeptPostsByLid(
     @Param('deptId', ParseIntPipe) deptId: number,
     @Param('lid', ParseIntPipe) lid: number,
+    @Param('isPublished', ParseIntPipe) isPublished: number,
   ) {
-    return this.postService.findDeptPostsByLid(deptId, lid);
+    return this.postService.findDeptPostsByLid(deptId, lid, isPublished);
   }
 
   @Get('level/:lid')
@@ -105,8 +115,9 @@ export class PostController {
     @Param('lid') lid: number,
     @Query('offset') offset: number,
     @Query('limit') limit: number,
+    @Query('isPublished', ParseIntPipe) isPublished: number,
   ) {
-    return this.postService.findManyByLid(lid, offset, limit);
+    return this.postService.findManyByLid(lid, offset, limit, isPublished);
   }
 
   // This endpoint returns the post with the given id

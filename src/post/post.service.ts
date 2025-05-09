@@ -43,11 +43,13 @@ export class PostService {
     direction: string,
     offset: number,
     limit: number,
+    isPublished: number,
   ) {
     try {
       const ownedPosts = await this.prismaService.post.findMany({
         where: {
           userId: Number(userId),
+          isPublished: isPublished === 1 ? true : false,
         },
         orderBy: { createdAt: direction === 'desc' ? 'desc' : 'asc' },
         skip: +offset,
@@ -79,6 +81,7 @@ export class PostService {
     limit: number = 10,
     direction: string = 'desc',
     deptId: number | undefined = undefined,
+    isPublished: number = 0,
   ) {
     try {
       const iUserId = userId ? Number(userId) : undefined;
@@ -86,6 +89,7 @@ export class PostService {
       const _lid = lid;
 
       const opts: any[] = [
+        isPublished,
         ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
         ...(search
           ? [
@@ -169,7 +173,7 @@ export class PostService {
     }
   }
 
-  async findDeptPostsByLid(deptId: number, lid: number) {
+  async findDeptPostsByLid(deptId: number, lid: number, isPublished: number) {
     try {
       const deptPostsByLid = await this.prismaService.post.findMany({
         where: {
@@ -177,6 +181,7 @@ export class PostService {
           postDepartments: {
             some: { deptId: deptId },
           },
+          isPublished: isPublished == 1 ? true : false,
           folderId: null,
         },
         orderBy: { createdAt: 'desc' },
@@ -210,6 +215,7 @@ export class PostService {
     lid: number,
     offset: number = 0,
     limit: number = 10,
+    isPublished: number,
     direction: string = 'desc',
   ) {
     try {
@@ -217,6 +223,7 @@ export class PostService {
         where: {
           public: true,
           lid: +lid,
+          isPublished: isPublished == 1 ? true : false,
         },
         include: {
           imageLocations: true,
