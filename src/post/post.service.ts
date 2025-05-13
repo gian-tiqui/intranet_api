@@ -362,6 +362,7 @@ export class PostService {
           downloadable: createPostDto.downloadable === 1 ? true : false,
           extractedText: createPostDto.extractedText,
           ...(createPostDto.folderId && { folderId: createPostDto.folderId }),
+          isPublished: createPostDto.isPublished === 1 ? true : false,
         },
       });
 
