@@ -99,7 +99,7 @@ export class PostController {
   findDeptPostsByLid(
     @Param('deptId', ParseIntPipe) deptId: number,
     @Param('lid', ParseIntPipe) lid: number,
-    @Param('isPublished', ParseIntPipe) isPublished: number,
+    @Query('isPublished', ParseIntPipe) isPublished: number,
   ) {
     return this.postService.findDeptPostsByLid(deptId, lid, isPublished);
   }

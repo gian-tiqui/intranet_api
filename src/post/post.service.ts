@@ -89,7 +89,7 @@ export class PostService {
       const _lid = lid;
 
       const opts: any[] = [
-        isPublished,
+        { isPublished: isPublished === 1 ? true : false },
         ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
         ...(search
           ? [
