@@ -89,7 +89,7 @@ export class PostService {
       const _lid = lid;
 
       const opts: any[] = [
-        isPublished,
+        { isPublished: isPublished === 1 ? true : false },
         ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
         ...(search
           ? [
@@ -362,6 +362,7 @@ export class PostService {
           downloadable: createPostDto.downloadable === 1 ? true : false,
           extractedText: createPostDto.extractedText,
           ...(createPostDto.folderId && { folderId: createPostDto.folderId }),
+          isPublished: createPostDto.isPublished === 1 ? true : false,
         },
       });
 

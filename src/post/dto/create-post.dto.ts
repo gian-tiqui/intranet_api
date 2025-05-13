@@ -45,4 +45,9 @@ export class CreatePostDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
   downloadable?: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value, 10))
+  isPublished: number;
 }

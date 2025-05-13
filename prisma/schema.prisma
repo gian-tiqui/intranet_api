@@ -64,6 +64,7 @@ model Department {
   division           Division       @relation(fields: [divisionId], references: [id], onDelete: Cascade)
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
+  folderDepartments  FolderDepartment[]
 }
 
 // ANCILLARY, ADMIN, NSD
@@ -114,6 +115,20 @@ model Folder {
   icon               String?
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
+  folderDepartments  FolderDepartment[]
+}
+
+model FolderDepartment {
+  id                 Int @unique @default(autoincrement())
+  folderId           Int
+  deptId             Int
+  
+  folder             Folder @relation(fields: [folderId], references: [id])
+  department         Department @relation(fields: [deptId], references: [deptId])
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@unique([folderId, deptId])
 }
 
 model ImageLocations {

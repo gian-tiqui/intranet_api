@@ -16,13 +16,15 @@ export class FolderService {
 
   async getFolders(query: FindAllDto) {
     try {
-      const { search, skip, take, includeSubfolders, depth } = query;
+      const { search, skip, take, includeSubfolders, depth, isPublished } =
+        query;
 
       const where: Prisma.FolderWhereInput = {
         ...(includeSubfolders === 0 && { parentId: null }),
         ...(search && {
           OR: [{ name: { contains: search, mode: 'insensitive' } }],
         }),
+        isPublished: isPublished === 1 ? true : false,
       };
 
       const buildInclude = (depth: number): Prisma.FolderInclude => {
@@ -59,13 +61,14 @@ export class FolderService {
 
   async getFoldersSubfolder(folderId: number, query: FindAllDto) {
     try {
-      const { search, skip, take } = query;
+      const { search, skip, take, isPublished } = query;
 
       const where: Prisma.FolderWhereInput = {
         ...(search && {
           OR: [{ name: { contains: search, mode: 'insensitive' } }],
         }),
         parentId: folderId,
+        isPublished: isPublished === 1 ? true : false,
       };
 
       const folders = await this.prisma.folder.findMany({
@@ -92,11 +95,22 @@ export class FolderService {
 
   // Create a main folder
   async createMainFolder(createFolderDto: CreateFolderDto) {
+    const { deptIds, ...dto } = createFolderDto;
     try {
       return this.prisma.folder.create({
         data: {
-          ...createFolderDto,
+          ...dto,
           icon: 'mynaui:folder-two',
+          isPublished: createFolderDto.isPublished === 1 ? true : false,
+          folderDepartments: {
+            createMany: {
+              data: [
+                ...deptIds
+                  .split(',')
+                  .map((deptId) => ({ deptId: parseInt(deptId) })),
+              ],
+            },
+          },
         },
       });
     } catch (error) {
@@ -106,7 +120,7 @@ export class FolderService {
     }
   }
 
-  async createSubfolder(query: CreateFolderDto, parentId: number) {
+  async createSubfolder(createSubFolderDto: CreateFolderDto, parentId: number) {
     try {
       const parentFolder = await this.prisma.folder.findUnique({
         where: { id: parentId },
@@ -116,11 +130,23 @@ export class FolderService {
         throw new Error(`Parent folder with ID ${parentId} not found`);
       }
 
+      const { deptIds, ...dto } = createSubFolderDto;
+
       return this.prisma.folder.create({
         data: {
-          ...query,
+          ...dto,
           parentId: parentId,
           icon: 'mynaui:folder-two',
+          isPublished: createSubFolderDto.isPublished === 1 ? true : false,
+          folderDepartments: {
+            createMany: {
+              data: [
+                ...deptIds
+                  .split(',')
+                  .map((deptId) => ({ deptId: parseInt(deptId) })),
+              ],
+            },
+          },
         },
       });
     } catch (error) {
@@ -148,9 +174,7 @@ export class FolderService {
     }
   }
 
-  async getFolderById(folderId: number, query: FindAllDto) {
-    const { isPublished } = query;
-
+  async getFolderById(folderId: number) {
     try {
       return this.prisma.folder.findUnique({
         where: { id: folderId },
@@ -288,11 +312,12 @@ export class FolderService {
 
   getFolderSubfolders = async (folderId: number, query: FindAllDto) => {
     try {
-      const { search, skip, take } = query;
+      const { search, skip, take, isPublished } = query;
 
       const where: Prisma.FolderWhereInput = {
         ...(search && { name: { contains: search, mode: 'insensitive' } }),
         parentId: folderId,
+        isPublished: isPublished === 1 ? true : false,
       };
 
       const parentFolder = await this.prisma.folder.findFirst({
