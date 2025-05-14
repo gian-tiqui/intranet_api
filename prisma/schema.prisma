@@ -123,7 +123,7 @@ model FolderDepartment {
   folderId           Int
   deptId             Int
   
-  folder             Folder @relation(fields: [folderId], references: [id])
+  folder             Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
   department         Department @relation(fields: [deptId], references: [deptId])
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
