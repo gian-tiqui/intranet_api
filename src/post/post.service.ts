@@ -476,6 +476,7 @@ export class PostService {
           edited: true,
           folderId: updatePostDto.folderId,
           downloadable: updatePostDto.downloadable === 1 ? true : false,
+          isPublished: updatePostDto.isPublished === 1 ? true : false,
         },
       });
 
