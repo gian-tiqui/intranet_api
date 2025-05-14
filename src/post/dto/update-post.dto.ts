@@ -53,4 +53,9 @@ export class UpdatePostDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
   folderId?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  isPublished: number;
 }
