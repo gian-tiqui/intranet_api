@@ -44,6 +44,7 @@ model User {
   editLogs           EditLogs[]
   employeeLevel      EmployeeLevel @relation(fields: [lid], references: [lid])
   tickets            Ticket[]
+  folders             Folder[]
 }
 
 model EmployeeLevel {
@@ -113,6 +114,8 @@ model Folder {
   textColor          String?
   folderColor        String?
   icon               String?
+  userId             Int
+  user               User         @relation(fields: [userId], references: [id])
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
   folderDepartments  FolderDepartment[]

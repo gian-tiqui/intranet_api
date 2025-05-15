@@ -30,4 +30,8 @@ export class CreateFolderDto {
   @IsString()
   @IsNotEmpty()
   deptIds: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
 }
