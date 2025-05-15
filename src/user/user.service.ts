@@ -10,6 +10,7 @@ import * as argon from 'argon2';
 import { LoggerService } from 'src/logger/logger.service';
 import { Prisma } from '@prisma/client';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import errorHandler from 'src/utils/functions/errorHandler';
 
 @Injectable()
 export class UserService {
@@ -395,6 +396,63 @@ export class UserService {
         error,
       );
 
+      throw error;
+    }
+  }
+
+  async getDraftsByUserID(userId: number, query: FindAllDto) {
+    try {
+      const { skip = 0, take = 10, search = '', deptId, lid = 0 } = query;
+      const lowerSearch = search.toLowerCase();
+
+      const [folders, posts] = await Promise.all([
+        this.prismaService.folder.findMany({
+          where: {
+            name: { contains: lowerSearch, mode: 'insensitive' },
+            userId,
+          },
+        }),
+        this.prismaService.post.findMany({
+          where: {
+            OR: [
+              { title: { contains: lowerSearch, mode: 'insensitive' } },
+              { message: { contains: lowerSearch, mode: 'insensitive' } },
+            ],
+            lid: { gte: lid },
+            postDepartments: { some: { deptId } },
+            userId,
+          },
+        }),
+      ]);
+
+      const scoredResults = [
+        ...folders.map((f) => ({
+          type: 'folder',
+          data: f,
+          score: f.name?.toLowerCase().includes(lowerSearch) ? 2 : 0,
+        })),
+        ...posts.map((p) => ({
+          type: 'post',
+          data: p,
+          score:
+            (p.title?.toLowerCase().includes(lowerSearch) ? 3 : 0) +
+            (p.message?.toLowerCase().includes(lowerSearch) ? 1 : 0),
+        })),
+      ];
+
+      const sorted = scoredResults.sort((a, b) => b.score - a.score);
+
+      const total = sorted.length;
+      const paginated = sorted.slice(skip, skip + take);
+
+      return {
+        total,
+        skip,
+        take,
+        results: paginated,
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
       throw error;
     }
   }

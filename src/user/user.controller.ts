@@ -135,4 +135,18 @@ export class UserController {
   ) {
     return this.userService.setSecretQuestion(question, answer, userId);
   }
+
+  @RateLimit({
+    keyPrefix: 'set_secret_question',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before setting new question.',
+  })
+  @Get(':userId/drafts')
+  getDraftsById(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Query() query: FindAllDto,
+  ) {
+    return this.userService.getDraftsByUserID(userId, query);
+  }
 }

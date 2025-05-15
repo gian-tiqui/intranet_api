@@ -33,6 +33,7 @@ export class SearchService {
         this.prismaService.folder.findMany({
           where: {
             name: { contains: lowerSearch, mode: 'insensitive' },
+            isPublished: true,
           },
         }),
         this.prismaService.post.findMany({
@@ -41,6 +42,7 @@ export class SearchService {
               { title: { contains: lowerSearch, mode: 'insensitive' } },
               { message: { contains: lowerSearch, mode: 'insensitive' } },
             ],
+            isPublished: true,
             lid: { gte: lid },
             postDepartments: { some: { deptId } },
           },
