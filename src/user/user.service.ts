@@ -410,7 +410,9 @@ export class UserService {
           where: {
             name: { contains: lowerSearch, mode: 'insensitive' },
             userId,
+            isPublished: false,
           },
+          include: { folderDepartments: { include: { department: true } } },
         }),
         this.prismaService.post.findMany({
           where: {
@@ -421,7 +423,9 @@ export class UserService {
             lid: { gte: lid },
             postDepartments: { some: { deptId } },
             userId,
+            isPublished: false,
           },
+          include: { postDepartments: { include: { department: true } } },
         }),
       ]);
 
