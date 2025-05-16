@@ -187,6 +187,7 @@ export class FolderService {
             },
           },
           posts: { where: { isPublished: true } },
+          folderDepartments: true,
         },
       });
     } catch (error) {
@@ -242,10 +243,11 @@ export class FolderService {
   }
 
   async updateFolder(folderId: number, updateFolderDto: UpdateFolderDto) {
+    const { isPublished, ...rest } = updateFolderDto;
     try {
       return this.prisma.folder.update({
         where: { id: folderId },
-        data: { ...updateFolderDto },
+        data: { ...rest, isPublished: isPublished === 1 ? true : false },
       });
     } catch (error) {
       this.logger.error('There was a problem in updating a folder: ', error);
