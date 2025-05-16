@@ -110,8 +110,11 @@ export class FolderController {
     duration: 10,
     errorMessage: 'Please wait before getting a folder.',
   })
-  async getFolderById(@Param('folderId', ParseIntPipe) folderId: number) {
-    return this.folderService.getFolderById(folderId);
+  async getFolderById(
+    @Param('folderId', ParseIntPipe) folderId: number,
+    @Query('deptId', ParseIntPipe) deptId: number,
+  ) {
+    return this.folderService.getFolderById(folderId, deptId);
   }
 
   @Put(':folderId')
