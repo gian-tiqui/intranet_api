@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 import sanitize from 'src/utils/functions/sanitize';
 import sanitizeSQL from 'src/utils/functions/sanitizeSQL';
 
@@ -21,4 +21,12 @@ export class UpdateFolderDto {
   @Transform(({ value }) => sanitize(value))
   @Transform(({ value }) => sanitizeSQL(value))
   folderColor?: string;
+
+  @IsString()
+  @IsOptional()
+  deptIds: string;
+
+  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
+  isPublished: number;
 }
