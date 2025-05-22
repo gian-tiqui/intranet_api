@@ -190,7 +190,7 @@ export class FolderService {
         include: {
           subfolders: {
             where: {
-              folderDepartments: { some: { deptId } },
+              ...(deptId && { folderDepartments: { some: { deptId } } }),
             },
             include: {
               posts: {
