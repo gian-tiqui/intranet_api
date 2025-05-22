@@ -16,8 +16,15 @@ export class FolderService {
 
   async getFolders(query: FindAllDto) {
     try {
-      const { search, skip, take, includeSubfolders, depth, isPublished } =
-        query;
+      const {
+        search,
+        skip,
+        take,
+        includeSubfolders,
+        depth,
+        isPublished,
+        deptId,
+      } = query;
 
       const where: Prisma.FolderWhereInput = {
         ...(includeSubfolders === 0 && { parentId: null }),
@@ -25,6 +32,7 @@ export class FolderService {
           OR: [{ name: { contains: search, mode: 'insensitive' } }],
         }),
         isPublished: isPublished === 1 ? true : false,
+        ...(deptId && { folderDepartments: { some: { deptId } } }),
       };
 
       const buildInclude = (depth: number): Prisma.FolderInclude => {
@@ -61,7 +69,7 @@ export class FolderService {
 
   async getFoldersSubfolder(folderId: number, query: FindAllDto) {
     try {
-      const { search, skip, take, isPublished } = query;
+      const { search, skip, take, isPublished, deptId } = query;
 
       const where: Prisma.FolderWhereInput = {
         ...(search && {
@@ -69,6 +77,7 @@ export class FolderService {
         }),
         parentId: folderId,
         isPublished: isPublished === 1 ? true : false,
+        ...(deptId && { folderDepartments: { some: { deptId } } }),
       };
 
       const folders = await this.prisma.folder.findMany({
@@ -174,12 +183,15 @@ export class FolderService {
     }
   }
 
-  async getFolderById(folderId: number) {
+  async getFolderById(folderId: number, deptId: number) {
     try {
       return this.prisma.folder.findUnique({
         where: { id: folderId },
         include: {
           subfolders: {
+            where: {
+              ...(deptId && { folderDepartments: { some: { deptId } } }),
+            },
             include: {
               posts: {
                 where: { isPublished: true },
@@ -314,12 +326,13 @@ export class FolderService {
 
   getFolderSubfolders = async (folderId: number, query: FindAllDto) => {
     try {
-      const { search, skip, take, isPublished } = query;
+      const { search, skip, take, isPublished, deptId } = query;
 
       const where: Prisma.FolderWhereInput = {
         ...(search && { name: { contains: search, mode: 'insensitive' } }),
         parentId: folderId,
         isPublished: isPublished === 1 ? true : false,
+        folderDepartments: { some: { deptId } },
       };
 
       const parentFolder = await this.prisma.folder.findFirst({
