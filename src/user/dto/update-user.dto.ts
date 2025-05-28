@@ -93,4 +93,8 @@ export class UpdateUserDTO {
   @IsInt()
   @IsOptional()
   lid: number;
+
+  @IsString()
+  @IsOptional()
+  localNumber: string;
 }

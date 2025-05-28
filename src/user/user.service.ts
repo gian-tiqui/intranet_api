@@ -368,7 +368,11 @@ export class UserService {
     }
   }
 
-  async setSecretQuestion(question: string, answer: string, userId: number) {
+  setSecretQuestion = async (
+    question: string,
+    answer: string,
+    userId: number,
+  ) => {
     try {
       const hashedQuestion: string = await argon.hash(question);
       const hashedAnswer: string = await argon.hash(answer);
@@ -398,7 +402,7 @@ export class UserService {
 
       throw error;
     }
-  }
+  };
 
   async getDraftsByUserID(userId: number, query: FindAllDto) {
     try {
