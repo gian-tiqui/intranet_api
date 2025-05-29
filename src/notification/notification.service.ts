@@ -272,7 +272,7 @@ export class NotificationService {
     try {
       const users = await this.prismaService.user.findMany({
         where: { deptId: Number(deptId), lid: { gte: lid } },
-        select: { id: true },
+        select: { id: true, phone: true },
       });
 
       if (users.length === 0)
@@ -281,13 +281,17 @@ export class NotificationService {
       const postMessage = await this.getPostMessage(postId);
       const notificationMessage = `A new post has been created for your department: '${postMessage}'`;
 
-      const notificationsData = users.map((user) => ({
-        userId: user.id,
-        message: notificationMessage,
-        postId: Number(postId),
-        deptId: Number(deptId),
-        isRead: false,
-      }));
+      const notificationsData = users.map((user) => {
+        console.log(user.phone);
+
+        return {
+          userId: user.id,
+          message: notificationMessage,
+          postId: Number(postId),
+          deptId: Number(deptId),
+          isRead: false,
+        }; // pang check ng temp sa imaging nakaoff, casey sa pharma papa
+      });
 
       return this.prismaService.notification.createMany({
         data: notificationsData,
