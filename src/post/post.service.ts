@@ -359,10 +359,12 @@ export class PostService {
           message: createPostDto.message,
           public: createPostDto.public === 'public',
           lid: Number(createPostDto.lid),
-          downloadable: createPostDto.downloadable === 1 ? true : false,
+          downloadable: createPostDto.downloadable === 1,
           extractedText: createPostDto.extractedText,
           ...(createPostDto.folderId && { folderId: createPostDto.folderId }),
-          isPublished: createPostDto.isPublished === 1 ? true : false,
+          isPublished: createPostDto.isPublished === 1,
+          superseeded: false,
+          typeId: createPostDto.typeId,
         },
       });
 

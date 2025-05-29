@@ -22,6 +22,7 @@ import { FolderModule } from './folder/folder.module';
 import { DivisionModule } from './division/division.module';
 import { LoggerService } from './logger/logger.service';
 import { SearchModule } from './search/search.module';
+import { RevisionModule } from './revision/revision.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { SearchModule } from './search/search.module';
     FolderModule,
     DivisionModule,
     SearchModule,
+    RevisionModule,
   ],
   providers: [
     {

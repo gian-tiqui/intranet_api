@@ -50,4 +50,9 @@ export class CreatePostDto {
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value, 10))
   isPublished: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value, 10))
+  typeId: number;
 }
