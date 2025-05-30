@@ -23,8 +23,6 @@ import { DivisionModule } from './division/division.module';
 import { LoggerService } from './logger/logger.service';
 import { SearchModule } from './search/search.module';
 import { RevisionModule } from './revision/revision.module';
-import { SendsmsService } from './sendsms/sendsms.service';
-import { SendsmsModule } from './sendsms/sendsms.module';
 
 @Module({
   imports: [
@@ -73,7 +71,6 @@ import { SendsmsModule } from './sendsms/sendsms.module';
     DivisionModule,
     SearchModule,
     RevisionModule,
-    SendsmsModule,
   ],
   providers: [
     {
@@ -81,7 +78,6 @@ import { SendsmsModule } from './sendsms/sendsms.module';
       useClass: RateLimiterGuard,
     },
     LoggerService,
-    SendsmsService,
   ],
   controllers: [AppController],
 })
