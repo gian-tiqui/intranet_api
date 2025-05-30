@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,6 +9,8 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  UploadedFiles,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -16,11 +19,54 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import { AddUserDto } from './dto/add-user.dto';
+import errorHandler from 'src/utils/functions/errorHandler';
+import { LoggerService } from 'src/logger/logger.service';
+import { JwtService } from '@nestjs/jwt';
+import extractAccessToken from 'src/utils/functions/extractAccessToken';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private logger: LoggerService,
+    private jwtService: JwtService,
+  ) {}
+
+  @Post()
+  @RateLimit({
+    keyPrefix: 'add_user',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before adding a new user.',
+  })
+  addUser(@Body() addUserDto: AddUserDto, @Req() req: Request) {
+    try {
+      const accessToken = extractAccessToken(req);
+
+      if (!accessToken)
+        throw new BadRequestException(`Access token is required`);
+
+      return this.userService.addUser(addUserDto, accessToken);
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  }
+
+  @Post(':userId/upload')
+  @RateLimit({
+    keyPrefix: 'upload_picture',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before uploading user picture',
+  })
+  uploadProfilePicture(
+    @Param('userId', ParseIntPipe) userId: number,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.userService.uploadUserProfile(userId, files);
+  }
 
   @Get()
   @RateLimit({
