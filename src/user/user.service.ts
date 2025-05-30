@@ -11,12 +11,16 @@ import { LoggerService } from 'src/logger/logger.service';
 import { Prisma } from '@prisma/client';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
 import errorHandler from 'src/utils/functions/errorHandler';
+import { AddUserDto } from './dto/add-user.dto';
+import extractUserId from 'src/utils/functions/extractUserId';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     private prismaService: PrismaService,
     private readonly logger: LoggerService,
+    private jwtService: JwtService,
   ) {}
 
   async getAll(query: FindAllDto) {
@@ -403,6 +407,37 @@ export class UserService {
       throw error;
     }
   };
+
+  async uploadUserProfile(userId: number, files: Express.Multer.File[]) {
+    try {
+      console.log(userId, files);
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  }
+
+  async addUser(addUserDto: AddUserDto, accessToken: string) {
+    try {
+      const userId = extractUserId(accessToken, this.jwtService);
+
+      const user = await this.prismaService.user.findFirst({
+        where: { id: userId },
+      });
+
+      if (!user)
+        throw new NotFoundException(`User with the id ${userId} not found`);
+
+      await this.prismaService.user.create({
+        data: { password: 'abcd_123', ...addUserDto },
+      });
+
+      return {
+        message: `User created successfully by ${user.firstName}`,
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  }
 
   async getDraftsByUserID(userId: number, query: FindAllDto) {
     try {
