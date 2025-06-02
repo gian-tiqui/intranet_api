@@ -195,4 +195,9 @@ export class UserController {
   ) {
     return this.userService.getDraftsByUserID(userId, query);
   }
+
+  @Get(':userId/last-login')
+  getLastLoginByUserId(@Param('userId', ParseIntPipe) userId: number) {
+    return this.userService.getUserLastLogin(userId);
+  }
 }
