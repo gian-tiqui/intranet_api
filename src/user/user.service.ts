@@ -439,6 +439,24 @@ export class UserService {
     }
   }
 
+  async getUserLastLogin(id: number) {
+    try {
+      const lastLogin = await this.prismaService.loginLogs.findFirst({
+        where: { userId: id },
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        select: { updatedAt: true },
+      });
+
+      return {
+        message: `Last login of user with the id ${id} loaded successfully.`,
+        lastLogin,
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  }
+
   async getDraftsByUserID(userId: number, query: FindAllDto) {
     try {
       const { skip = 0, take = 10, search = '', deptId, lid = 0 } = query;

@@ -462,6 +462,12 @@ export class AuthService {
         });
       }
 
+      await this.prisma.loginLogs.create({
+        data: {
+          userId: user.id,
+        },
+      });
+
       return {
         message: 'Login successful',
         statusCode: 200,

@@ -14,6 +14,8 @@ import { promisify } from 'util';
 import * as path from 'path';
 import { NotificationService } from 'src/notification/notification.service';
 import { LoggerService } from 'src/logger/logger.service';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import errorHandler from 'src/utils/functions/errorHandler';
 
 @Injectable()
 export class PostService {
@@ -562,6 +564,40 @@ export class PostService {
       this.logger.error('There was a problem in removing a post by id', error);
 
       throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async getPostRevisions(postId: number, query: FindAllDto) {
+    try {
+      const post = await this.prismaService.post.findFirst({
+        where: { pid: postId },
+      });
+
+      const { search } = query;
+
+      if (!post)
+        throw new NotFoundException(`Post with the id ${postId} not found`);
+
+      const revisions = await this.prismaService.revision.findMany({
+        where: {
+          postId,
+          post: {
+            title: { contains: search.toLowerCase(), mode: 'insensitive' },
+            message: { contains: search.toLowerCase(), mode: 'insensitive' },
+            extractedText: {
+              contains: search.toLowerCase(),
+              mode: 'insensitive',
+            },
+          },
+        },
+      });
+
+      return {
+        message: `Revisions of the post with the id ${postId} found.`,
+        revisions,
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
     }
   }
 }
