@@ -10,22 +10,22 @@ import {
   Put,
   Query,
   Req,
-  UploadedFiles,
-  UseGuards,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RateLimit } from 'nestjs-rate-limiter';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
 import { AddUserDto } from './dto/add-user.dto';
 import errorHandler from 'src/utils/functions/errorHandler';
 import { LoggerService } from 'src/logger/logger.service';
 import { JwtService } from '@nestjs/jwt';
 import extractAccessToken from 'src/utils/functions/extractAccessToken';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
   constructor(
@@ -61,11 +61,26 @@ export class UserController {
     duration: 60,
     errorMessage: 'Please wait before uploading user picture',
   })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: (
+        req: Express.Request,
+        file: Express.Multer.File,
+        callback: (error: Error | null, acceptFile: boolean) => void,
+      ) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        callback(null, true);
+      },
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
   uploadProfilePicture(
     @Param('userId', ParseIntPipe) userId: number,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.userService.uploadUserProfile(userId, files);
+    return this.userService.uploadUserProfile(userId, file);
   }
 
   @Get()
