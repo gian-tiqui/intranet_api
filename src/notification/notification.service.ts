@@ -290,7 +290,7 @@ export class NotificationService {
           postId: Number(postId),
           deptId: Number(deptId),
           isRead: false,
-        }; // pang check ng temp sa imaging nakaoff, casey sa pharma papa
+        };
       });
 
       return this.prismaService.notification.createMany({
