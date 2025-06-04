@@ -37,6 +37,7 @@ model User {
   secretAnswer2            String?
   divisionId               Int?
   localNumber              String?
+  profilePictureLocation   String?
   division                 Division?      @relation(fields: [divisionId], references: [id])
   notifications            Notification[]
   posts                    Post[]

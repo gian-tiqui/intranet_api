@@ -14,6 +14,8 @@ import errorHandler from 'src/utils/functions/errorHandler';
 import { AddUserDto } from './dto/add-user.dto';
 import extractUserId from 'src/utils/functions/extractUserId';
 import { JwtService } from '@nestjs/jwt';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class UserService {
@@ -121,6 +123,12 @@ export class UserService {
           middleName: true,
           lastName: true,
           email: true,
+          localNumber: true,
+          dob: true,
+          profilePictureLocation: true,
+          id: true,
+          posts: true,
+          folders: true,
         },
       });
 
@@ -408,9 +416,35 @@ export class UserService {
     }
   };
 
-  async uploadUserProfile(userId: number, files: Express.Multer.File[]) {
+  async uploadUserProfile(userId: number, file: Express.Multer.File) {
     try {
-      console.log(userId, files);
+      const user = await this.prismaService.user.findFirst({
+        where: { id: userId },
+      });
+
+      if (!user)
+        throw new NotFoundException(`User with the id ${userId} not found.`);
+
+      const profilePicDir = path.join(process.cwd(), 'uploads', 'profilePic');
+
+      await fs.mkdir(profilePicDir, { recursive: true });
+
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+
+      const storedFileName = `${userId}-${uniqueSuffix}-${file.originalname}`;
+
+      const filePath = path.join(profilePicDir, storedFileName);
+
+      await fs.writeFile(filePath, file.buffer);
+
+      await this.prismaService.user.update({
+        where: { id: userId },
+        data: { profilePictureLocation: storedFileName },
+      });
+
+      return {
+        message: `User ${userId} profile picture updated`,
+      };
     } catch (error) {
       errorHandler(error, this.logger);
     }
