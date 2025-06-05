@@ -20,7 +20,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { RateLimit } from 'nestjs-rate-limiter';
 
 // This guard accepts requests that are provided with valid access tokens
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}

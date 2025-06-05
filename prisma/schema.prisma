@@ -125,20 +125,19 @@ model Post {
   notifications            Notification[] 
   postDepartments          PostDepartment[] 
   imageLocations           ImageLocations[] 
-  revisions                Revision[]
   folder                   Folder?        @relation(fields: [folderId], references: [id])
   typeId                   Int
   type                     PostType       @relation(fields: [typeId], references: [id])
+  postRevisionId           Int?
+  postRevision             PostRevision?   @relation(fields: [postRevisionId], references: [id])
 }
 
-// The post will be marked as superseeded if the ID of the last memo in this model is the same as the current post
-model Revision {
-  id                       Int            @id @default(autoincrement())
-  postId                   Int
-  post                     Post           @relation(fields: [postId], references: [pid])
-  createdAt                DateTime       @default(now())
-  updatedAt                DateTime       @updatedAt
+model PostRevision {
+  id                      Int             @id @default(autoincrement())
+  posts                   Post[]
 }
+
+
 
 model PostType {
   id                       Int            @id @default(autoincrement())

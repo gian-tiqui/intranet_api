@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateRevisionDto } from './dto/create-revision.dto';
 import { UpdateRevisionDto } from './dto/update-revision.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -16,11 +16,8 @@ export class RevisionService {
 
   async findAll() {
     try {
-      const revisions = await this.prismaService.revision.findMany();
-
       return {
         message: `Revisions loaded successfully`,
-        revisions,
       };
     } catch (error) {
       errorHandler(error, this.logger);
@@ -29,16 +26,8 @@ export class RevisionService {
 
   async findOne(id: number) {
     try {
-      const revision = await this.prismaService.revision.findFirst({
-        where: { id },
-      });
-
-      if (!revision)
-        throw new NotFoundException(`Revision with the id ${id} not found`);
-
       return {
         message: `Revision with the id ${id} found.`,
-        revision,
       };
     } catch (error) {
       errorHandler(error, this.logger);
@@ -51,8 +40,6 @@ export class RevisionService {
 
   async remove(id: number) {
     try {
-      await this.prismaService.revision.delete({ where: { id } });
-
       return {
         message: `Revision with the id ${id} deleted successfully.`,
       };

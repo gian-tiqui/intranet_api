@@ -14,8 +14,6 @@ import { promisify } from 'util';
 import * as path from 'path';
 import { NotificationService } from 'src/notification/notification.service';
 import { LoggerService } from 'src/logger/logger.service';
-import { FindAllDto } from 'src/utils/global-dto/global.dto';
-import errorHandler from 'src/utils/functions/errorHandler';
 
 @Injectable()
 export class PostService {
@@ -318,8 +316,14 @@ export class PostService {
           },
           imageLocations: true,
           readers: { select: { user: true } },
+          postRevision: { select: { posts: true } },
         },
       });
+
+      const superseeded: boolean =
+        post.postRevision && post.postRevision.posts.length > 0
+          ? post.postRevision.posts.some((p) => p.pid === post.pid)
+          : false;
 
       if (!post)
         throw new NotFoundException(`Post with the id ${id} not found`);
@@ -329,7 +333,7 @@ export class PostService {
       return {
         message: 'Post retrieved successfully',
         statusCode: 200,
-        post: { ...post, census },
+        post: { ...post, census, superseeded },
       };
     } catch (error) {
       this.logger.error('An error occured while fetching a post by id', error);
@@ -582,40 +586,6 @@ export class PostService {
       this.logger.error('There was a problem in removing a post by id', error);
 
       throw new InternalServerErrorException(error.message);
-    }
-  }
-
-  async getPostRevisions(postId: number, query: FindAllDto) {
-    try {
-      const post = await this.prismaService.post.findFirst({
-        where: { pid: postId },
-      });
-
-      const { search } = query;
-
-      if (!post)
-        throw new NotFoundException(`Post with the id ${postId} not found`);
-
-      const revisions = await this.prismaService.revision.findMany({
-        where: {
-          postId,
-          post: {
-            title: { contains: search.toLowerCase(), mode: 'insensitive' },
-            message: { contains: search.toLowerCase(), mode: 'insensitive' },
-            extractedText: {
-              contains: search.toLowerCase(),
-              mode: 'insensitive',
-            },
-          },
-        },
-      });
-
-      return {
-        message: `Revisions of the post with the id ${postId} found.`,
-        revisions,
-      };
-    } catch (error) {
-      errorHandler(error, this.logger);
     }
   }
 }
