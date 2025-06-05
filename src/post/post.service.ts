@@ -257,6 +257,21 @@ export class PostService {
     }
   }
 
+  async getCensusWithPercentage(postId: number) {
+    const [readCount, totalUsers] = await this.prismaService.$transaction([
+      this.prismaService.postReader.count({ where: { postId } }),
+      this.prismaService.user.count(),
+    ]);
+
+    const readPercentage = totalUsers > 0 ? (readCount / totalUsers) * 100 : 0;
+
+    return {
+      readCount,
+      totalUsers,
+      readPercentage: `${readPercentage.toFixed(1)}%`,
+    };
+  }
+
   // This method returns a post with the given id
   async findById(postId: number, userId: number) {
     try {
@@ -302,16 +317,19 @@ export class PostService {
             },
           },
           imageLocations: true,
+          readers: { select: { user: true } },
         },
       });
 
       if (!post)
         throw new NotFoundException(`Post with the id ${id} not found`);
 
+      const census = await this.getCensusWithPercentage(post.pid);
+
       return {
         message: 'Post retrieved successfully',
         statusCode: 200,
-        post: post,
+        post: { ...post, census },
       };
     } catch (error) {
       this.logger.error('An error occured while fetching a post by id', error);
