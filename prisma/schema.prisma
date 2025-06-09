@@ -38,6 +38,8 @@ model User {
   divisionId               Int?
   localNumber              String?
   profilePictureLocation   String?
+  officeLocation           String?
+  jobTitle                 String?
   division                 Division?      @relation(fields: [divisionId], references: [id])
   notifications            Notification[]
   posts                    Post[]
