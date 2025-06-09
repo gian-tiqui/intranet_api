@@ -551,4 +551,55 @@ export class UserService {
       throw error;
     }
   }
+
+  async findUserCensus(userId: number) {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { id: userId },
+        select: { deptId: true },
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const { deptId } = user;
+
+      const departmentPosts = await this.prismaService.postDepartment.findMany({
+        where: {
+          deptId,
+          post: { isPublished: true },
+        },
+        include: {
+          post: true,
+        },
+      });
+
+      const allPostIds = departmentPosts.map((entry) => entry.postId);
+
+      const readPosts = await this.prismaService.postReader.findMany({
+        where: {
+          userId,
+          postId: { in: allPostIds },
+        },
+        select: { postId: true },
+      });
+
+      const readPostIds = new Set(readPosts.map((entry) => entry.postId));
+
+      const unreadPosts = departmentPosts
+        .filter((entry) => !readPostIds.has(entry.postId))
+        .map((entry) => entry.post);
+
+      return {
+        totalRead: readPostIds.size,
+        totalUnread: allPostIds.length - readPostIds.size,
+        unreadPostsByDepartment: {
+          [deptId]: unreadPosts,
+        },
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  }
 }
