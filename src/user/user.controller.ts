@@ -215,4 +215,9 @@ export class UserController {
   getLastLoginByUserId(@Param('userId', ParseIntPipe) userId: number) {
     return this.userService.getUserLastLogin(userId);
   }
+
+  @Get(':userId/census')
+  getUserCensus(@Param('userId', ParseIntPipe) userId: number) {
+    return this.userService.findUserCensus(userId);
+  }
 }
