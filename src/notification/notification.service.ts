@@ -282,7 +282,15 @@ export class NotificationService {
       const notificationMessage = `A new post has been created for your department: '${postMessage}'`;
 
       const notificationsData = users.map((user) => {
-        console.log(user.phone);
+        // const password = process.env.SMS_PASSWORD;
+
+        // fetch(
+        //   `http://10.10.10.78:8080/sendsms?phone=${user.phone}&text=${notificationMessage}&password=${password}`,
+        // )
+        //   .then((res) => {
+        //     console.log(res);
+        //   })
+        //   .catch((err) => this.logger.error(err, 'stackTrace'));
 
         return {
           userId: user.id,
