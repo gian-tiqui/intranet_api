@@ -30,7 +30,7 @@ model User {
   employeeId               String?        @unique
   phone                    String?        @unique
   lid                      Int      
-  confirmed                Boolean        @default(false)
+  confirmed                Boolean        @default(true)
   secretQuestion1          String?
   secretAnswer1            String?
   secretQuestion2          String?
