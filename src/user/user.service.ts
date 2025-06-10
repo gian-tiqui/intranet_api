@@ -129,6 +129,10 @@ export class UserService {
           id: true,
           posts: true,
           folders: true,
+          phone: true,
+          division: { select: { divisionName: true } },
+          jobTitle: true,
+          officeLocation: true,
         },
       });
 

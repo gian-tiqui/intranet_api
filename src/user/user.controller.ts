@@ -42,6 +42,7 @@ export class UserController {
     errorMessage: 'Please wait before adding a new user.',
   })
   addUser(@Body() addUserDto: AddUserDto, @Req() req: Request) {
+    console.log('?');
     try {
       const accessToken = extractAccessToken(req);
 
