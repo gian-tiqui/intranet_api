@@ -131,14 +131,8 @@ model Post {
   folder                   Folder?        @relation(fields: [folderId], references: [id])
   typeId                   Int
   type                     PostType       @relation(fields: [typeId], references: [id])
-  postRevisionId           Int?
-  postRevision             PostRevision?   @relation(fields: [postRevisionId], references: [id])
 }
 
-model PostRevision {
-  id                      Int             @id @default(autoincrement())
-  posts                   Post[]
-}
 
 
 
