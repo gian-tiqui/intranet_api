@@ -5,12 +5,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoggerService } from 'src/logger/logger.service';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class NotificationService {
   constructor(
     private prismaService: PrismaService,
     private readonly logger: LoggerService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async getUnreadPosts(userId: number, deptId: number) {
@@ -272,7 +274,7 @@ export class NotificationService {
     try {
       const users = await this.prismaService.user.findMany({
         where: { deptId: Number(deptId), lid: { gte: lid } },
-        select: { id: true, phone: true },
+        select: { id: true, phone: true, firstName: true, email: true },
       });
 
       if (users.length === 0)
@@ -282,15 +284,26 @@ export class NotificationService {
       const notificationMessage = `A new post has been created for your department: '${postMessage}'`;
 
       const notificationsData = users.map((user) => {
-        // const password = process.env.SMS_PASSWORD;
+        const password = process.env.SMS_PASSWORD;
 
-        // fetch(
-        //   `http://10.10.10.78:8080/sendsms?phone=${user.phone}&text=${notificationMessage}&password=${password}`,
-        // )
-        //   .then((res) => {
-        //     console.log(res);
+        fetch(
+          `http://10.10.10.78:8080/sendsms?phone=${user.phone}&text=${notificationMessage}&password=${password}`,
+        ).catch((err) => this.logger.error(err, 'stackTrace'));
+
+        // this.mailerService
+        //   .sendMail({
+        //     to: user.email,
+        //     subject: 'New Post',
+        //     template: 'registration',
+        //     context: {
+        //       name: user.firstName,
+        //       message: notificationMessage,
+        //     },
         //   })
-        //   .catch((err) => this.logger.error(err, 'stackTrace'));
+        //   .then((response) => {
+        //     console.log(response);
+        //   })
+        //   .catch((err) => console.log(err));
 
         return {
           userId: user.id,
