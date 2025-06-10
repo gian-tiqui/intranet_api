@@ -1,3 +1,4 @@
+import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
   IsInt,
@@ -35,10 +36,12 @@ export class AddUserDto {
   @IsNotEmpty()
   state: string;
 
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   zipCode: number;
 
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   dob: Date;
@@ -62,4 +65,20 @@ export class AddUserDto {
   @IsString()
   @IsNotEmpty()
   employeeId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  jobTitle: string;
+
+  @IsString()
+  @IsNotEmpty()
+  localNumber: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  divisionId: number;
+
+  @IsString()
+  @IsNotEmpty()
+  officeLocation: string;
 }

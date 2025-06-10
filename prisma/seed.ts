@@ -301,7 +301,7 @@ async function seedUsers() {
         deptId,
         employeeId: `0000${employeeIdCounter++}`,
         lid,
-        confirmed: lid >= 2 ? true : false,
+        confirmed: true,
       });
     }
   }
