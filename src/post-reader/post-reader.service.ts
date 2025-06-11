@@ -41,7 +41,7 @@ export class PostReaderService {
 
   async create(createPostReaderDto: CreatePostReaderDto) {
     try {
-      const { postId, userId } = createPostReaderDto;
+      const { postId, userId, understood } = createPostReaderDto;
 
       const existingPostReader = await this.prismaService.postReader.findUnique(
         {
@@ -56,7 +56,7 @@ export class PostReaderService {
       }
 
       return this.prismaService.postReader.create({
-        data: { postId: Number(postId), userId },
+        data: { postId: Number(postId), userId, understood: understood === 1 },
       });
     } catch (error) {
       this.logger.error(

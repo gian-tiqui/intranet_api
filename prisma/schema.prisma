@@ -39,8 +39,8 @@ model User {
   localNumber              String?
   profilePictureLocation   String?
   officeLocation           String?
-  jobTitle                 String?
-  isAdmin                  Boolean
+  jobTitle                 String?        
+  isAdmin                  Boolean        @default(false)
   division                 Division?      @relation(fields: [divisionId], references: [id])
   notifications            Notification[]
   posts                    Post[]
@@ -205,6 +205,7 @@ model PostReader {
   readAt                    DateTime      @default(now())
   post                      Post          @relation(fields: [postId], references: [pid], onDelete: Cascade)
   user                      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  understood                Boolean       @default(false)
   createdAt                 DateTime      @default(now())
   updatedAt                 DateTime      @updatedAt
   @@unique([postId, userId])

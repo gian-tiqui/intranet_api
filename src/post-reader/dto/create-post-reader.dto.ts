@@ -8,4 +8,8 @@ export class CreatePostReaderDto {
   @IsNotEmpty()
   @IsInt()
   userId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  understood: number;
 }

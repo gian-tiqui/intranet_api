@@ -316,14 +316,8 @@ export class PostService {
           },
           imageLocations: true,
           readers: { select: { user: true } },
-          postRevision: { select: { posts: true } },
         },
       });
-
-      const superseeded: boolean =
-        post.postRevision && post.postRevision.posts.length > 0
-          ? post.postRevision.posts.some((p) => p.pid === post.pid)
-          : false;
 
       if (!post)
         throw new NotFoundException(`Post with the id ${id} not found`);
@@ -333,7 +327,7 @@ export class PostService {
       return {
         message: 'Post retrieved successfully',
         statusCode: 200,
-        post: { ...post, census, superseeded },
+        post: { ...post, census },
       };
     } catch (error) {
       this.logger.error('An error occured while fetching a post by id', error);
