@@ -223,6 +223,16 @@ async function seedDepartments() {
   console.log('Department seeded.');
 }
 
+async function seedPostTypes() {
+  const postTypes: string[] = ['GUIDELINE', 'MEMO', 'PROCEDURE'];
+
+  await prisma.postType.createMany({
+    data: postTypes.map((postType: string) => ({
+      name: postType,
+    })),
+  });
+}
+
 async function updateDepartments() {
   const existingDepartments = await prisma.department.findMany();
   const existingDepartmentsMap = new Map(
@@ -321,6 +331,7 @@ async function main() {
   console.log('Seeding database...');
 
   // updateDepartments();
+  seedPostTypes();
 
   seedEditTypes();
   seedEmployeeLevel().then(() =>

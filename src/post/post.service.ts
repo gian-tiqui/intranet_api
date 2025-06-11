@@ -316,6 +316,7 @@ export class PostService {
           },
           imageLocations: true,
           readers: { select: { user: true } },
+          parentPost: true,
         },
       });
 
@@ -427,7 +428,6 @@ export class PostService {
   ) {
     try {
       const id = Number(postId);
-
       if (isNaN(id)) {
         throw new BadRequestException('ID must be a number');
       }
@@ -441,118 +441,141 @@ export class PostService {
           `User with the id ${updatePostDto.updatedBy} not found.`,
         );
 
-      const post = await this.prismaService.post.findFirst({
+      const existingPost = await this.prismaService.post.findFirst({
         where: { pid: id },
+        include: {
+          imageLocations: true,
+          postDepartments: true,
+        },
       });
 
-      if (!post) {
+      if (!existingPost) {
         throw new NotFoundException('Post not found');
       }
 
+      // Mark existing post as superseeded
+      await this.prismaService.post.update({
+        where: { pid: id },
+        data: { superseeded: true },
+      });
+
+      // Log original post to edit logs
       await this.prismaService.editLogs.create({
         data: {
           editTypeId: 1,
           updatedBy: Number(updatePostDto.updatedBy),
-          log: { ...post },
+          log: { ...existingPost },
         },
       });
 
+      // Save new uploaded images
       const imageLocations = [];
-
       if (newFiles && newFiles.length > 0) {
         const postDir = path.join(process.cwd(), 'uploads', 'post');
-
         await fs.mkdir(postDir, { recursive: true });
 
         for (const file of newFiles) {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const filePath = path.join(
-            postDir,
-            `${uniqueSuffix}-${file.originalname}`,
-          );
-
+          const filename = `${uniqueSuffix}-${file.originalname}`;
+          const filePath = path.join(postDir, filename);
           await fs.writeFile(filePath, file.buffer);
 
           imageLocations.push({
-            imageLocation: `post/${uniqueSuffix}-${file.originalname}`,
+            imageLocation: `post/${filename}`,
           });
         }
       }
 
+      // Determine extracted text
       const updatedExtractedText =
         updatePostDto.addPhoto !== 'true'
           ? updatePostDto.extractedText
-          : updatePostDto.extractedText + post.extractedText;
+          : updatePostDto.extractedText + existingPost.extractedText;
 
-      const updatedPost = await this.prismaService.post.update({
-        where: { pid: id },
+      // Create a new version of the post
+      const newPost = await this.prismaService.post.create({
         data: {
+          userId: existingPost.userId,
           title: updatePostDto.title,
           message: updatePostDto.message,
           public: updatePostDto.public === 'public',
           lid: Number(updatePostDto.lid),
+          folderId: updatePostDto.folderId,
           extractedText: updatedExtractedText,
           edited: true,
-          folderId: updatePostDto.folderId,
-          downloadable: updatePostDto.downloadable === 1 ? true : false,
-          isPublished: updatePostDto.isPublished === 1 ? true : false,
+          downloadable: updatePostDto.downloadable === 1,
+          isPublished: updatePostDto.isPublished === 1,
+          typeId: existingPost.typeId,
+          superseeded: false,
         },
       });
 
-      if (updatePostDto.addPhoto !== 'true') {
-        await this.prismaService.imageLocations.deleteMany({
-          where: {
-            postId: id,
-          },
-        });
-      }
+      // Mark existing post as superseeded
+      await this.prismaService.post.update({
+        where: { pid: id },
+        data: { superseeded: true, parentId: newPost.pid },
+      });
 
-      if (imageLocations.length > 0) {
+      // Re-attach image locations
+      if (updatePostDto.addPhoto !== 'true') {
+        // Copy new ones only
         await this.prismaService.imageLocations.createMany({
           data: imageLocations.map((loc) => ({
-            postId: updatedPost.pid,
+            postId: newPost.pid,
             imageLocation: loc.imageLocation,
           })),
         });
+      } else {
+        // Append to old ones
+        const combinedImages = [
+          ...existingPost.imageLocations.map((i) => ({
+            postId: newPost.pid,
+            imageLocation: i.imageLocation,
+          })),
+          ...imageLocations.map((i) => ({
+            postId: newPost.pid,
+            imageLocation: i.imageLocation,
+          })),
+        ];
+        await this.prismaService.imageLocations.createMany({
+          data: combinedImages,
+        });
       }
 
+      // Re-attach departments
       const newDeptIds = updatePostDto.deptIds;
       if (newDeptIds) {
-        await this.prismaService.postDepartment.deleteMany({
-          where: { postId: id },
-        });
+        const deptData = newDeptIds.split(',').map((deptId) => ({
+          postId: newPost.pid,
+          deptId: Number(deptId),
+        }));
 
+        await this.prismaService.postDepartment.createMany({ data: deptData });
+
+        // Clear old notifications and send new ones
         await this.prismaService.notification.deleteMany({
-          where: { postId: id },
-        });
-
-        await this.prismaService.postDepartment.createMany({
-          data: newDeptIds.split(',').map((deptId) => ({
-            postId: id,
-            deptId: Number(deptId),
-          })),
+          where: { postId: existingPost.pid },
         });
 
         newDeptIds
           .split(',')
-          .map((deptId) =>
+          .forEach((deptId) =>
             this.notificationService.notifyDepartmentOfNewPost(
               Number(deptId),
-              id,
+              newPost.pid,
               updatePostDto.lid,
             ),
           );
       }
 
       return {
-        message: 'Post updated successfully',
+        message: 'Post updated and new version created successfully',
         statusCode: 200,
-        post: updatedPost,
+        post: newPost,
       };
     } catch (error) {
       this.logger.error('There was a problem while updating a post', error);
-
       throw error;
     }
   }

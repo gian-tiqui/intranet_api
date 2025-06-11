@@ -121,6 +121,10 @@ model Post {
   isPublished              Boolean        @default(false)
   downloadable             Boolean        @default(false)
   superseeded              Boolean        
+  originalPostId           Int?
+  parentId                 Int?
+  parentPost               Post?          @relation("PostRevision", fields: [parentId], references: [pid])
+  childrenPosts            Post[]         @relation("PostRevision")
   employeeLevel            EmployeeLevel  @relation(fields: [lid], references: [lid])
   user                     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments                 Comment[]
@@ -132,8 +136,6 @@ model Post {
   typeId                   Int
   type                     PostType       @relation(fields: [typeId], references: [id])
 }
-
-
 
 
 model PostType {
