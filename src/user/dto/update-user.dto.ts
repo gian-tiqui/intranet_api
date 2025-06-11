@@ -97,4 +97,16 @@ export class UpdateUserDTO {
   @IsString()
   @IsOptional()
   localNumber: string;
+
+  @IsString()
+  @IsOptional()
+  jobTitle: string;
+
+  @IsString()
+  @IsOptional()
+  phone: string;
+
+  @IsString()
+  @IsOptional()
+  officeLocation: string;
 }

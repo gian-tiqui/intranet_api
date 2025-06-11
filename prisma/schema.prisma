@@ -39,8 +39,8 @@ model User {
   localNumber              String?
   profilePictureLocation   String?
   officeLocation           String?
-  jobTitle                 String?
-  isAdmin                  Boolean
+  jobTitle                 String?        
+  isAdmin                  Boolean        @default(false)
   division                 Division?      @relation(fields: [divisionId], references: [id])
   notifications            Notification[]
   posts                    Post[]
@@ -121,6 +121,10 @@ model Post {
   isPublished              Boolean        @default(false)
   downloadable             Boolean        @default(false)
   superseeded              Boolean        
+  originalPostId           Int?
+  parentId                 Int?
+  parentPost               Post?          @relation("PostRevision", fields: [parentId], references: [pid])
+  childrenPosts            Post[]         @relation("PostRevision")
   employeeLevel            EmployeeLevel  @relation(fields: [lid], references: [lid])
   user                     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments                 Comment[]
@@ -132,8 +136,6 @@ model Post {
   typeId                   Int
   type                     PostType       @relation(fields: [typeId], references: [id])
 }
-
-
 
 
 model PostType {
@@ -205,6 +207,7 @@ model PostReader {
   readAt                    DateTime      @default(now())
   post                      Post          @relation(fields: [postId], references: [pid], onDelete: Cascade)
   user                      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  understood                Boolean       @default(false)
   createdAt                 DateTime      @default(now())
   updatedAt                 DateTime      @updatedAt
   @@unique([postId, userId])
