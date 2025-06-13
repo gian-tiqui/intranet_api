@@ -23,6 +23,7 @@ import { DivisionModule } from './division/division.module';
 import { LoggerService } from './logger/logger.service';
 import { SearchModule } from './search/search.module';
 import { RevisionModule } from './revision/revision.module';
+import { PostTypesModule } from './post-types/post-types.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { RevisionModule } from './revision/revision.module';
     DivisionModule,
     SearchModule,
     RevisionModule,
+    PostTypesModule,
   ],
   providers: [
     {
