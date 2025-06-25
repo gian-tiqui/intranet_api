@@ -558,15 +558,17 @@ export class PostService {
           where: { postId: existingPost.pid },
         });
 
-        newDeptIds
-          .split(',')
-          .forEach((deptId) =>
-            this.notificationService.notifyDepartmentOfNewPost(
-              Number(deptId),
-              newPost.pid,
-              updatePostDto.lid,
+        await Promise.all(
+          newDeptIds
+            .split(',')
+            .map((deptId) =>
+              this.notificationService.notifyDepartmentOfNewPost(
+                Number(deptId),
+                newPost.pid,
+                updatePostDto.lid,
+              ),
             ),
-          );
+        );
       }
 
       return {
