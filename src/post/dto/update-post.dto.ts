@@ -58,4 +58,9 @@ export class UpdatePostDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
   isPublished: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value, 10))
+  typeId: number;
 }
