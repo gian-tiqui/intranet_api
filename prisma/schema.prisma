@@ -133,8 +133,8 @@ model Post {
   postDepartments          PostDepartment[] 
   imageLocations           ImageLocations[] 
   folder                   Folder?        @relation(fields: [folderId], references: [id])
-  typeId                   Int
-  type                     PostType       @relation(fields: [typeId], references: [id])
+  typeId                   Int?
+  type                     PostType?      @relation(fields: [typeId], references: [id])
 }
 
 
