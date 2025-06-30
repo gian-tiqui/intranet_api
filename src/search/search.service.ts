@@ -11,44 +11,88 @@ export class SearchService {
 
   globalSearch = async (query: FindAllDto) => {
     try {
-      const { skip = 0, take = 10, search = '', deptId, lid = 0 } = query;
+      const {
+        skip = 0,
+        take = 10,
+        search = '',
+        deptId,
+        lid = 0,
+        postTypeId,
+        folderDeptId,
+        searchTypes = ['user', 'folder', 'post'], // Default to all types
+      } = query;
       const lowerSearch = search.toLowerCase();
 
-      const [users, folders, posts] = await Promise.all([
-        this.prismaService.user.findMany({
-          where: {
-            OR: [
-              { firstName: { contains: lowerSearch, mode: 'insensitive' } },
-              { middleName: { contains: lowerSearch, mode: 'insensitive' } },
-              { lastName: { contains: lowerSearch, mode: 'insensitive' } },
-            ],
-          },
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            middleName: true,
-          },
-        }),
-        this.prismaService.folder.findMany({
-          where: {
-            name: { contains: lowerSearch, mode: 'insensitive' },
-            isPublished: true,
-          },
-        }),
-        this.prismaService.post.findMany({
-          where: {
-            OR: [
-              { title: { contains: lowerSearch, mode: 'insensitive' } },
-              { message: { contains: lowerSearch, mode: 'insensitive' } },
-            ],
-            isPublished: true,
-            lid: { gte: lid },
-            postDepartments: { some: { deptId } },
-          },
-        }),
+      // Initialize result arrays
+      let users: any[] = [];
+      let folders: any[] = [];
+      let posts: any[] = [];
+
+      // Conditionally run queries based on selected types
+      await Promise.all([
+        searchTypes.includes('user') &&
+          this.prismaService.user
+            .findMany({
+              where: {
+                OR: [
+                  { firstName: { contains: lowerSearch, mode: 'insensitive' } },
+                  {
+                    middleName: { contains: lowerSearch, mode: 'insensitive' },
+                  },
+                  { lastName: { contains: lowerSearch, mode: 'insensitive' } },
+                ],
+                ...(deptId ? { deptId } : {}),
+              },
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                middleName: true,
+              },
+            })
+            .then((res) => (users = res)),
+
+        searchTypes.includes('folder') &&
+          this.prismaService.folder
+            .findMany({
+              where: {
+                name: { contains: lowerSearch, mode: 'insensitive' },
+                isPublished: true,
+                ...(folderDeptId
+                  ? {
+                      folderDepartments: {
+                        some: { deptId: folderDeptId },
+                      },
+                    }
+                  : {}),
+              },
+            })
+            .then((res) => (folders = res)),
+
+        searchTypes.includes('post') &&
+          this.prismaService.post
+            .findMany({
+              where: {
+                OR: [
+                  { title: { contains: lowerSearch, mode: 'insensitive' } },
+                  { message: { contains: lowerSearch, mode: 'insensitive' } },
+                ],
+                isPublished: true,
+                lid: { gte: lid },
+                ...(deptId
+                  ? {
+                      postDepartments: {
+                        some: { deptId },
+                      },
+                    }
+                  : {}),
+                ...(postTypeId ? { typeId: postTypeId } : {}),
+              },
+            })
+            .then((res) => (posts = res)),
       ]);
 
+      // Score and merge results
       const scoredResults = [
         ...users.map((u) => ({
           type: 'user',
@@ -73,7 +117,6 @@ export class SearchService {
       ];
 
       const sorted = scoredResults.sort((a, b) => b.score - a.score);
-
       const total = sorted.length;
       const paginated = sorted.slice(skip, skip + take);
 
