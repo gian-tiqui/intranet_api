@@ -465,8 +465,10 @@ export class UserService {
       if (!user)
         throw new NotFoundException(`User with the id ${userId} not found`);
 
+      const password = await argon.hash('abcd_123');
+
       await this.prismaService.user.create({
-        data: { password: 'abcd_123', ...addUserDto },
+        data: { password, ...addUserDto },
       });
 
       return {
