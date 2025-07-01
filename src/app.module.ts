@@ -24,6 +24,7 @@ import { LoggerService } from './logger/logger.service';
 import { SearchModule } from './search/search.module';
 import { RevisionModule } from './revision/revision.module';
 import { PostTypesModule } from './post-types/post-types.module';
+import { LandingPageModule } from './landing-page/landing-page.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { PostTypesModule } from './post-types/post-types.module';
     SearchModule,
     RevisionModule,
     PostTypesModule,
+    LandingPageModule,
   ],
   providers: [
     {
