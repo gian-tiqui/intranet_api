@@ -284,6 +284,7 @@ export class PostService {
         include: {
           employeeLevel: true,
           folder: true,
+          type: true,
           postDepartments: {
             select: {
               department: { select: { departmentName: true, deptId: true } },
