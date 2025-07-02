@@ -25,6 +25,7 @@ import { SearchModule } from './search/search.module';
 import { RevisionModule } from './revision/revision.module';
 import { PostTypesModule } from './post-types/post-types.module';
 import { LandingPageModule } from './landing-page/landing-page.module';
+import { IncidentReportModule } from './incident-report/incident-report.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { LandingPageModule } from './landing-page/landing-page.module';
     RevisionModule,
     PostTypesModule,
     LandingPageModule,
+    IncidentReportModule,
   ],
   providers: [
     {

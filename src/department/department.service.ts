@@ -11,6 +11,7 @@ import { FindAllDto } from 'src/utils/global-dto/global.dto';
 import errorHandler from 'src/utils/functions/errorHandler';
 import { Prisma } from '@prisma/client';
 import convertDatesToString from 'src/utils/functions/convertDates';
+import notFound from 'src/utils/functions/notFound';
 
 @Injectable()
 export class DepartmentService {
@@ -198,4 +199,24 @@ export class DepartmentService {
       errorHandler(error, this.logger);
     }
   };
+
+  async getDepartmentUsers(deptId: number) {
+    const department = await this.prismaService.department.findFirst({
+      where: { deptId },
+    });
+
+    if (!department) notFound(`Department`, deptId);
+
+    const usrs = await this.prismaService.user.findMany({ where: { deptId } });
+
+    const users = usrs.map((user) => {
+      const fullName = `${user.firstName} ${user.lastName}`;
+      return { ...user, fullName };
+    });
+
+    return {
+      message: `Users of the department found.`,
+      users: users,
+    };
+  }
 }
