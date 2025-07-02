@@ -83,4 +83,15 @@ export class DepartmentController {
   deleteById(@Param('id', ParseIntPipe) deptId: number) {
     return this.departmentService.deleteById(deptId);
   }
+
+  @Get(':deptId/users')
+  @RateLimit({
+    keyPrefix: 'get department users by id',
+    points: 150,
+    duration: 20,
+    errorMessage: `Please wait before loading a department's users`,
+  })
+  findDepartmentUsers(@Param('deptId', ParseIntPipe) deptId: number) {
+    return this.departmentService.getDepartmentUsers(deptId);
+  }
 }

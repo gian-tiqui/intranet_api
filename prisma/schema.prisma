@@ -53,6 +53,8 @@ model User {
   folders                  Folder[]
   userPictures             UserPictures[] 
   loginLogs                LoginLogs[]
+  sentReports              IncidentReport[] @relation("reporter")
+  receivedReports          IncidentReport[] @relation("reported")
 }
 
 model LoginLogs {
@@ -93,6 +95,8 @@ model Department {
   createdAt                DateTime       @default(now())
   updatedAt                DateTime       @updatedAt
   folderDepartments        FolderDepartment[]
+  sentReports              IncidentReport[] @relation("sentReports")
+  receivedReports          IncidentReport[] @relation("receivedReports")
 }
 
 // ANCILLARY, ADMIN, NSD
@@ -227,6 +231,8 @@ model Comment {
   parentComment             Comment?      @relation("CommentReplies", fields: [parentId], references: [cid])
   notification              Notification[]
   replies                   Comment[]     @relation("CommentReplies")
+  incidentReportId          Int?
+  incidentReport            IncidentReport? @relation(fields: [incidentReportId], references: [id])
 
   @@index([parentId])
 }
@@ -289,4 +295,52 @@ model TicketStatus {
   tickets                   Ticket[]    
   createdAt                 DateTime      @default(now())
   updatedAt                 DateTime      @updatedAt
+}
+
+model IncidentReport {
+  id                                  Int           @id @default(autoincrement())
+  title                               String
+  reportDescription                   String        
+  reportedDepartmentExplanation       String?
+  sanction                            String?
+
+  reportingDepartmentId               Int
+  reportingDepartment                 Department    @relation("sentReports" ,fields: [reportingDepartmentId], references: [deptId])
+
+  reporterId                          Int
+  reporter                            User          @relation("reporter", fields: [reporterId], references: [id])
+
+  reportedUserId                      Int
+  reportedUser                        User          @relation("reported", fields: [reportedUserId], references: [id])
+
+  reportedDepartmentId                Int
+  reportedDepartment                  Department    @relation("receivedReports", fields: [reportedDepartmentId], references: [deptId])
+
+  comments                            Comment[]
+
+  statusId                            Int
+  status                              IncidentReportStatus @relation(fields: [statusId], references: [id])
+
+  evidences                           IncidentReportImageLocations[]
+  createdAt                           DateTime      @default(now())
+  updatedAt                           DateTime      @updatedAt    
+}
+
+model IncidentReportStatus {
+  id                                  Int            @id @default(autoincrement())
+  status                              String         @unique
+
+  createdAt                           DateTime       @default(now())
+  updatedAt                           DateTime       @updatedAt
+
+  reports                             IncidentReport[]
+}
+
+model IncidentReportImageLocations {
+  id                                  Int            @id @default(autoincrement())
+  imageLocation                       String         @unique
+  incidentReportId                    Int 
+  incidentReport                      IncidentReport @relation(fields: [incidentReportId], references: [id])
+  createdAt                           DateTime      @default(now())
+  updatedAt                           DateTime      @updatedAt
 }
