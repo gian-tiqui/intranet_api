@@ -67,4 +67,9 @@ export class FindAllDto {
   @IsArray()
   @IsOptional()
   searchTypes?: string[];
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  statusId?: number;
 }

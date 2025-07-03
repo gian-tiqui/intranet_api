@@ -181,6 +181,18 @@ async function seedEditTypes() {
   console.log('EditType seeded.');
 }
 
+async function seedIncidentReportStatus() {
+  const statuses = ['New', 'Viewed', 'Forwarded', 'Seen', 'Sent', 'Sanctioned'];
+
+  await prisma.incidentReportStatus.createMany({
+    data: [
+      ...statuses.map((status) => ({
+        status: status,
+      })),
+    ],
+  });
+}
+
 async function seedEmployeeLevel() {
   const employeeLevels = [
     { level: 'All Employees' },
@@ -329,6 +341,7 @@ async function seedUsers() {
 
 async function main() {
   console.log('Seeding database...');
+  await seedIncidentReportStatus();
 
   // updateDepartments();
   seedPostTypes();
