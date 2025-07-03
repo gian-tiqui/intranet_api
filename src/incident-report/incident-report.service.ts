@@ -94,6 +94,7 @@ export class IncidentReportService {
           evidences: true,
           comments: true,
         },
+        orderBy: { createdAt: 'desc' },
       });
 
       const count = await this.prismaService.incidentReport.count({ where });
