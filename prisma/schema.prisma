@@ -316,10 +316,12 @@ model IncidentReport {
   reportedDepartmentId                Int
   reportedDepartment                  Department    @relation("receivedReports", fields: [reportedDepartmentId], references: [deptId])
 
+  public                              Boolean?       @default(false)
+
   comments                            Comment[]
 
-  statusId                            Int
-  status                              IncidentReportStatus @relation(fields: [statusId], references: [id])
+  statusId                            Int?
+  status                              IncidentReportStatus? @relation(fields: [statusId], references: [id])
 
   evidences                           IncidentReportImageLocations[]
   createdAt                           DateTime      @default(now())

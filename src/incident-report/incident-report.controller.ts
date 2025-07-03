@@ -16,6 +16,7 @@ import { UpdateIncidentReportDto } from './dto/update-incident-report.dto';
 import errorHandler from 'src/utils/functions/errorHandler';
 import extractAccessToken from 'src/utils/functions/extractAccessToken';
 import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import { RateLimit } from 'nestjs-rate-limiter';
 
 @Controller('incident-report')
 export class IncidentReportController {
@@ -41,6 +42,12 @@ export class IncidentReportController {
   }
 
   @Get()
+  @RateLimit({
+    keyPrefix: 'find_all_incident_reports',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before fetching all incident reports.',
+  })
   findAll(@Query() query: FindAllDto) {
     return this.incidentReportService.findAll(query);
   }

@@ -39,10 +39,11 @@ export class IncidentReportService {
 
   async findAll(query: FindAllDto) {
     try {
-      const { search, skip, take } = query;
+      const { search, statusId } = query;
 
       const where: Prisma.IncidentReportWhereInput = search
         ? {
+            statusId,
             OR: [
               {
                 title: {
@@ -78,12 +79,13 @@ export class IncidentReportService {
               },
             ],
           }
-        : {};
+        : {
+            statusId,
+          };
 
       const incidentReports = await this.prismaService.incidentReport.findMany({
         where,
-        skip,
-        take,
+
         include: {
           reporter: true,
           reportedDepartment: true,
@@ -110,6 +112,14 @@ export class IncidentReportService {
     try {
       const incidentReport = await this.prismaService.incidentReport.findFirst({
         where: { id },
+        include: {
+          reporter: true,
+          reportedDepartment: true,
+          reportingDepartment: true,
+          status: true,
+          evidences: true,
+          comments: true,
+        },
       });
 
       if (!incidentReport) notFound(`Incident Report`, id);

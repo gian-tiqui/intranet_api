@@ -19,6 +19,10 @@ export class CreateIncidentReportDto {
 
   @IsInt()
   @IsNotEmpty()
+  reportedUserId: number;
+
+  @IsInt()
+  @IsNotEmpty()
   reportedDepartmentId: number;
 
   @IsInt()
