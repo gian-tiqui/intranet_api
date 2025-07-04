@@ -80,4 +80,9 @@ export class IncidentReportController {
   remove(@Param('incidentReportId') incidentReportId: number) {
     return this.incidentReportService.remove(incidentReportId);
   }
+
+  @Get(':id/counts')
+  getIncidentReportCounts() {
+    return this.incidentReportService.getCounts();
+  }
 }

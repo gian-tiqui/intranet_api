@@ -111,22 +111,26 @@ export class IncidentReportService {
 
   async findOne(id: number) {
     try {
-      const incidentReport = await this.prismaService.incidentReport.findFirst({
-        where: { id },
-        include: {
-          reporter: true,
-          reportedDepartment: true,
-          reportingDepartment: true,
-          status: true,
-          evidences: true,
-          comments: true,
+      const incidentReport = await this.prismaService.incidentReport.findUnique(
+        {
+          where: { id },
+          include: {
+            reporter: true,
+            reportedDepartment: true,
+            reportingDepartment: true,
+            status: true,
+            evidences: true,
+            comments: true,
+          },
         },
-      });
+      );
 
-      if (!incidentReport) notFound(`Incident Report`, id);
+      if (!incidentReport) {
+        notFound('Incident Report', id);
+      }
 
       return {
-        message: `Incident Report loaded successfully`,
+        message: 'Incident Report loaded successfully',
         incidentReport,
       };
     } catch (error) {
@@ -167,6 +171,45 @@ export class IncidentReportService {
 
   async remove(id: number) {
     try {
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  }
+
+  async getCounts() {
+    try {
+      // Get all possible status IDs
+      const allStatuses =
+        await this.prismaService.incidentReportStatus.findMany({
+          select: { id: true },
+        });
+
+      // Group incident reports by statusId and count them
+      const groupedCounts = await this.prismaService.incidentReport.groupBy({
+        by: ['statusId'],
+        _count: {
+          statusId: true,
+        },
+      });
+
+      // Map grouped results into a Record
+      const groupedMap: Record<number, number> = {};
+      for (const item of groupedCounts) {
+        if (item.statusId !== null) {
+          groupedMap[item.statusId] = item._count.statusId;
+        }
+      }
+
+      // Combine with all status IDs, assigning 0 if not present
+      const counts: Record<number, number> = {};
+      for (const status of allStatuses) {
+        counts[status.id] = groupedMap[status.id] ?? 0;
+      }
+
+      return {
+        message: 'Counts of each type of incident report loaded successfully.',
+        counts,
+      };
     } catch (error) {
       errorHandler(error, this.logger);
     }
