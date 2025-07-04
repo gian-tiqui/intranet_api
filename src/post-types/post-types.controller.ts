@@ -18,6 +18,12 @@ export class PostTypesController {
   constructor(private readonly postTypesService: PostTypesService) {}
 
   @Post()
+  @RateLimit({
+    keyPrefix: 'find_post_reader',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before creating a new post type.',
+  })
   create(@Body() createPostTypeDto: CreatePostTypeDto) {
     return this.postTypesService.create(createPostTypeDto);
   }
@@ -35,11 +41,23 @@ export class PostTypesController {
   }
 
   @Get(':postTypeId')
+  @RateLimit({
+    keyPrefix: 'find_post_type',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before finding a post type.',
+  })
   findOne(@Param('postTypeId', ParseIntPipe) postTypeId: number) {
     return this.postTypesService.findOne(postTypeId);
   }
 
   @Patch(':postTypeId')
+  @RateLimit({
+    keyPrefix: 'update_post_type',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before updating a post type.',
+  })
   update(
     @Param('postTypeId', ParseIntPipe) postTypeId: number,
     @Body() updatePostTypeDto: UpdatePostTypeDto,
@@ -48,6 +66,12 @@ export class PostTypesController {
   }
 
   @Delete(':postTypeId')
+  @RateLimit({
+    keyPrefix: 'delete_post_type',
+    points: 50,
+    duration: 60,
+    errorMessage: 'Please wait before deleting a post type.',
+  })
   remove(@Param('postTypeId', ParseIntPipe) postTypeId: number) {
     return this.postTypesService.remove(postTypeId);
   }

@@ -25,6 +25,12 @@ export class IncidentReportController {
   constructor(private readonly incidentReportService: IncidentReportService) {}
 
   @Post()
+  @RateLimit({
+    keyPrefix: 'create-incident-report',
+    points: 150,
+    duration: 5,
+    errorMessage: 'Please wait before checking read status',
+  })
   create(
     @Body() createIncidentReportDto: CreateIncidentReportDto,
     @Req() req: Request,
@@ -53,11 +59,23 @@ export class IncidentReportController {
   }
 
   @Get(':incidentReportId')
+  @RateLimit({
+    keyPrefix: 'find-one-IR',
+    points: 150,
+    duration: 5,
+    errorMessage: 'Please wait before finding one IR',
+  })
   findOne(@Param('incidentReportId') incidentReportId: number) {
     return this.incidentReportService.findOne(incidentReportId);
   }
 
   @Patch(':incidentReportId')
+  @RateLimit({
+    keyPrefix: 'update-IR',
+    points: 150,
+    duration: 5,
+    errorMessage: 'Please wait before updating IR',
+  })
   update(
     @Param('incidentReportId') incidentReportId: number,
     @Body() updateIncidentReportDto: UpdateIncidentReportDto,
@@ -82,6 +100,12 @@ export class IncidentReportController {
   }
 
   @Get(':id/counts')
+  @RateLimit({
+    keyPrefix: 'IR-counts',
+    points: 150,
+    duration: 5,
+    errorMessage: 'Please wait before getting IR counts',
+  })
   getIncidentReportCounts() {
     return this.incidentReportService.getCounts();
   }
