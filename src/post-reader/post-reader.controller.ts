@@ -12,7 +12,7 @@ export class PostReaderController {
   @Get()
   @RateLimit({
     keyPrefix: 'find_post_readers',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before finding all postreaders.',
   })
@@ -23,7 +23,7 @@ export class PostReaderController {
   @Get(':id')
   @RateLimit({
     keyPrefix: 'find_post_reader',
-    points: 50,
+    points: 150,
     duration: 60,
     errorMessage: 'Please wait before finding a new postreader.',
   })

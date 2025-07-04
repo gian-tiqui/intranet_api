@@ -9,12 +9,10 @@ import {
   Put,
   Query,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { RateLimit } from 'nestjs-rate-limiter';
@@ -37,6 +35,12 @@ export class PostController {
   }
 
   @Get('my-posts')
+  @RateLimit({
+    keyPrefix: 'get_self_posts',
+    points: 500,
+    duration: 60,
+    errorMessage: 'Please wait before fetching self posts.',
+  })
   findAllSelfPosts(
     @Query('userId') userId: number,
     @Query('direction') direction: string,

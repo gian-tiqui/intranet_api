@@ -22,7 +22,6 @@ import { FolderModule } from './folder/folder.module';
 import { DivisionModule } from './division/division.module';
 import { LoggerService } from './logger/logger.service';
 import { SearchModule } from './search/search.module';
-import { RevisionModule } from './revision/revision.module';
 import { PostTypesModule } from './post-types/post-types.module';
 import { LandingPageModule } from './landing-page/landing-page.module';
 import { IncidentReportModule } from './incident-report/incident-report.module';
@@ -73,7 +72,6 @@ import { IncidentReportModule } from './incident-report/incident-report.module';
     FolderModule,
     DivisionModule,
     SearchModule,
-    RevisionModule,
     PostTypesModule,
     LandingPageModule,
     IncidentReportModule,
