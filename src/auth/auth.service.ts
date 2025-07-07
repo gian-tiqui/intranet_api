@@ -445,6 +445,7 @@ export class AuthService {
         user.department,
         user.lid,
         user.confirmed,
+        user.isFirstLogin,
       );
 
       let refreshToken: string;
@@ -508,6 +509,7 @@ export class AuthService {
         user.department,
         user.lid,
         user.confirmed,
+        user.isFirstLogin,
       );
 
       return { access_token: accessToken };
@@ -606,6 +608,7 @@ export class AuthService {
     },
     lid: number,
     confirmed: boolean,
+    isFirstLogin: boolean,
   ): Promise<string> {
     return this.jwtService.signAsync({
       sub: userId,
@@ -617,6 +620,7 @@ export class AuthService {
       lid,
       departmentName: department.departmentName,
       confirmed,
+      isFirstLogin,
     });
   }
 
