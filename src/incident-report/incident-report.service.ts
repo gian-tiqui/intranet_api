@@ -115,7 +115,7 @@ export class IncidentReportService {
         {
           where: { id },
           include: {
-            reporter: true,
+            reporter: { include: { department: true } },
             reportedDepartment: true,
             reportingDepartment: true,
             status: true,

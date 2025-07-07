@@ -290,20 +290,20 @@ export class NotificationService {
           `http://10.10.10.78:8080/sendsms?phone=${user.phone}&text=${notificationMessage}&password=${password}`,
         ).catch((err) => this.logger.error(err, 'stackTrace'));
 
-        // this.mailerService
-        //   .sendMail({
-        //     to: user.email,
-        //     subject: 'New Post',
-        //     template: 'registration',
-        //     context: {
-        //       name: user.firstName,
-        //       message: notificationMessage,
-        //     },
-        //   })
-        //   .then((response) => {
-        //     console.log(response);
-        //   })
-        //   .catch((err) => console.log(err));
+        this.mailerService
+          .sendMail({
+            to: user.email,
+            subject: 'New Post',
+            template: 'registration',
+            context: {
+              name: user.firstName,
+              message: notificationMessage,
+            },
+          })
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((err) => console.log(err));
 
         return {
           userId: user.id,
