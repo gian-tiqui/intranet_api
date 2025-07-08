@@ -15,6 +15,8 @@ async function bootstrap() {
   const logger = app.get(LoggerService);
   app.useLogger(logger);
 
+  app.setViewEngine('hbs');
+
   app.enableCors({
     origin: [prodClient, devClient],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

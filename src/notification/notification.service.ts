@@ -286,22 +286,21 @@ export class NotificationService {
       const notificationsData = users.map((user) => {
         const password = process.env.SMS_PASSWORD;
 
-        fetch(
-          `http://10.10.10.78:8080/sendsms?phone=${user.phone}&text=${notificationMessage}&password=${password}`,
-        ).catch((err) => this.logger.error(err, 'stackTrace'));
+        if (user.phone) {
+          fetch(
+            `http://10.10.10.78:8080/sendsms?phone=${user.phone}&text=${notificationMessage}&password=${password}`,
+          ).catch((err) => this.logger.error(err, 'stackTrace'));
+        }
 
         this.mailerService
           .sendMail({
             to: user.email,
             subject: 'New Post',
-            template: 'registration',
+            template: 'notification',
             context: {
               name: user.firstName,
               message: notificationMessage,
             },
-          })
-          .then((response) => {
-            console.log(response);
           })
           .catch((err) => console.log(err));
 
