@@ -90,6 +90,11 @@ export class UpdateUserDTO {
   @IsInt()
   divisionId: number;
 
+  @IsOptional()
+  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
+  isFirstLogin: number;
+
   @IsInt()
   @IsOptional()
   lid: number;

@@ -195,6 +195,7 @@ export class UserService {
           password: updatedPassword,
           ...(updateUserDto.dob && { dob: new Date(updateUserDto.dob) }),
           updatedAt: new Date(),
+          isFirstLogin: updateUserDto.isFirstLogin === 1 ? true : false,
         },
       });
       if (!updatedUser) {
