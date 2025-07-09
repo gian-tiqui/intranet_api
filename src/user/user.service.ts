@@ -133,6 +133,7 @@ export class UserService {
           division: { select: { divisionName: true } },
           jobTitle: true,
           officeLocation: true,
+          isFirstLogin: true,
         },
       });
 
