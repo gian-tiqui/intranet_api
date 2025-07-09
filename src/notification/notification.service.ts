@@ -292,17 +292,20 @@ export class NotificationService {
           ).catch((err) => this.logger.error(err, 'stackTrace'));
         }
 
-        this.mailerService
-          .sendMail({
-            to: user.email,
-            subject: 'New Post',
-            template: 'notification',
-            context: {
-              name: user.firstName,
-              message: notificationMessage,
-            },
-          })
-          .catch((err) => console.log(err));
+        if (user.email) {
+          this.mailerService
+            .sendMail({
+              to: user.email,
+              subject: 'New Post',
+              template: 'notification',
+              context: {
+                name: user.firstName,
+                message: notificationMessage,
+                postTitle: postMessage,
+              },
+            })
+            .catch((err) => console.log(err));
+        }
 
         return {
           userId: user.id,
