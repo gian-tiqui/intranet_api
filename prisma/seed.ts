@@ -146,8 +146,11 @@ const departments: {
   { departmentCode: 'DIA', departmentName: 'Dialysis', divisionId: 3 },
   { departmentCode: 'ICU', departmentName: 'Icu', divisionId: 3 },
   { departmentCode: 'ACU', departmentName: 'Acu', divisionId: 3 },
-  { departmentCode: 'GNU4F', departmentName: '4th Floor Ward', divisionId: 3 },
-  { departmentCode: 'GNU5F', departmentName: '5th Floor Ward', divisionId: 3 },
+  {
+    departmentCode: 'GNU',
+    departmentName: 'General Nursing Unit',
+    divisionId: 3,
+  },
   { departmentCode: 'IMGN', departmentName: 'Imaging', divisionId: 2 },
   { departmentCode: 'CRD', departmentName: 'Cardiology', divisionId: 2 },
   { departmentCode: 'PULM', departmentName: 'Pulmonary', divisionId: 2 },
