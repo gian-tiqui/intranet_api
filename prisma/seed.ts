@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as argon from 'argon2';
-import { v4 as uuidv4 } from 'uuid';
+import { faker } from '@faker-js/faker';
 
 // type UserInfo = {
 //   firstName: string;
@@ -305,22 +305,25 @@ async function seedUsers() {
         lid = 1;
       }
 
-      const email = `user${deptId}${i}${uuidv4()}@westlakemed.com.ph`;
+      const firstName = faker.person.firstName();
+      const lastName = faker.person.lastName();
+      const email =
+        `${firstName[0]}${lastName}@westlakemed.com.ph`.toLowerCase();
       const password = await argon.hash('abcd_123');
 
       users.push({
         email,
         password,
-        firstName: `FirstName${deptId}${i}`,
-        middleName: '',
-        lastName: `LastName${deptId}${i}`,
+        firstName,
+        middleName: faker.person.middleName(),
+        lastName,
         lastNamePrefix: '',
         preferredName: '',
         suffix: '',
-        address: `Address${deptId}${i}`,
-        city: `City${deptId}`,
-        state: `State${deptId}`,
-        zipCode: 4000 + deptId + i,
+        address: faker.location.streetAddress(),
+        city: faker.location.city(),
+        state: faker.location.state(),
+        zipCode: parseInt(faker.location.zipCode(), 10),
         dob: new Date(1990, deptId % 12, 15 + i).toISOString(),
         gender: i % 2 === 0 ? 'Female' : 'Male',
         deptId,
@@ -334,9 +337,7 @@ async function seedUsers() {
   await prisma.user.deleteMany();
 
   for (const user of users) {
-    await prisma.user.create({
-      data: user,
-    });
+    await prisma.user.create({ data: user });
   }
 
   console.log('Users seeded.');
