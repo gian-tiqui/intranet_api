@@ -239,7 +239,12 @@ async function seedDepartments() {
 }
 
 async function seedPostTypes() {
-  const postTypes: string[] = ['GUIDELINE', 'MEMO', 'PROCEDURE'];
+  const postTypes: string[] = [
+    'GUIDELINE',
+    'MEMO',
+    'PROCEDURE',
+    'ANNOUNCEMENT',
+  ];
 
   await prisma.postType.createMany({
     data: postTypes.map((postType: string) => ({
