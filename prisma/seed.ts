@@ -312,8 +312,9 @@ async function seedUsers() {
 
       const firstName = faker.person.firstName();
       const lastName = faker.person.lastName();
-      const email =
-        `${firstName[0]}${lastName}@westlakemed.com.ph`.toLowerCase();
+      const email = null;
+      // const email =
+      //   `${firstName[0]}${lastName}@westlakemed.com.ph`.toLowerCase();
       const password = await argon.hash('abcd_123');
 
       users.push({
