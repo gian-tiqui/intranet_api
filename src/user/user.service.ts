@@ -59,7 +59,11 @@ export class UserService {
 
       const users = await this.prismaService.user.findMany({
         where,
-        include: { department: true, employeeLevel: true },
+        include: {
+          department: true,
+          employeeLevel: true,
+          loginLogs: { take: 1, orderBy: { createdAt: 'desc' } },
+        },
       });
 
       const count = await this.prismaService.user.count({ where });
