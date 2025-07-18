@@ -106,7 +106,7 @@ export class FolderService {
   async createMainFolder(createFolderDto: CreateFolderDto) {
     const { deptIds, ...dto } = createFolderDto;
     try {
-      return this.prisma.folder.create({
+      const newfolder = this.prisma.folder.create({
         data: {
           ...dto,
           icon: 'mynaui:folder-two',
@@ -122,6 +122,8 @@ export class FolderService {
           },
         },
       });
+
+      return newfolder;
     } catch (error) {
       this.logger.error('There was a problem in creating a folder: ', error);
 
@@ -141,7 +143,9 @@ export class FolderService {
 
       const { deptIds, ...dto } = createSubFolderDto;
 
-      return this.prisma.folder.create({
+      const postTypes = await this.prisma.postType.findMany();
+
+      const newSubfolder = await this.prisma.folder.create({
         data: {
           ...dto,
           parentId: parentId,
@@ -158,6 +162,28 @@ export class FolderService {
           },
         },
       });
+
+      postTypes.map(async (postType) => {
+        await this.prisma.folder.create({
+          data: {
+            name: postType.name[0].toUpperCase() + postType.name.slice(1),
+            userId: dto.userId,
+            parentId: newSubfolder.id,
+            isPublished: true,
+            folderDepartments: {
+              createMany: {
+                data: [
+                  ...deptIds
+                    .split(',')
+                    .map((deptId) => ({ deptId: parseInt(deptId) })),
+                ],
+              },
+            },
+          },
+        });
+      });
+
+      return newSubfolder;
     } catch (error) {
       this.logger.error('There was a problem in creating a subfolder: ', error);
 
