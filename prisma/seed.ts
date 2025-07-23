@@ -340,6 +340,26 @@ async function seedUsers() {
     }
   }
 
+  /**
+   *
+   * User
+   *
+   * email
+   * First, Middle, Last Name
+   * Address
+   * City
+   * State
+   * Zip Code
+   * dob
+   * Gender
+   * Employee ID
+   * Employee Level
+   *
+   * Department
+   * Department Code
+   * Department Name
+   */
+
   await prisma.user.deleteMany();
 
   for (const user of users) {

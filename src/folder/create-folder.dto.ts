@@ -34,4 +34,9 @@ export class CreateFolderDto {
   @IsNotEmpty()
   @IsNumber()
   userId: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsNumber()
+  createDefaultFolders: number;
 }
