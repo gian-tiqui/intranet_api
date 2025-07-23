@@ -163,25 +163,27 @@ export class FolderService {
         },
       });
 
-      postTypes.map(async (postType) => {
-        await this.prisma.folder.create({
-          data: {
-            name: postType.name[0].toUpperCase() + postType.name.slice(1),
-            userId: dto.userId,
-            parentId: newSubfolder.id,
-            isPublished: true,
-            folderDepartments: {
-              createMany: {
-                data: [
-                  ...deptIds
-                    .split(',')
-                    .map((deptId) => ({ deptId: parseInt(deptId) })),
-                ],
+      if (createSubFolderDto.createDefaultFolders === 1) {
+        postTypes.map(async (postType) => {
+          await this.prisma.folder.create({
+            data: {
+              name: postType.name[0].toUpperCase() + postType.name.slice(1),
+              userId: dto.userId,
+              parentId: newSubfolder.id,
+              isPublished: true,
+              folderDepartments: {
+                createMany: {
+                  data: [
+                    ...deptIds
+                      .split(',')
+                      .map((deptId) => ({ deptId: parseInt(deptId) })),
+                  ],
+                },
               },
             },
-          },
+          });
         });
-      });
+      }
 
       return newSubfolder;
     } catch (error) {
