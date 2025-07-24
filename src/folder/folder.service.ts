@@ -6,6 +6,7 @@ import { Prisma } from '@prisma/client';
 import { CreateFolderDto } from './create-folder.dto';
 import { UpdateFolderDto } from './update-folder.dto';
 import errorHandler from 'src/utils/functions/errorHandler';
+import { create } from 'domain';
 
 @Injectable()
 export class FolderService {
@@ -141,7 +142,7 @@ export class FolderService {
         throw new Error(`Parent folder with ID ${parentId} not found`);
       }
 
-      const { deptIds, ...dto } = createSubFolderDto;
+      const { deptIds, createDefaultFolders, ...dto } = createSubFolderDto;
 
       const postTypes = await this.prisma.postType.findMany();
 
@@ -163,7 +164,7 @@ export class FolderService {
         },
       });
 
-      if (createSubFolderDto.createDefaultFolders === 1) {
+      if (createDefaultFolders === 1) {
         postTypes.map(async (postType) => {
           await this.prisma.folder.create({
             data: {
