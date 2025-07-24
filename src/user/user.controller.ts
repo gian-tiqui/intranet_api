@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -212,12 +213,46 @@ export class UserController {
   }
 
   @Get(':userId/last-login')
+  @RateLimit({
+    keyPrefix: 'get_last_login',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before loading last login.',
+  })
   getLastLoginByUserId(@Param('userId', ParseIntPipe) userId: number) {
     return this.userService.getUserLastLogin(userId);
   }
 
   @Get(':userId/census')
+  @RateLimit({
+    keyPrefix: 'get_user_census',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before getting your census.',
+  })
   getUserCensus(@Param('userId', ParseIntPipe) userId: number) {
     return this.userService.findUserCensus(userId);
+  }
+
+  @Patch(':userId/profileUpdate')
+  @RateLimit({
+    keyPrefix: 'update_user_profile',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before updating your profile.',
+  })
+  updateUserProfile(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() updateUserDto: UpdateUserDTO,
+    @Req() req: Request,
+  ) {
+    const accessToken = extractAccessToken(req);
+    if (!accessToken) throw new BadRequestException(`Access token is required`);
+
+    return this.userService.updateUserProfile(
+      userId,
+      updateUserDto,
+      accessToken,
+    );
   }
 }

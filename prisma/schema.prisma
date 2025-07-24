@@ -25,6 +25,7 @@ model User {
   gender                   String?
   createdAt                DateTime       @default(now())
   updatedAt                DateTime       @updatedAt
+  lastUpdated              DateTime       @default(now())
   refreshToken             String?        @unique
   deptId                   Int
   employeeId               String?        @unique
@@ -56,6 +57,24 @@ model User {
   loginLogs                LoginLogs[]
   sentReports              IncidentReport[] @relation("reporter")
   receivedReports          IncidentReport[] @relation("reported")
+  userUpdates              UserUpdates[]
+}
+
+model UserUpdates {
+  id                       Int            @id @default(autoincrement())
+  userId                   Int
+  user                     User           @relation(fields: [userId], references: [id])
+  firstName                String?
+  middleName               String?
+  lastName                 String?
+  suffix                   String?
+  gender                   String?
+  localNumber              String?
+  address                  String?
+  jobTitle                 String?
+  officeLocation           String?
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
 }
 
 model LoginLogs {

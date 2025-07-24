@@ -316,7 +316,14 @@ export class PostService {
             },
           },
           imageLocations: true,
-          readers: { select: { user: true } },
+          readers: {
+            select: {
+              user: {
+                select: { department: true, firstName: true, lastName: true },
+              },
+              createdAt: true,
+            },
+          },
           parentPost: true,
         },
       });

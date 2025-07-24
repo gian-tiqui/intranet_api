@@ -240,9 +240,19 @@ async function seedDepartments() {
 
 async function seedPostTypes() {
   const postTypes: string[] = [
+    'QUALITY MANUAL',
+    'POLICY',
     'GUIDELINE',
     'MEMO',
     'PROCEDURE',
+    'WORK INSTRUCTION',
+    'STANDARDS AND TABLES',
+    'INTERNAL FORMS',
+    'EXTERNAL FORMS',
+    'HIRAC',
+    'MATRIX OF QUALITY RECORDS',
+    'BSC METRICS',
+    'BSC TRACKING SHEET',
     'ANNOUNCEMENT',
   ];
 

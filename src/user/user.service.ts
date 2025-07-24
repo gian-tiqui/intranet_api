@@ -16,6 +16,7 @@ import extractUserId from 'src/utils/functions/extractUserId';
 import { JwtService } from '@nestjs/jwt';
 import { promises as fs } from 'fs';
 import * as path from 'path';
+import { PendingUpdateUserDto } from './dto/pending-update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -138,6 +139,8 @@ export class UserService {
           jobTitle: true,
           officeLocation: true,
           isFirstLogin: true,
+          lastUpdated: true,
+          address: true,
         },
       });
 
@@ -215,6 +218,40 @@ export class UserService {
     } catch (error) {
       this.logger.error('There was a problem in updating a user: ', error);
       throw new Error(`Could not update user: ${error.message}`);
+    }
+  }
+
+  async updateUserProfile(
+    userId: number,
+    updateUserDto: PendingUpdateUserDto,
+    accessToken: string,
+  ) {
+    try {
+      const userIdFromToken = extractUserId(accessToken, this.jwtService);
+
+      if (userId !== userIdFromToken)
+        throw new BadRequestException('You can only update your own profile.');
+
+      const user = await this.prismaService.user.findFirst({
+        where: { id: userId },
+      });
+
+      if (!user)
+        throw new NotFoundException(`User with the id ${userId} not found`);
+
+      await this.prismaService.userUpdates.create({
+        data: {
+          ...updateUserDto,
+          user: { connect: { id: userId } },
+        },
+      });
+
+      return {
+        message:
+          'User profile update request submitted successfully. Please wait for approval.',
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
     }
   }
 

@@ -25,6 +25,7 @@ import { SearchModule } from './search/search.module';
 import { PostTypesModule } from './post-types/post-types.module';
 import { LandingPageModule } from './landing-page/landing-page.module';
 import { IncidentReportModule } from './incident-report/incident-report.module';
+import { UserUpdatesModule } from './user-updates/user-updates.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { IncidentReportModule } from './incident-report/incident-report.module';
     PostTypesModule,
     LandingPageModule,
     IncidentReportModule,
+    UserUpdatesModule,
   ],
   providers: [
     {
