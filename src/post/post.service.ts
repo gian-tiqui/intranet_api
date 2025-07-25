@@ -319,7 +319,13 @@ export class PostService {
           readers: {
             select: {
               user: {
-                select: { department: true, firstName: true, lastName: true },
+                select: {
+                  department: {
+                    select: { departmentName: true, departmentCode: true },
+                  },
+                  firstName: true,
+                  lastName: true,
+                },
               },
               createdAt: true,
             },
