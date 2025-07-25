@@ -58,6 +58,7 @@ model User {
   sentReports              IncidentReport[] @relation("reporter")
   receivedReports          IncidentReport[] @relation("reported")
   userUpdates              UserUpdates[]
+  bookMarkedFolders        Folder[]        @relation("bookmarkedFolders")
 }
 
 model UserUpdates {
@@ -172,7 +173,7 @@ model PostType {
 }
 
 model Folder {
-  id                       Int            @unique @default(autoincrement())
+  id                       Int            @id @default(autoincrement())
   name                     String
   parentId                 Int?
   parentFolder             Folder?        @relation("SubFolders", fields: [parentId], references: [id], onDelete: Cascade)
@@ -187,6 +188,7 @@ model Folder {
   createdAt                DateTime       @default(now())
   updatedAt                DateTime       @updatedAt
   folderDepartments        FolderDepartment[]
+  bookmarkedByUsers        User[]         @relation("bookmarkedFolders")
 }
 
 model FolderDepartment {

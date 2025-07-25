@@ -17,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { PendingUpdateUserDto } from './dto/pending-update-user.dto';
+import notFound from 'src/utils/functions/notFound';
 
 @Injectable()
 export class UserService {
@@ -647,6 +648,26 @@ export class UserService {
         unreadPostsByDepartment: {
           [deptId]: unreadPosts,
         },
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  }
+
+  async getUserBookmarksById(userId: number) {
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: { id: userId },
+        include: { bookMarkedFolders: { select: { id: true } } },
+      });
+
+      if (!user) notFound(`User`, userId);
+
+      return {
+        message: `${user.firstName} ${user.lastName}'s bookmarks IDS fetched successfully.`,
+        bookMarksIds: [
+          ...user.bookMarkedFolders.map((bookMark) => bookMark.id),
+        ],
       };
     } catch (error) {
       errorHandler(error, this.logger);

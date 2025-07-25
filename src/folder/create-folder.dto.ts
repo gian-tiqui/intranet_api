@@ -39,4 +39,8 @@ export class CreateFolderDto {
   @Transform(({ value }) => parseInt(value, 10))
   @IsNumber()
   createDefaultFolders: number;
+
+  @IsString()
+  @IsOptional()
+  bookmarkDeptIds: string;
 }

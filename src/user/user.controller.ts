@@ -255,4 +255,15 @@ export class UserController {
       accessToken,
     );
   }
+
+  @Get(':userId/bookmarks')
+  @RateLimit({
+    keyPrefix: 'get_bookmarks',
+    points: 150,
+    duration: 60,
+    errorMessage: 'Please wait before loading your bookmarks.',
+  })
+  getBookmarksByUserId(@Param('userId', ParseIntPipe) userId: number) {
+    return this.userService.getUserBookmarksById(userId);
+  }
 }
