@@ -234,6 +234,7 @@ export class UserService {
 
       const user = await this.prismaService.user.findFirst({
         where: { id: userId },
+        include: { userUpdates: true },
       });
 
       if (!user)
