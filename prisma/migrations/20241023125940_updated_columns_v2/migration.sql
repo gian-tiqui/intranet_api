@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "lid" INTEGER NOT NULL DEFAULT 1;
-
--- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_lid_fkey" FOREIGN KEY ("lid") REFERENCES "EmployeeLevel"("lid") ON DELETE RESTRICT ON UPDATE CASCADE;

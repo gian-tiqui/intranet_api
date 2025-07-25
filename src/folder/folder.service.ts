@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 import { CreateFolderDto } from './create-folder.dto';
 import { UpdateFolderDto } from './update-folder.dto';
 import errorHandler from 'src/utils/functions/errorHandler';
-import { create } from 'domain';
+import bookmarkFoldersPerDepartment from 'src/utils/functions/bookmarkFoldersPerDepartment';
 
 @Injectable()
 export class FolderService {
@@ -105,9 +105,9 @@ export class FolderService {
 
   // Create a main folder
   async createMainFolder(createFolderDto: CreateFolderDto) {
-    const { deptIds, ...dto } = createFolderDto;
+    const { deptIds, bookmarkDeptIds, ...dto } = createFolderDto;
     try {
-      const newfolder = this.prisma.folder.create({
+      const newfolder = await this.prisma.folder.create({
         data: {
           ...dto,
           icon: 'mynaui:folder-two',
@@ -123,6 +123,13 @@ export class FolderService {
           },
         },
       });
+
+      bookmarkFoldersPerDepartment(
+        this.prisma,
+        newfolder.id,
+        bookmarkDeptIds,
+        this.logger,
+      );
 
       return newfolder;
     } catch (error) {
@@ -142,7 +149,8 @@ export class FolderService {
         throw new Error(`Parent folder with ID ${parentId} not found`);
       }
 
-      const { deptIds, createDefaultFolders, ...dto } = createSubFolderDto;
+      const { deptIds, bookmarkDeptIds, createDefaultFolders, ...dto } =
+        createSubFolderDto;
 
       const postTypes = await this.prisma.postType.findMany();
 
@@ -163,6 +171,13 @@ export class FolderService {
           },
         },
       });
+
+      bookmarkFoldersPerDepartment(
+        this.prisma,
+        newSubfolder.id,
+        bookmarkDeptIds,
+        this.logger,
+      );
 
       if (createDefaultFolders === 1) {
         postTypes.map(async (postType) => {
