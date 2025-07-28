@@ -50,6 +50,7 @@ export class PostService {
         where: {
           userId: Number(userId),
           isPublished: isPublished === 1 ? true : false,
+          parentId: null,
         },
         orderBy: { createdAt: direction === 'desc' ? 'desc' : 'asc' },
         skip: +offset,
@@ -89,6 +90,7 @@ export class PostService {
       const _lid = lid;
 
       const opts: any[] = [
+        { parentId: null },
         { isPublished: isPublished === 1 ? true : false },
         ...(_lid ? [{ lid: { lte: Number(_lid) } }] : []),
         ...(search
@@ -183,6 +185,7 @@ export class PostService {
           },
           isPublished: isPublished == 1 ? true : false,
           folderId: null,
+          parentId: null,
         },
         orderBy: { createdAt: 'desc' },
       });
@@ -194,6 +197,7 @@ export class PostService {
             some: { deptId: deptId },
           },
           folderId: null,
+          parentId: null,
         },
       });
 
@@ -224,6 +228,7 @@ export class PostService {
           public: true,
           lid: +lid,
           isPublished: isPublished == 1 ? true : false,
+          parentId: null,
         },
         include: {
           imageLocations: true,
@@ -331,6 +336,7 @@ export class PostService {
             },
           },
           parentPost: true,
+          childrenPosts: { select: { title: true, message: true, pid: true } },
         },
       });
 
@@ -449,6 +455,11 @@ export class PostService {
         }
         const post = await this.prismaService.post.findFirst({
           where: { pid: id },
+          include: {
+            comments: true,
+            readers: true,
+            imageLocations: true,
+          },
         });
 
         if (!post) {
@@ -551,6 +562,55 @@ export class PostService {
               ),
             );
         }
+
+        const {
+          pid, // This is the ID we want to exclude
+          comments,
+          imageLocations: images,
+          readers,
+          ...rest
+        } = post;
+
+        await this.prismaService.post.create({
+          data: {
+            ...rest,
+            parentId: pid, // Set the parentId to the original post's ID
+            // Remove pid from the data to let it auto-increment
+            comments: {
+              createMany: {
+                data: [
+                  ...comments.map((comment) => {
+                    delete comment.cid;
+                    delete comment.postId;
+                    return comment;
+                  }),
+                ],
+              },
+            },
+            imageLocations: {
+              createMany: {
+                data: [
+                  ...images.map((imageLocation) => {
+                    delete imageLocation.id;
+                    delete imageLocation.postId;
+                    return imageLocation;
+                  }),
+                ],
+              },
+            },
+            readers: {
+              createMany: {
+                data: [
+                  ...readers.map((reader) => {
+                    delete reader.id;
+                    delete reader.postId;
+                    return reader;
+                  }),
+                ],
+              },
+            },
+          },
+        });
 
         return {
           message: 'Post updated successfully',
