@@ -148,7 +148,7 @@ model Post {
   superseeded              Boolean        
   originalPostId           Int?
   parentId                 Int?
-  parentPost               Post?          @relation("PostRevision", fields: [parentId], references: [pid])
+  parentPost               Post?          @relation("PostRevision", fields: [parentId], references: [pid], onDelete: Cascade)
   childrenPosts            Post[]         @relation("PostRevision")
   employeeLevel            EmployeeLevel  @relation(fields: [lid], references: [lid])
   user                     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
