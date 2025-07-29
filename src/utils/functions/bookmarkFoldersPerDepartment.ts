@@ -9,6 +9,7 @@ const bookmarkFoldersPerDepartment = async (
   logger: LoggerService,
 ) => {
   try {
+    if (!deptIds) return;
     const users = await prisma.user.findMany({
       where: {
         deptId: {
