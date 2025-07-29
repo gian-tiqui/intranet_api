@@ -11,6 +11,7 @@ export class ApiKeyMiddleware implements NestMiddleware {
     if (req.path.startsWith('/uploads/post/')) {
       return next();
     }
+
     const apiKey = req.header('x-api-key');
     const validApiKey = process.env.API_KEY;
 

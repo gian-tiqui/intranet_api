@@ -1,9 +1,18 @@
-version: '3'
+version: '3.8'
+
 services:
-  intranet_api:
-    build: .
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - LOG_DIR=/usr/src/app/logs
+    volumes:
+      - logs:/usr/src/app/logs
+      - uploads:/usr/src/app/uploads
     ports:
       - '8081:8081'
-    environment:
-      PORT: 8081
-      DATABASE_URL: mysql://root:@host.docker.internal:3306/db_intranet
+
+volumes:
+  logs:
+  uploads:

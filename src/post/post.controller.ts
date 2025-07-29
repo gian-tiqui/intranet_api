@@ -4,68 +4,133 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
-  UploadedFile,
-  UseGuards,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from './common/MulterOption';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { RateLimit } from 'nestjs-rate-limiter';
 
-const FIND_ALL_POINTS = 50;
-const FIND_BY_ID_POINTS = 50;
-const CREATE_POINTS = 5;
-const UPDATE_BY_ID_POINTS = 10;
-const DELETE_BY_ID_POINTS = 10;
-
 // This guard accepts requests that are provided with valid access tokens
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
+
+  @Get('admin')
+  @RateLimit({
+    keyPrefix: 'get_posts_for_admin',
+    points: 500,
+    duration: 60,
+    errorMessage: 'Please wait before fetching posts.',
+  })
+  findPostsForAdmin() {
+    return this.postService.findPostsForAdmin();
+  }
+
+  @Get('my-posts')
+  @RateLimit({
+    keyPrefix: 'get_self_posts',
+    points: 500,
+    duration: 60,
+    errorMessage: 'Please wait before fetching self posts.',
+  })
+  findAllSelfPosts(
+    @Query('userId') userId: number,
+    @Query('direction') direction: string,
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+    @Query('isPublished', ParseIntPipe) isPublished: number,
+  ) {
+    return this.postService.findAllSelfPosts(
+      userId,
+      direction,
+      offset,
+      limit,
+      isPublished,
+    );
+  }
 
   // This endpoint returns the filtered posts [filters are blank by default and will return all of the posts]
   @Get()
   @RateLimit({
     keyPrefix: 'get_posts',
-    points: FIND_ALL_POINTS,
+    points: 500,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching posts.',
   })
   findAll(
-    @Query('userId') userId: number,
-    @Query('deptId') deptId: number,
-    @Query('message') message: string,
-    @Query('imageLocation') imageLocation: string,
-    @Query('search') search: string,
-    @Query('public') _public: boolean,
-    @Query('userIdComment') userIdComment: number,
+    @Query('userId') userId: number = null,
+    @Query('imageLocation') imageLocation: string = null,
+    @Query('search') search: string = '',
+    @Query('public') _public: string = undefined,
+    @Query('userIdComment') userIdComment: number = null,
+    @Query('lid') lid: number,
+    @Query('offset') offset: number = 0,
+    @Query('limit') limit: number = 100,
+    @Query('direction') direction: string,
+    @Query('deptId') deptId: number = null,
+    @Query('isPublished', ParseIntPipe) isPublished: number,
   ) {
     return this.postService.findAll(
+      lid,
       userId,
-      deptId,
-      message,
       imageLocation,
       search,
       _public,
       userIdComment,
+      offset,
+      limit,
+      direction,
+      deptId,
+      isPublished,
     );
+  }
+
+  @Get(':deptId/level/:lid')
+  @RateLimit({
+    keyPrefix: 'get_dept_post_by_lid',
+    points: 500,
+    duration: 60,
+    errorMessage: 'Please wait before fetching dept posts by lid',
+  })
+  findDeptPostsByLid(
+    @Param('deptId', ParseIntPipe) deptId: number,
+    @Param('lid', ParseIntPipe) lid: number,
+    @Query('isPublished', ParseIntPipe) isPublished: number,
+  ) {
+    return this.postService.findDeptPostsByLid(deptId, lid, isPublished);
+  }
+
+  @Get('level/:lid')
+  @RateLimit({
+    keyPrefix: 'get_post_by_level_and_id',
+    points: 500,
+    duration: 60,
+    errorMessage: 'Please wait before fetching posts by lid.',
+  })
+  findManyByLid(
+    @Param('lid') lid: number,
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+    @Query('isPublished', ParseIntPipe) isPublished: number,
+  ) {
+    return this.postService.findManyByLid(lid, offset, limit, isPublished);
   }
 
   // This endpoint returns the post with the given id
   @Get(':id')
   @RateLimit({
     keyPrefix: 'get_post_by_id',
-    points: FIND_BY_ID_POINTS,
+    points: 500,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before fetching a post.',
   })
   findById(
     @Param('id') postId: number,
@@ -77,7 +142,7 @@ export class PostController {
   // This endpoint validates if the file is valid (image) and will create a new data after when it satisfies the checks
   @Post()
   @UseInterceptors(
-    FileInterceptor('memo', {
+    FilesInterceptor('memo', 25, {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -91,64 +156,54 @@ export class PostController {
   )
   @RateLimit({
     keyPrefix: 'create_post',
-    points: CREATE_POINTS,
+    points: 500,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before creating a post.',
   })
   async createPost(
     @Body() createPostDto: CreatePostDto,
-    @UploadedFile() memoFile: Express.Multer.File,
+    @UploadedFiles() memoFiles: Express.Multer.File[],
   ) {
-    if (!memoFile) {
-      throw new Error('Memo file is required');
-    }
-
-    return this.postService.create(createPostDto, memoFile);
+    return this.postService.create(createPostDto, memoFiles);
   }
 
   @Put(':id')
   @UseInterceptors(
-    FileInterceptor('newMemo', {
+    FilesInterceptor('newMemo', 25, {
       limits: { fileSize: 1024 * 1024 * 10 },
       fileFilter: (req, file, cb) => {
-        const allowedMimeTypes = [
-          'image/jpeg',
-          'image/png',
-          'image/gif',
-          'image/jpg',
-        ];
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (allowedMimeTypes.includes(file.mimetype)) {
           cb(null, true);
         } else {
           cb(new Error('Only image files are allowed'), false);
         }
       },
-      storage: multerOptions('post').storage,
     }),
   )
   @RateLimit({
     keyPrefix: 'update_post_by_id',
-    points: UPDATE_BY_ID_POINTS,
+    points: 500,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before updating a post.',
   })
   updateById(
     @Param('id') postId,
     @Body() updatePostDto: UpdatePostDto,
-    @UploadedFile() updatedMemoFile?: Express.Multer.File,
+    @UploadedFiles() updatedMemoFiles?: Express.Multer.File[],
   ) {
-    return this.postService.updateById(postId, updatePostDto, updatedMemoFile);
+    return this.postService.updateById(postId, updatePostDto, updatedMemoFiles);
   }
 
   // This endpoint deletes a post with the given id
   @Delete(':id')
   @RateLimit({
     keyPrefix: 'delete_post_by_id',
-    points: DELETE_BY_ID_POINTS,
+    points: 500,
     duration: 60,
-    errorMessage: 'Please wait before posting again.',
+    errorMessage: 'Please wait before deleting a post.',
   })
   deleteById(@Param('id') postId: number) {
-    return this.postService.deleteById(postId);
+    return this.postService.removeById(postId);
   }
 }

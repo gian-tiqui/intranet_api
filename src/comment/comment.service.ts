@@ -1,224 +1,196 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import * as path from 'path';
-import { promises as fs, unlink, rename } from 'fs';
-import { promisify } from 'util';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class CommentService {
-  constructor(private prismaService: PrismaService) {}
-
-  unlinkAsync = promisify(unlink);
-  renameAsync = promisify(rename);
+  constructor(
+    private prismaService: PrismaService,
+    private readonly logger: LoggerService,
+  ) {}
 
   async findAll(userId: number) {
-    const comments = await this.prismaService.comment.findMany({
-      where: {
-        parentId: null,
-        ...(userId && { userId: userId }),
-      },
-      include: {
-        post: { include: { department: { select: { departmentName: true } } } },
-        user: { select: { firstName: true, lastName: true, id: true } },
-        replies: {
-          include: {
-            replies: true,
+    try {
+      const comments = await this.prismaService.comment.findMany({
+        where: {
+          parentId: null,
+          ...(userId && { userId }),
+        },
+        include: {
+          user: { select: { firstName: true, lastName: true, id: true } },
+          replies: {
+            include: {
+              replies: true,
+            },
+          },
+          post: {
+            select: {
+              postDepartments: {
+                select: { department: { select: { departmentName: true } } },
+              },
+            },
           },
         },
-      },
-    });
+      });
 
-    return comments;
+      return comments;
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in fetching all comments: ',
+        error,
+      );
+
+      throw error;
+    }
   }
 
   async findAllReplies(parentId?: number) {
-    const replies = await this.prismaService.comment.findMany({
-      where: {
-        postId: { equals: null },
-        ...(parentId && { parentId: Number(parentId) }),
-      },
-      include: { user: { select: { firstName: true, lastName: true } } },
-    });
-
-    return replies;
-  }
-
-  async findOneById(_cid: number) {
-    const cid = Number(_cid);
-
-    if (typeof cid !== 'number')
-      throw new BadRequestException('ID must be a number');
-
-    const comment = await this.prismaService.comment.findFirst({
-      where: {
-        cid,
-      },
-      include: { replies: { include: { replies: true } } },
-    });
-
-    if (!comment)
-      throw new NotFoundException(`Comment with the id ${cid} not found`);
-
-    return {
-      message: 'Comment retrieved',
-      statusCode: 200,
-      comment,
-    };
-  }
-
-  async create(
-    createCommentDto: CreateCommentDto,
-    commentImage?: Express.Multer.File,
-  ) {
     try {
-      let imageLocation = '';
+      const replies = await this.prismaService.comment.findMany({
+        where: {
+          postId: { equals: null },
+          ...(parentId && { parentId }),
+        },
+        include: { user: { select: { firstName: true, lastName: true } } },
+      });
 
-      if (commentImage) {
-        const commentDir = path.join(__dirname, 'uploads');
+      return replies;
+    } catch (error) {
+      this.logger.error('There was a problem in fetching all replies: ', error);
 
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const filePath = path.join(
-          commentDir,
-          `${uniqueSuffix}-${commentImage.originalname}`,
+      throw error;
+    }
+  }
+
+  async findOneById(cid: number) {
+    try {
+      const comment = await this.prismaService.comment.findFirst({
+        where: {
+          cid,
+        },
+        include: { replies: { include: { replies: true } } },
+      });
+
+      if (!comment)
+        throw new NotFoundException(`Comment with the id ${cid} not found`);
+
+      return {
+        message: 'Comment retrieved',
+        statusCode: 200,
+        comment,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in fetching a comment', error);
+
+      throw error;
+    }
+  }
+
+  async create(createCommentDto: CreateCommentDto) {
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: { id: +createCommentDto.userId },
+      });
+
+      if (!user)
+        throw new NotFoundException(
+          `User with the id ${createCommentDto.userId} not found.`,
         );
-
-        await fs.mkdir(commentDir, { recursive: true });
-
-        await fs.writeFile(filePath, commentImage.buffer);
-
-        imageLocation = `uploads/${uniqueSuffix}-${commentImage.originalname}`;
-      }
 
       const createdComment = await this.prismaService.comment.create({
         data: {
-          userId: Number(createCommentDto.userId),
-          postId: Number(createCommentDto.postId),
-          message: createCommentDto.message,
-          imageLocation: imageLocation,
-          parentId: Number(createCommentDto.parentId),
+          ...createCommentDto,
+        },
+        include: { parentComment: { include: { post: true } } },
+      });
+
+      await this.prismaService.editLogs.create({
+        data: {
+          log: createdComment,
+          editTypeId: 2,
+          updatedBy: createCommentDto.userId,
         },
       });
 
       return createdComment;
     } catch (error) {
+      this.logger.error('There was a problem in creating a comment: ', error);
+
       console.error(error);
     }
   }
 
-  async updateById(
-    cid: number,
-    updateCommentDto: UpdateCommentDto,
-    newImage?: Express.Multer.File,
-  ) {
-    const id = Number(cid);
-    if (typeof id !== 'number')
-      throw new BadRequestException('ID must be a number');
+  async updateById(cid: number, updateCommentDto: UpdateCommentDto) {
+    try {
+      const comment = await this.prismaService.comment.findFirst({
+        where: {
+          cid,
+        },
+      });
 
-    const comment = await this.prismaService.comment.findFirst({
-      where: {
-        cid: id,
-      },
-    });
+      await this.prismaService.editLogs.create({
+        data: {
+          editTypeId: 2,
+          log: { ...comment },
+          updatedBy: Number(updateCommentDto.updatedBy),
+        },
+      });
 
-    if (!comment)
-      throw new NotFoundException(`Comment with the id ${id} not found`);
+      if (!comment)
+        throw new NotFoundException(`Comment with the id ${cid} not found`);
 
-    const updateComment = {
-      message: updateCommentDto.message,
-      imageLocation: '',
-    };
+      const updateComment = {
+        message: updateCommentDto.message,
+        imageLocation: '',
+      };
 
-    if (newImage) {
-      const oldFilePath = path.join(
-        __dirname,
-        'uploads',
-        comment.imageLocation.split('uploads/')[1],
-      );
+      const updatedComment = await this.prismaService.comment.update({
+        where: { cid },
+        data: updateComment,
+      });
 
-      const newFileName = newImage.originalname;
-      const newFilePath = path.join(
-        __dirname,
-        '../../dist/comment/uploads',
-        newFileName,
-      );
+      return {
+        statusCode: 204,
+        message: 'Comment updated',
+        comment: updatedComment,
+      };
+    } catch (error) {
+      console.error(error);
+      this.logger.error('There was a problem in updating the comment: ', error);
 
-      try {
-        await this.unlinkAsync(oldFilePath);
-        console.log('Old file deleted successfully:', oldFilePath);
-      } catch (err) {
-        console.error('Error deleting old file:', err);
-      }
-
-      try {
-        await this.renameAsync(newImage.path, newFilePath);
-        console.log('New file moved successfully:', newFilePath);
-        updateComment.imageLocation = `uploads/${newFileName}`;
-      } catch (err) {
-        console.error('Error moving new file:', err);
-      }
+      throw error;
     }
-
-    const updatedComment = await this.prismaService.comment.update({
-      where: { cid: id },
-      data: updateComment,
-    });
-
-    return {
-      statusCode: 204,
-      message: 'Comment updated',
-      comment: updatedComment,
-    };
   }
 
   async deleteById(cid: number) {
-    const id = Number(cid);
+    try {
+      const comment = await this.prismaService.comment.findFirst({
+        where: {
+          cid,
+        },
+      });
 
-    if (typeof id !== 'number') {
-      throw new BadRequestException('ID must be a number');
-    }
-
-    const comment = await this.prismaService.comment.findFirst({
-      where: {
-        cid: id,
-      },
-    });
-
-    if (!comment) {
-      throw new NotFoundException(`Comment with the id ${id} not found`);
-    }
-
-    const deletedComment = await this.prismaService.comment.delete({
-      where: {
-        cid: id,
-      },
-    });
-
-    if (deletedComment.imageLocation) {
-      const deleteFileName = deletedComment.imageLocation.split('uploads/')[1];
-
-      if (deleteFileName) {
-        const filePath = path.join(__dirname, 'uploads', deleteFileName);
-
-        unlink(filePath, (err) => {
-          if (err) {
-            console.error('Error deleting file:', err);
-          } else {
-            console.log('File deleted successfully:', filePath);
-          }
-        });
+      if (!comment) {
+        throw new NotFoundException(`Comment with the id ${cid} not found`);
       }
-    }
 
-    return {
-      message: 'Comment deleted successfully',
-      statusCode: 209,
-      deletedComment,
-    };
+      const deletedComment = await this.prismaService.comment.delete({
+        where: {
+          cid,
+        },
+      });
+
+      return {
+        message: 'Comment deleted successfully',
+        statusCode: 209,
+        deletedComment,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem in deleting the comment: ', error);
+
+      throw error;
+    }
   }
 }

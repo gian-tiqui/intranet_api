@@ -2,125 +2,369 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// DEPT ID [1]HR [2]QM [3]IT [4]ADMIN [5]MARKETING [6]ACCOUNTING [7]PURCHASING
-// POPULATE DEPARTMENTS TABLE UPON MIGRATION
-
-// moving to postgresql
-
-
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  email          String   @unique
-  password       String
-  firstName      String  
-  middleName     String?
-  lastName       String
-  lastNamePrefix String?
-  preferredName  String?
-  suffix         String?
-  address        String?
-  city           String?
-  state          String?
-  zipCode        Int?
-  dob            DateTime @db.Date
-  gender         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  refreshToken   String?  @unique
-  deptId         Int
-  employeeId     Int? @unique
+  id                       Int            @id @default(autoincrement())
+  email                    String?        @unique
+  password                 String
+  firstName                String  
+  middleName               String?
+  lastName                 String
+  lastNamePrefix           String?
+  preferredName            String?
+  suffix                   String?
+  address                  String?
+  city                     String?
+  state                    String?
+  zipCode                  Int?
+  dob                      DateTime       @db.Date
+  gender                   String?
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  lastUpdated              DateTime       @default(now())
+  refreshToken             String?        @unique
+  deptId                   Int
+  employeeId               String?        @unique
+  phone                    String?        @unique
+  lid                      Int      
+  confirmed                Boolean        @default(true)
+  secretQuestion1          String?
+  secretAnswer1            String?
+  secretQuestion2          String?
+  secretAnswer2            String?
+  divisionId               Int?
+  localNumber              String?
+  profilePictureLocation   String?
+  officeLocation           String?
+  jobTitle                 String?        
+  isFirstLogin             Boolean        @default(true)
+  isAdmin                  Boolean        @default(false)
+  division                 Division?      @relation(fields: [divisionId], references: [id])
+  notifications            Notification[]
+  posts                    Post[]
+  comments                 Comment[]
+  postReads                PostReader[] 
+  department               Department     @relation(fields: [deptId], references: [deptId], onDelete: Cascade)
+  editLogs                 EditLogs[]
+  employeeLevel            EmployeeLevel  @relation(fields: [lid], references: [lid])
+  tickets                  Ticket[]
+  folders                  Folder[]
+  userPictures             UserPictures[] 
+  loginLogs                LoginLogs[]
+  sentReports              IncidentReport[] @relation("reporter")
+  receivedReports          IncidentReport[] @relation("reported")
+  userUpdates              UserUpdates[]
+  bookMarkedFolders        Folder[]        @relation("bookmarkedFolders")
+}
 
-  notifications  Notification[]
-  posts          Post[]
-  comments       Comment[]
-  postReads      PostReader[] 
-  department     Department   @relation(fields: [deptId], references: [deptId])
+model UserUpdates {
+  id                       Int            @id @default(autoincrement())
+  userId                   Int
+  user                     User           @relation(fields: [userId], references: [id])
+  firstName                String?
+  middleName               String?
+  lastName                 String?
+  suffix                   String?
+  gender                   String?
+  localNumber              String?
+  address                  String?
+  jobTitle                 String?
+  officeLocation           String?
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+}
+
+model LoginLogs {
+  id                       Int            @id @default(autoincrement())
+  userId                   Int      
+  user                     User           @relation(fields: [userId], references: [id])
+
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+}
+
+model UserPictures {
+  id                       Int            @id @default(autoincrement())
+  imageLocation            String
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  userId                   Int
+  user                     User           @relation(fields: [userId], references: [id])
+}
+
+model EmployeeLevel {
+  lid                      Int            @id @default(autoincrement())
+  level                    String
+  users                    User[]
+  posts                    Post[]
 }
 
 model Department {
-  deptId         Int      @id @default(autoincrement())
-  departmentName String   @unique
-  departmentCode String
-  posts          Post[]
-  users          User[] 
-  notifications  Notification[]
+  deptId                   Int            @id @default(autoincrement())
+  departmentName           String         @unique
+  departmentCode           String
+  posts                    PostDepartment[] 
+  users                    User[]
+  notifications            Notification[]
+  divisionId               Int
+  division                 Division       @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  folderDepartments        FolderDepartment[]
+  sentReports              IncidentReport[] @relation("sentReports")
+  receivedReports          IncidentReport[] @relation("receivedReports")
+}
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now())
+// ANCILLARY, ADMIN, NSD
+model Division {
+  id                       Int            @id @default(autoincrement())
+  divisionCode             String         @unique
+  divisionName             String         
+  departments              Department[]    
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  users                    User[]
 }
 
 model Post {
-  pid            Int      @id @default(autoincrement())
-  userId         Int
-  deptId         Int
-  title          String?  @db.VarChar(255)
-  message        String?  @db.VarChar(255)
-  imageLocation  String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  edited         Boolean  @default(false)
-  public         Boolean  @default(true)
-
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  department     Department @relation(fields: [deptId], references: [deptId])
-  comments       Comment[]
-  readers        PostReader[] 
+  pid                      Int            @id @default(autoincrement())
+  userId                   Int
+  title                    String?        @db.VarChar(255)
+  message                  String?        @db.Text
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  edited                   Boolean        @default(false)
+  public                   Boolean        @default(true)
+  extractedText            String?        @db.Text
+  lid                      Int            
+  folderId                 Int?
+  isPublished              Boolean        @default(false)
+  downloadable             Boolean        @default(false)
+  superseeded              Boolean        
+  originalPostId           Int?
+  parentId                 Int?
+  parentPost               Post?          @relation("PostRevision", fields: [parentId], references: [pid], onDelete: Cascade)
+  childrenPosts            Post[]         @relation("PostRevision")
+  employeeLevel            EmployeeLevel  @relation(fields: [lid], references: [lid])
+  user                     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments                 Comment[]
+  readers                  PostReader[] 
+  notifications            Notification[] 
+  postDepartments          PostDepartment[] 
+  imageLocations           ImageLocations[] 
+  folder                   Folder?        @relation(fields: [folderId], references: [id])
+  typeId                   Int?
+  type                     PostType?      @relation(fields: [typeId], references: [id])
 }
 
+
+model PostType {
+  id                       Int            @id @default(autoincrement())
+  name                     String         @unique
+
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  posts                    Post[]
+}
+
+model Folder {
+  id                       Int            @id @default(autoincrement())
+  name                     String
+  parentId                 Int?
+  parentFolder             Folder?        @relation("SubFolders", fields: [parentId], references: [id], onDelete: Cascade)
+  subfolders               Folder[]       @relation("SubFolders")
+  posts                    Post[]
+  isPublished              Boolean        @default(false)
+  textColor                String?
+  folderColor              String?
+  icon                     String?
+  userId                   Int
+  user                     User           @relation(fields: [userId], references: [id])
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  folderDepartments        FolderDepartment[]
+  bookmarkedByUsers        User[]         @relation("bookmarkedFolders")
+}
+
+model FolderDepartment {
+  id                       Int            @unique @default(autoincrement())
+  folderId                 Int
+  deptId                   Int
+  
+  folder                   Folder         @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  department               Department     @relation(fields: [deptId], references: [deptId])
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@unique([folderId, deptId])
+}
+
+model ImageLocations {
+  id                        Int           @id @default(autoincrement())
+  imageLocation             String
+  postId                    Int
+  post                      Post          @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+}
+
+model PostDepartment {
+  id                        Int           @id @default(autoincrement())
+  postId                    Int
+  deptId                    Int
+  post                      Post          @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  department                Department    @relation(fields: [deptId], references: [deptId], onDelete: Cascade)
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+
+  @@unique([postId, deptId])
+}
+
+
 model PostReader {
-  id        Int      @id @default(autoincrement())
-  postId    Int
-  userId    Int
-  readAt    DateTime @default(now())
-
-  post      Post     @relation(fields: [postId], references: [pid], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id                        Int           @id @default(autoincrement())
+  postId                    Int
+  userId                    Int
+  readAt                    DateTime      @default(now())
+  post                      Post          @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  user                      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  understood                Boolean       @default(false)
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
   @@unique([postId, userId])
 }
 
 model Comment {
-  cid            Int      @id @default(autoincrement())
-  userId         Int
-  postId         Int?
-  parentId       Int?
-  message        String   @db.VarChar(255)
-  imageLocation  String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post           Post?     @relation(fields: [postId], references: [pid], onDelete: Cascade)
-  parentComment  Comment? @relation("CommentReplies", fields: [parentId], references: [cid])
-  replies        Comment[] @relation("CommentReplies")
+  cid                       Int           @id @default(autoincrement())
+  userId                    Int
+  postId                    Int?
+  parentId                  Int? 
+  message                   String        @db.VarChar(255)
+  imageLocation             String?
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+  user                      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post                      Post?         @relation(fields: [postId], references: [pid], onDelete: Cascade)
+  parentComment             Comment?      @relation("CommentReplies", fields: [parentId], references: [cid])
+  notification              Notification[]
+  replies                   Comment[]     @relation("CommentReplies")
+  incidentReportId          Int?
+  incidentReport            IncidentReport? @relation(fields: [incidentReportId], references: [id])
 
   @@index([parentId])
 }
 
 model Notification {
-  id          Int       @id @default(autoincrement())
-  userId      Int
-  postId      Int?
-  commentId   Int?
-  deptId      Int?      
-  message     String
-  isRead      Boolean   @default(false)
-  createdAt   DateTime  @default(now())
+  id                        Int           @id @default(autoincrement())
+  userId                    Int
+  postId                    Int?
+  commentId                 Int?
+  deptId                    Int?      
+  message                   String
+  isRead                    Boolean       @default(false)
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
   
-  user        User      @relation(fields: [userId], references: [id])
-  department  Department?  @relation(fields: [deptId], references: [deptId])
+  post                      Post?         @relation(fields: [postId], references: [pid], onDelete: Cascade) 
+  user                      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department                Department?   @relation(fields: [deptId], references: [deptId], onDelete: Cascade)
+  comment                   Comment?      @relation(fields: [commentId], references: [cid])
 }
 
 model EditLogs {
-  id           Int        @id @default(autoincrement())
-  previousData String
-  updatedBy    Int
+  id                        Int           @id @default(autoincrement())
+  log                       Json
+  updatedBy                 Int
+  editTypeId                Int
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
 
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now())
+  user                      User          @relation(fields: [updatedBy], references: [id], onDelete: Cascade)
+  editType                  EditType      @relation(fields: [editTypeId], references: [id])
+}
+
+model EditType {
+  id                        Int           @id @default(autoincrement())
+  type                      String      
+  editLogs                  EditLogs[]
+
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+}
+
+model Ticket {
+  id                        Int           @id @default(autoincrement())
+  title                     String
+  issue                     String     
+  statusId                  Int?          @default(1)
+  ticketStatus              TicketStatus? @relation(fields: [statusId], references: [id])
+  issueerId                 Int
+  issuer                    User          @relation(fields: [issueerId], references: [id])
+  startedAt                 DateTime?
+  resolvedAt                DateTime?
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+}
+
+model TicketStatus {
+  id                        Int           @id @default(autoincrement())
+  status                    String
+  tickets                   Ticket[]    
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+}
+
+model IncidentReport {
+  id                                  Int           @id @default(autoincrement())
+  title                               String
+  reportDescription                   String        
+  reportedDepartmentExplanation       String?
+  sanction                            String?
+
+  reportingDepartmentId               Int
+  reportingDepartment                 Department    @relation("sentReports" ,fields: [reportingDepartmentId], references: [deptId])
+
+  reporterId                          Int
+  reporter                            User          @relation("reporter", fields: [reporterId], references: [id])
+
+  reportedUserId                      Int
+  reportedUser                        User          @relation("reported", fields: [reportedUserId], references: [id])
+
+  reportedDepartmentId                Int
+  reportedDepartment                  Department    @relation("receivedReports", fields: [reportedDepartmentId], references: [deptId])
+
+  public                              Boolean?       @default(false)
+
+  comments                            Comment[]
+
+  statusId                            Int?
+  status                              IncidentReportStatus? @relation(fields: [statusId], references: [id])
+
+  evidences                           IncidentReportImageLocations[]
+  createdAt                           DateTime      @default(now())
+  updatedAt                           DateTime      @updatedAt    
+}
+
+model IncidentReportStatus {
+  id                                  Int            @id @default(autoincrement())
+  status                              String         @unique
+
+  createdAt                           DateTime       @default(now())
+  updatedAt                           DateTime       @updatedAt
+
+  reports                             IncidentReport[]
+}
+
+model IncidentReportImageLocations {
+  id                                  Int            @id @default(autoincrement())
+  imageLocation                       String         @unique
+  incidentReportId                    Int 
+  incidentReport                      IncidentReport @relation(fields: [incidentReportId], references: [id])
+  createdAt                           DateTime      @default(now())
+  updatedAt                           DateTime      @updatedAt
 }

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -7,111 +6,217 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDeptDto } from './dto/update-department.dto';
+import { LoggerService } from 'src/logger/logger.service';
+import { FindAllDto } from 'src/utils/global-dto/global.dto';
+import errorHandler from 'src/utils/functions/errorHandler';
+import { Prisma } from '@prisma/client';
+import convertDatesToString from 'src/utils/functions/convertDates';
+import notFound from 'src/utils/functions/notFound';
 
 @Injectable()
 export class DepartmentService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private readonly logger: LoggerService,
+  ) {}
 
   // This method returns the data as default and can also be filtered if the department name is not empty
   async findAll(departmentName: string) {
-    return await this.prismaService.department.findMany({
-      where: {
-        ...(departmentName && { departmentName: { contains: departmentName } }),
-      },
-      include: { posts: true, users: true },
-    });
+    try {
+      return await this.prismaService.department.findMany({
+        where: {
+          ...(departmentName && {
+            departmentName: { contains: departmentName },
+          }),
+        },
+        include: { posts: true, users: true },
+      });
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in fetching all departments:',
+        error,
+      );
+
+      throw error;
+    }
   }
 
   // This method finds a department and throws not found if it doesnt exist
   async findOneById(id: number) {
-    if (typeof id !== 'number')
-      throw new BadRequestException('ID must be a number');
+    try {
+      const department = await this.prismaService.department.findFirst({
+        where: { deptId: id },
+        include: { users: true, posts: true, division: true },
+      });
 
-    const department = await this.prismaService.department.findFirst({
-      where: { deptId: id },
-      include: { users: true, posts: true },
-    });
+      if (!department)
+        throw new NotFoundException(`Department with the id ${id} not found`);
 
-    if (!department)
-      throw new NotFoundException(`Department with the id ${id} not found`);
+      return department;
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in fetching all the departments: ',
+        error,
+      );
 
-    return department;
+      throw error;
+    }
   }
 
   // This method creates a new department if the input department does not exist
   async create(createDepartmentDto: CreateDepartmentDto) {
-    const foundDepartment = await this.prismaService.department.findFirst({
-      where: {
-        departmentName: createDepartmentDto.departmentName,
-      },
-    });
+    try {
+      const foundDepartment = await this.prismaService.department.findFirst({
+        where: {
+          departmentName: createDepartmentDto.departmentName,
+        },
+      });
 
-    if (foundDepartment) throw new ConflictException('Department exists');
+      if (foundDepartment) throw new ConflictException('Department exists');
 
-    const createdDepartment = await this.prismaService.department.create({
-      data: {
-        departmentName: createDepartmentDto.departmentName,
-        departmentCode: createDepartmentDto.departmentCode,
-      },
-    });
+      const createdDepartment = await this.prismaService.department.create({
+        data: {
+          ...createDepartmentDto,
+        },
+      });
 
-    return {
-      message: 'Department added successfully',
-      statusCode: 201,
-      department: createdDepartment,
-    };
+      return {
+        message: 'Department added successfully',
+        statusCode: 201,
+        department: createdDepartment,
+      };
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in creating a new department: ',
+        error,
+      );
+    }
   }
 
   async updateById(deptId: number, updateDeptDto: UpdateDeptDto) {
-    const did = Number(deptId);
+    try {
+      const department = await this.prismaService.department.findFirst({
+        where: { deptId },
+      });
 
-    const department = await this.prismaService.department.findFirst({
-      where: { deptId: did },
-    });
+      if (!department)
+        throw new NotFoundException(
+          `Department with the id: ${deptId} not found`,
+        );
 
-    if (!department)
-      throw new NotFoundException(`Department with the id: ${did} not found`);
+      const updatedDepartment = await this.prismaService.department.update({
+        where: { deptId },
+        data: updateDeptDto,
+      });
 
-    const updatedDepartment = await this.prismaService.department.update({
-      where: { deptId: did },
-      data: updateDeptDto,
-    });
+      if (updateDeptDto) {
+        return {
+          message: `User with the id ${deptId} was updated`,
+          statusCode: 202,
+          data: updatedDepartment,
+        };
+      }
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in updating a department: ',
+        error,
+      );
 
-    if (updateDeptDto) {
-      return {
-        message: `User with the id ${did} was updated`,
-        statusCode: 202,
-        data: updatedDepartment,
-      };
+      throw error;
     }
   }
 
   // This method deletes a department with the provided ID in the url
   async deleteById(deptId: number) {
-    const iDeptId = Number(deptId);
+    try {
+      const department = await this.prismaService.department.findFirst({
+        where: {
+          deptId,
+        },
+      });
 
-    if (typeof iDeptId !== 'number')
-      throw new BadRequestException('ID must be a number');
+      if (!department)
+        throw new NotFoundException(`Department with the ${deptId} not found`);
 
+      const deletedDept = await this.prismaService.department.delete({
+        where: {
+          deptId,
+        },
+      });
+
+      return {
+        message: 'Department deleted successfully',
+        statusCode: 209,
+        deletedDepartment: deletedDept,
+      };
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in removing the department: ',
+        error,
+      );
+
+      throw error;
+    }
+  }
+
+  /**
+   * V2 Starts here
+   */
+
+  findDepartments = async (query: FindAllDto) => {
+    const { search, skip, take } = query;
+
+    try {
+      const where: Prisma.DepartmentWhereInput = {
+        ...(search && {
+          OR: [
+            { departmentCode: { contains: search, mode: 'insensitive' } },
+            { departmentName: { contains: search, mode: 'insensitive' } },
+          ],
+        }),
+      };
+
+      const departments = await this.prismaService.department.findMany({
+        where,
+        orderBy: { departmentName: 'asc' },
+        include: { posts: true, users: true },
+        skip,
+        take,
+      });
+
+      const count = await this.prismaService.department.count({
+        where,
+      });
+
+      convertDatesToString(departments);
+
+      return {
+        message: 'Departments loaded successfully.',
+        departments,
+        count,
+      };
+    } catch (error) {
+      errorHandler(error, this.logger);
+    }
+  };
+
+  async getDepartmentUsers(deptId: number) {
     const department = await this.prismaService.department.findFirst({
-      where: {
-        deptId: iDeptId,
-      },
+      where: { deptId },
     });
 
-    if (!department)
-      throw new NotFoundException(`Department with the ${iDeptId} not found`);
+    if (!department) notFound(`Department`, deptId);
 
-    const deletedDept = await this.prismaService.department.delete({
-      where: {
-        deptId: iDeptId,
-      },
+    const usrs = await this.prismaService.user.findMany({ where: { deptId } });
+
+    const users = usrs.map((user) => {
+      const fullName = `${user.firstName} ${user.lastName}`;
+      return { ...user, fullName };
     });
 
     return {
-      message: 'Department deleted successfully',
-      statusCode: 209,
-      deletedDepartment: deletedDept,
+      message: `Users of the department found.`,
+      users: users,
     };
   }
 }
