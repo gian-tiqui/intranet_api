@@ -124,12 +124,14 @@ export class FolderService {
         },
       });
 
-      bookmarkFoldersPerDepartment(
-        this.prisma,
-        newfolder.id,
-        bookmarkDeptIds,
-        this.logger,
-      );
+      if (bookmarkDeptIds) {
+        bookmarkFoldersPerDepartment(
+          this.prisma,
+          newfolder.id,
+          bookmarkDeptIds,
+          this.logger,
+        );
+      }
 
       return newfolder;
     } catch (error) {
@@ -172,12 +174,14 @@ export class FolderService {
         },
       });
 
-      bookmarkFoldersPerDepartment(
-        this.prisma,
-        newSubfolder.id,
-        bookmarkDeptIds,
-        this.logger,
-      );
+      if (bookmarkDeptIds) {
+        bookmarkFoldersPerDepartment(
+          this.prisma,
+          newSubfolder.id,
+          bookmarkDeptIds,
+          this.logger,
+        );
+      }
 
       if (createDefaultFolders === 1) {
         postTypes.map(async (postType) => {
