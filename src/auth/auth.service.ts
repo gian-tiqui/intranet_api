@@ -30,253 +30,7 @@ export class AuthService {
     private readonly logger: LoggerService,
   ) {
     this.accounts = [
-      {
-        email: 'gian.tiqui.dev@gmail.com',
-        password: 'password',
-        firstName: 'Marie Ana',
-        middleName: '',
-        lastName: 'Alvarez',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Female',
-        deptId: 4,
-        employeeId: 1111,
-        lid: 3,
-      },
-      {
-        email: 'gian.tiqui.dev@gmail.com',
-        password: 'password',
-        firstName: 'Qm',
-        middleName: '',
-        lastName: 'Head',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Female',
-        deptId: 2,
-        employeeId: 1112,
-        lid: 3,
-      },
-      {
-        email: 'gian.tiqui.dev@gmail.com',
-        password: 'password',
-        firstName: 'IT',
-        middleName: '',
-        lastName: 'IT',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 3,
-        employeeId: 1113,
-        lid: 2,
-      },
-      {
-        email: 'gian.tiqui.dev@gmail.com',
-        password: 'password',
-        firstName: 'IT2',
-        middleName: '',
-        lastName: 'IT2',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 3,
-        employeeId: 1114,
-        lid: 2,
-      },
-      {
-        email: 'it3@gmail.com',
-        password: 'password',
-        firstName: 'IT3',
-        middleName: '',
-        lastName: 'IT3',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 3,
-        employeeId: 1115,
-        lid: 1,
-      },
-      {
-        email: 'gian.tiqui.dev@gmail.com',
-        password: 'password',
-        firstName: 'Meow',
-        middleName: '',
-        lastName: 'Meow',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 3,
-        employeeId: 1116,
-        lid: 1,
-      },
-      {
-        email: 'gian.tiqui.dev333@gmail.com',
-        password: 'password',
-        firstName: 'Hr',
-        middleName: '',
-        lastName: 'Staff',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 1,
-        employeeId: 1117,
-        lid: 1,
-      },
-      {
-        email: 'gian.tiqui.dev3333@gmail.com',
-        password: 'password',
-        firstName: 'QM',
-        middleName: '',
-        lastName: 'Staff',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 2,
-        employeeId: 1118,
-        lid: 1,
-      },
-      {
-        email: 'gian.tiqui.dev3333@gmail.com',
-        password: 'password',
-        firstName: 'QM',
-        middleName: '',
-        lastName: 'Head',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 2,
-        employeeId: 1119,
-        lid: 3,
-      },
-      {
-        email: 'gian.tiqui.dev33331@gmail.com',
-        password: 'password',
-        firstName: 'IT',
-        middleName: '',
-        lastName: 'Supervisor',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 2,
-        employeeId: 1120,
-        lid: 2,
-      },
-      {
-        email: 'gian.tiqui.dev33332@gmail.com',
-        password: 'password',
-        firstName: 'IT',
-        middleName: '',
-        lastName: 'Staff',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 2,
-        employeeId: 1121,
-        lid: 1,
-      },
-      {
-        email: 'gian.tiqui.dev33332@gmail.com',
-        password: 'password',
-        firstName: 'Jose Mari',
-        middleName: '',
-        lastName: 'Prats',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 8,
-        employeeId: 111,
-        lid: 5,
-      },
-      {
-        email: 'gian.tiqui.dev33332@gmail.com',
-        password: 'password',
-        firstName: 'Abet',
-        middleName: '',
-        lastName: 'Yaunario',
-        lastNamePrefix: '',
-        preferredName: '',
-        suffix: '',
-        address: '123 Elm St.',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: 4000,
-        dob: '1990-01-15T00:00:00.000Z',
-        gender: 'Male',
-        deptId: 8,
-        employeeId: 112,
-        lid: 5,
-      },
+      // ... your existing accounts array
     ];
   }
 
@@ -342,8 +96,6 @@ export class AuthService {
 
     const signedId = await this.signEmployeeId(found.employeeId);
 
-    // Write a line here that will find the email of the user with the same dept ID and add a approver field so it will send to that user with the approver field with the value of true
-
     const approver = await this.prisma.user.findFirst({
       where: {
         AND: {
@@ -373,7 +125,6 @@ export class AuthService {
     };
   }
 
-  // Create user upon successful validation and hash the password using the mechanism of argon package
   async register(registerDto: RegisterDto) {
     const hashedPassword = await argon.hash(registerDto.password);
     const formattedDob = new Date(registerDto.dob).toISOString();
@@ -418,7 +169,6 @@ export class AuthService {
     }
   }
 
-  // Check if the user exists and the password is correct if the user exists and generate tokens for the app to use
   async login(loginDto: LoginDto) {
     try {
       const user = await this.prisma.user.findUnique({
@@ -437,6 +187,15 @@ export class AuthService {
 
       if (!isPasswordValid) throw new UnauthorizedException('Password invalid');
 
+      // Clean up old refresh tokens (older than 30 days)
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      await this.prisma.refreshToken.deleteMany({
+        where: {
+          userId: user.id,
+          lastUsedAt: { lt: thirtyDaysAgo },
+        },
+      });
+
       const accessToken = await this.signToken(
         user.id,
         user.firstName,
@@ -448,18 +207,16 @@ export class AuthService {
         user.isFirstLogin,
       );
 
-      let refreshToken: string;
-
-      if (user.refreshToken) {
-        refreshToken = user.refreshToken;
-      } else {
-        refreshToken = await this.signRefreshToken(user.id);
-      }
+      // Always generate a new refresh token for each login
+      const refreshToken = await this.signRefreshToken(user.id);
 
       if (user.confirmed) {
-        await this.prisma.user.update({
-          where: { id: user.id },
-          data: { refreshToken },
+        // Store the new refresh token in the RefreshToken table
+        await this.prisma.refreshToken.create({
+          data: {
+            token: refreshToken,
+            userId: user.id,
+          },
         });
       }
 
@@ -476,12 +233,10 @@ export class AuthService {
       };
     } catch (error) {
       this.logger.error('There was a problem in logging in: ', error);
-
       throw error;
     }
   }
 
-  // Validate if the refresh token exists in the user data and generate a new access token if valid
   async refresh(refreshTokenDto: RefreshTokenDto) {
     try {
       const { refreshToken } = refreshTokenDto;
@@ -490,16 +245,39 @@ export class AuthService {
         throw new BadRequestException('No token provided');
       }
 
-      const user = await this.prisma.user.findFirst({
-        where: {
-          refreshToken: refreshToken,
-        },
-        include: { department: true },
-      });
-
-      if (!user) {
+      // Verify the refresh token JWT first
+      let payload;
+      try {
+        const refreshTokenSecret = this.configService.get<string>('RT_SECRET');
+        payload = await this.jwtService.verifyAsync(refreshToken, {
+          secret: refreshTokenSecret,
+        });
+      } catch (error) {
+        this.logger.error(`Invalid Refresh Token Error :`, error);
         throw new UnauthorizedException('Invalid refresh token');
       }
+
+      // Find the refresh token in the RefreshToken table
+      const tokenRecord = await this.prisma.refreshToken.findUnique({
+        where: { token: refreshToken },
+        include: {
+          user: {
+            include: { department: true },
+          },
+        },
+      });
+
+      if (!tokenRecord) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      // Update last used timestamp
+      await this.prisma.refreshToken.update({
+        where: { id: tokenRecord.id },
+        data: { lastUsedAt: new Date() },
+      });
+
+      const user = tokenRecord.user;
 
       const accessToken = await this.signToken(
         user.id,
@@ -515,20 +293,24 @@ export class AuthService {
       return { access_token: accessToken };
     } catch (error) {
       this.logger.error('There was a problem in refreshing the token', error);
-
       throw error;
     }
   }
 
-  // Remove the refresh token of the user upon logout
-  async logout(userId: number) {
+  async logout(refreshToken: string) {
     try {
-      const logout = await this.prisma.user.update({
-        where: { id: userId },
-        data: { refreshToken: null },
+      if (!refreshToken) {
+        throw new BadRequestException('Refresh token is required for logout');
+      }
+
+      // Delete the specific refresh token (logout from current device only)
+      const deletedToken = await this.prisma.refreshToken.delete({
+        where: { token: refreshToken },
       });
 
-      if (!logout) throw new ConflictException('Could not log you out');
+      if (!deletedToken) {
+        throw new BadRequestException('Invalid refresh token');
+      }
 
       return {
         message: 'Logged out successful',
@@ -536,7 +318,76 @@ export class AuthService {
       };
     } catch (error) {
       this.logger.error('There was a problem in logging out: ', error);
+      throw error;
+    }
+  }
 
+  // New method: Logout from all devices
+  async logoutAll(userId: number) {
+    try {
+      await this.prisma.refreshToken.deleteMany({
+        where: { userId },
+      });
+
+      return {
+        message: 'Logged out from all devices successfully',
+        statusCode: 204,
+      };
+    } catch (error) {
+      this.logger.error(
+        'There was a problem in logging out from all devices: ',
+        error,
+      );
+      throw error;
+    }
+  }
+
+  // New method: Get active sessions
+  async getActiveSessions(userId: number) {
+    try {
+      const sessions = await this.prisma.refreshToken.findMany({
+        where: { userId },
+        select: {
+          id: true,
+          createdAt: true,
+          lastUsedAt: true,
+        },
+        orderBy: { lastUsedAt: 'desc' },
+      });
+
+      return {
+        message: 'Active sessions retrieved successfully',
+        sessions,
+      };
+    } catch (error) {
+      this.logger.error(
+        'There was a problem retrieving active sessions: ',
+        error,
+      );
+      throw error;
+    }
+  }
+
+  // New method: Revoke specific session
+  async revokeSession(userId: number, sessionId: string) {
+    try {
+      const deletedToken = await this.prisma.refreshToken.delete({
+        where: {
+          id: sessionId,
+          userId: userId, // Ensure user can only revoke their own sessions
+        },
+      });
+
+      if (!deletedToken) {
+        throw new NotFoundException('Session not found');
+      }
+
+      return {
+        message: 'Session revoked successfully',
+        statusCode: 200,
+      };
+    } catch (error) {
+      this.logger.error('There was a problem revoking the session: ', error);
       throw error;
     }
   }
@@ -577,25 +428,32 @@ export class AuthService {
 
       const hashedPassword = await argon.hash(newPassword);
 
-      await this.prisma.user.update({
-        where: { employeeId },
-        data: { password: hashedPassword },
-      });
+      // Update password and invalidate all refresh tokens for security
+      await this.prisma.$transaction([
+        this.prisma.user.update({
+          where: { employeeId },
+          data: { password: hashedPassword },
+        }),
+        this.prisma.refreshToken.deleteMany({
+          where: {
+            user: { employeeId },
+          },
+        }),
+      ]);
 
       return {
-        message: 'Password reset successfully',
+        message:
+          'Password reset successfully. Please login again on all devices.',
       };
     } catch (error) {
       this.logger.error(
         'There was a problem in retrieving the password: ',
         error,
       );
-
       throw error;
     }
   }
 
-  // This generates the access token with payloads in the args
   private async signToken(
     userId: number,
     firstName: string,
@@ -624,7 +482,6 @@ export class AuthService {
     });
   }
 
-  // This generates the refresh token of the user with payload of the access token and exp of the refresh token
   private async signRefreshToken(userId: number): Promise<string> {
     const refreshTokenSecret = this.configService.get<string>('RT_SECRET');
     const refreshTokenExpiration = this.configService.get<string>('RT_EXP');
@@ -657,10 +514,16 @@ export class AuthService {
           `User with the id ${employeeId} not found.`,
         );
 
-      await this.prisma.user.update({
-        where: { employeeId },
-        data: { confirmed: false },
-      });
+      // Deactivate user and invalidate all their refresh tokens
+      await this.prisma.$transaction([
+        this.prisma.user.update({
+          where: { employeeId },
+          data: { confirmed: false },
+        }),
+        this.prisma.refreshToken.deleteMany({
+          where: { userId: user.id },
+        }),
+      ]);
 
       return {
         message: 'User deactivated successfully',

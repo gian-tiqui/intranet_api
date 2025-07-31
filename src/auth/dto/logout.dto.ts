@@ -1,7 +1,7 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class LogoutDto {
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  userId: number;
+  refreshToken: string;
 }

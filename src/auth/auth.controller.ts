@@ -66,7 +66,7 @@ export class AuthController {
     errorMessage: 'Please wait before logging out.',
   })
   logout(@Body() logoutDto: LogoutDto) {
-    return this.authService.logout(logoutDto.userId);
+    return this.authService.logout(logoutDto.refreshToken);
   }
 
   // Access token generation when refresh token is still valid endpoint

@@ -26,7 +26,6 @@ model User {
   createdAt                DateTime       @default(now())
   updatedAt                DateTime       @updatedAt
   lastUpdated              DateTime       @default(now())
-  refreshToken             String?        @unique
   deptId                   Int
   employeeId               String?        @unique
   phone                    String?        @unique
@@ -51,7 +50,6 @@ model User {
   department               Department     @relation(fields: [deptId], references: [deptId], onDelete: Cascade)
   editLogs                 EditLogs[]
   employeeLevel            EmployeeLevel  @relation(fields: [lid], references: [lid])
-  tickets                  Ticket[]
   folders                  Folder[]
   userPictures             UserPictures[] 
   loginLogs                LoginLogs[]
@@ -59,6 +57,17 @@ model User {
   receivedReports          IncidentReport[] @relation("reported")
   userUpdates              UserUpdates[]
   bookMarkedFolders        Folder[]        @relation("bookmarkedFolders")
+  refreshTokens            RefreshToken[]
+}
+
+model RefreshToken {
+  id          String   @id @default(cuid())
+  token       String   @unique
+  createdAt   DateTime @default(now())
+  lastUsedAt  DateTime @default(now())
+  
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserUpdates {
@@ -293,28 +302,6 @@ model EditType {
   type                      String      
   editLogs                  EditLogs[]
 
-  createdAt                 DateTime      @default(now())
-  updatedAt                 DateTime      @updatedAt
-}
-
-model Ticket {
-  id                        Int           @id @default(autoincrement())
-  title                     String
-  issue                     String     
-  statusId                  Int?          @default(1)
-  ticketStatus              TicketStatus? @relation(fields: [statusId], references: [id])
-  issueerId                 Int
-  issuer                    User          @relation(fields: [issueerId], references: [id])
-  startedAt                 DateTime?
-  resolvedAt                DateTime?
-  createdAt                 DateTime      @default(now())
-  updatedAt                 DateTime      @updatedAt
-}
-
-model TicketStatus {
-  id                        Int           @id @default(autoincrement())
-  status                    String
-  tickets                   Ticket[]    
   createdAt                 DateTime      @default(now())
   updatedAt                 DateTime      @updatedAt
 }
